@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[31,)"
+
+[[mods]]
+modId="dummmmmmy"
+version="1.0.0"
+displayName="DuMmmMmmy"
+credits="Made with MCreator"
+displayURL="https://mcreator.net"
+logoFile="logo.png"
+authors="MehVahdJukaar,  bonusboni"
+description='''
+Don't hurt me 
+'''
+
+[[dependencies.dummmmmmy]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
+
+
+
+

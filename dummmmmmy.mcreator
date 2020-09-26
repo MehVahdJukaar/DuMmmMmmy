@@ -1,0 +1,131 @@
+{
+  "id_map": {},
+  "mod_elements": [
+    {
+      "name": "TargetDummy",
+      "type": "mob",
+      "sortid": 1,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "target_dummy"
+    },
+    {
+      "name": "Network",
+      "type": "code",
+      "sortid": 2,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "network"
+    },
+    {
+      "name": "TargetDummyPlacer",
+      "type": "item",
+      "sortid": 3,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "target_dummy_placer"
+    },
+    {
+      "name": "DetectCriticalHit",
+      "type": "procedure",
+      "sortid": 4,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "detect_critical_hit",
+      "metadata": {
+        "dependencies": []
+      }
+    },
+    {
+      "name": "DummyNumber",
+      "type": "mob",
+      "sortid": 5,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "dummy_number"
+    },
+    {
+      "name": "Say",
+      "type": "procedure",
+      "sortid": 6,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "say",
+      "metadata": {
+        "dependencies": [
+          {
+            "name": "x",
+            "type": "number"
+          },
+          {
+            "name": "y",
+            "type": "number"
+          },
+          {
+            "name": "z",
+            "type": "number"
+          },
+          {
+            "name": "world",
+            "type": "world"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Crafting",
+      "type": "recipe",
+      "sortid": 7,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "crafting"
+    },
+    {
+      "name": "DispenserBehavior",
+      "type": "code",
+      "sortid": 8,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "dispenser_behavior"
+    }
+  ],
+  "variable_elements": [],
+  "sound_elements": [],
+  "language_map": {
+    "en_us": {
+      "item.dummmmmmy.target_dummy": "Target Dummy Spawn Egg",
+      "item.dummmmmmy.target_dummy_placer": "Target Dummy",
+      "item.dummmmmmy.dummy_number": "Dummy Number Spawn Egg",
+      "entity.dummmmmmy.dummy_number": "Dummy Number",
+      "entity.dummmmmmy.target_dummy": "Target Dummy"
+    }
+  },
+  "workspaceSettings": {
+    "modid": "dummmmmmy",
+    "modName": "DuMmmMmmy",
+    "version": "1.0.0",
+    "description": "Don\u0027t hurt me ",
+    "author": "MehVahdJukaar,  bonusboni",
+    "websiteURL": "https://mcreator.net",
+    "disableForgeVersionCheck": true,
+    "serverSideOnly": false,
+    "modPicture": "icon",
+    "requiredMods": [],
+    "dependencies": [],
+    "dependants": [],
+    "mcreatorDependencies": [],
+    "currentGenerator": "forge-1.15.2",
+    "credits": "Made with MCreator",
+    "modElementsPackage": "net.mcreator.dummmmmmy",
+    "lockBaseModFiles": false
+  },
+  "mcreatorVersion": 202000432115
+}
