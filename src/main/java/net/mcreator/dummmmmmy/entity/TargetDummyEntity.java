@@ -520,7 +520,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			}
 
 
-
+			
 
 			
 			//used for fire damage, poison damage etc.
@@ -529,7 +529,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			this.baseTick();
 
 	        //set to 0 to disable red glow that happens when hurt
-	        this.hurtTime = 0;//this.maxHurtTime;
+	        this.hurtTime = 0;//this.maxHurtTime;  
 			
 			if (shake > 0) {
 
@@ -541,8 +541,10 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 					
 				}
 			}
-			
-			
+			//used only for dragon head mouth
+			this.prevLimbSwingAmount=0;
+			this.limbSwingAmount=0; 
+			this.limbSwing=shake; 
 
 
 			// DPS!
