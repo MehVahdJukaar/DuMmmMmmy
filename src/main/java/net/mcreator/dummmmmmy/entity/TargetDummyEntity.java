@@ -128,6 +128,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 		public boolean critical = false; //has just been hit by critical?
 		public int mobType =0; //0=undefined, 1=undead, 2=water, 3= illager
 		private List<ServerPlayerEntity> currentlyAttacking = new ArrayList<>();//players to which display dps message
+		private int mynumberpos =0;
 		//public DummyNumberEntity.CustomEntity myLittleNumber;
 		private final NonNullList<ItemStack> inventoryArmor = NonNullList.withSize(4, ItemStack.EMPTY);
 
@@ -408,7 +409,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			}
 
 
-			//vnailla livingentity code down here
+			//vanilla livingentity code down here
 
 			//check if i'm on invulnerability frame
 			if ((float)this.hurtResistantTime > 10.0F) {
@@ -434,8 +435,8 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 	            this.hurtResistantTime = 20;
 	            this.maxHurtTime = 10;
 
-	            //don't know what this does. probably sends a packet of some sort
-	            this.world.setEntityState(this, (byte)2);
+	            //don't know what this does. probably sends a packet of some sort. seems to be related to red overlay so I disbled
+	            //this.world.setEntityState(this, (byte)2);
 	         }
 
 	        //set to 0 to disable red glow that happens when hurt
@@ -479,7 +480,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 
 				// damage numebrssss
 				int color = getColorFromDamageSource(source);
-				DummyNumberEntity.CustomEntity number = new DummyNumberEntity.CustomEntity(damage, color, this.world);
+				DummyNumberEntity.CustomEntity number = new DummyNumberEntity.CustomEntity(damage, color, this.mynumberpos++, this.world);
 				number.setLocationAndAngles(this.getPosX(), this.getPosY()+1, this.getPosZ(), 0.0F, 0.0F);
 				this.world.addEntity(number);
 
@@ -548,23 +549,34 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 
 
 			// DPS!
-			
-			if (!getEntityWorld().isRemote && this.damageTaken > 0 && this.ticksExisted - lastDamageTick > 60) {
-				if (firstDamageTick < lastDamageTick) {
+			//&& this.ticksExisted - lastDamageTick >60 for static
+
+			//am i being attacked?
+			if (!getEntityWorld().isRemote && this.damageTaken > 0) { 
+
+				boolean isdynamic = true;
+				boolean flag = isdynamic? (this.ticksExisted == lastDamageTick+1) : (this.ticksExisted - lastDamageTick) >60;
+				
+
+				//only show damage after second damage tick
+				if (flag && firstDamageTick < lastDamageTick) {
+
 					// it's not actual DPS but "damage per tick scaled to seconds".. but meh.
 					float seconds = (lastDamageTick - firstDamageTick) / 20f + 1;
 					float dps = damageTaken / seconds;
 					for (int i = 0; i < this.currentlyAttacking.size(); i++) {
 						this.currentlyAttacking.get(i).sendStatusMessage(new StringTextComponent("Target Dummy: " + new DecimalFormat("#.##").format(dps)+" DPS"), true);
+				
 					}
-					this.currentlyAttacking.clear();
-					// EntityFloatingNumber number = new EntityDpsFloatingNumber(getEntityWorld(),
-					// dps, this.posX, this.posY + 3, this.posZ);
-					// getEntityWorld().spawnEntity(number);
+					
+
 				}
- 
-				this.damageTaken = 0;
-				this.firstDamageTick = 0;
+				//out of combat. reset variables
+ 				if(this.ticksExisted - lastDamageTick >60){
+ 					this.currentlyAttacking.clear();
+					this.damageTaken = 0;
+					this.firstDamageTick = 0;
+ 				}
 			}
 		}
 
@@ -614,6 +626,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			super.writeAdditional(tag);
 			tag.putFloat("shake", this.shake);
 			tag.putInt("type", this.mobType);
+			tag.putInt("damage number pos", this.mynumberpos);
 		}
 
 		@Override
@@ -621,6 +634,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			super.readAdditional(tag);
 			this.shake = tag.getFloat("shake");
 			this.mobType = tag.getInt("type");
+			this.mynumberpos = tag.getInt("damage number pos");
 		}
 
 
