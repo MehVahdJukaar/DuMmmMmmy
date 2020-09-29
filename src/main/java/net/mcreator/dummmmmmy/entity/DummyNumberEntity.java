@@ -32,6 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.block.BlockState;
 
 import net.mcreator.dummmmmmy.DummmmmmyModElements;
+import net.mcreator.dummmmmmy.Config;
 
 import java.util.Random;
 
@@ -81,10 +82,6 @@ public class DummyNumberEntity extends DummmmmmyModElements.ModElement {
 		private int type =-1;
 		protected final Random rand = new Random();
 		public  List<Float> list = new ArrayList<Float>(Arrays.asList(0f,-0.25f,0.12f,-0.12f,0.25f));
-        //list.add(-0.25f); 
-        //list.add(0f); 
-        //list.add(-0.25f); 
-        //list.add(-0.5f); 
 		public CustomEntity(FMLPlayMessages.SpawnEntity packet, World world) {
 			this(entity, world);
 		}
@@ -163,7 +160,7 @@ public class DummyNumberEntity extends DummmmmmyModElements.ModElement {
 				this.remove();
 			}
 
-			float lenght=8;
+			float lenght=6;
 			this.fadeout = this.age>(MAXAGE-10)? (float)((float)10f-(this.age-30))/10f : 1;
 
 			
@@ -174,7 +171,7 @@ public class DummyNumberEntity extends DummmmmmyModElements.ModElement {
 			this.prevDx = this.dx;
 			this.dx += this.speedx;
 			// this.speed / 500d;
-			//spawn numbers in a sort of elliple centered on his feet
+			//spawn numbers in a sort of elliple centered on his torso
 			if (Math.sqrt(Math.pow(this.dx*1.5,2) + Math.pow(this.dy-1,2)) < 1.9-1) { 
 				speed = speed / 2;
 			} else {
@@ -259,7 +256,8 @@ public class DummyNumberEntity extends DummmmmmyModElements.ModElement {
 			matrixStackIn.scale(fadeout, fadeout, fadeout);
 			matrixStackIn.translate(0,  -d / 10d, 0);
 
-			String s = df.format(entityIn.getNumber());
+			float number = Config.Configs.SHOW_HEARTHS.get()? entityIn.getNumber()/2f : entityIn.getNumber();
+			String s = df.format(number);
 			// center string
 			matrixStackIn.translate((-fontrenderer.getStringWidth(s) / 2f) + 0.5f, 0, 0);
 			fontrenderer.renderString(s, 0, 0, entityIn.color, true, matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, packedLightIn);

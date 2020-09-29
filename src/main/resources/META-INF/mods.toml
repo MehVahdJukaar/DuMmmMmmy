@@ -3,14 +3,14 @@ loaderVersion="[31,)"
 
 [[mods]]
 modId="dummmmmmy"
-version="1.0.0"
+version="alpha"
 displayName="DuMmmMmmy"
 credits="Made with MCreator"
 displayURL="https://mcreator.net"
 logoFile="logo.png"
 authors="MehVahdJukaar,  bonusboni"
 description='''
-Don't hurt me 
+Not released yet
 '''
 
 [[dependencies.dummmmmmy]]

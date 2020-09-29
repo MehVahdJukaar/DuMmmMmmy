@@ -53,6 +53,7 @@ import net.minecraft.block.BlockState;
 
 import net.mcreator.dummmmmmy.entity.DummyNumberEntity;
 
+import net.mcreator.dummmmmmy.Config;
 import net.mcreator.dummmmmmy.item.TargetDummyPlacerItem;
 import net.mcreator.dummmmmmy.Network;
 import net.mcreator.dummmmmmy.DummmmmmyModElements;
@@ -458,16 +459,15 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			}
 			// magic code ^
 
-			//TODO: add a config to change this param that controls animation intensity
-			float shakescale =1.3f;
+
 			// damage in the same tick, add it
 			if (lastDamageTick == this.ticksExisted) {
 				lastDamage += damage;
-				shake += damage /shakescale;
-				shake = Math.min(shake, 40);
+				shake += damage ;
+				shake = Math.min(shake, 60f);
 			} else {
 				// OUCH :(
-				shake = Math.min(damage / shakescale, 40);
+				shake =  Math.min(damage, 60f);
 				lastDamage = damage;
 				lastDamageTick = this.ticksExisted;
 			}
@@ -554,7 +554,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			//am i being attacked?
 			if (!getEntityWorld().isRemote && this.damageTaken > 0) { 
 
-				boolean isdynamic = true;
+				boolean isdynamic = Config.Configs.DYNAMIC_DPS.get();
 				boolean flag = isdynamic? (this.ticksExisted == lastDamageTick+1) : (this.ticksExisted - lastDamageTick) >60;
 				
 
@@ -839,7 +839,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			this.bipedLeftArm.rotateAngleZ = -(float) Math.PI / 2f;
 
 			float phase = ((CustomEntity) entityIn).shakeAnimation;
-			float shake = ((CustomEntity) entityIn).shake;
+			float shake = Math.min((float)(((CustomEntity) entityIn).shake * Config.Configs.ANIMATION_INTENSITY.get()), 40f);
 			this.r = 0;
 			this.r2 = 0;
 			//float r3=0;
@@ -859,6 +859,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			// this.bipedHead.rotateAngleZ = r2;
 			// this.newhead.setRotationPoint(0.0F, 0.0F , 0.0F);
 			this.newhead2.rotateAngleX =-r; //-r
+			//
 			this.newhead2.rotateAngleZ = r2; //r2
 			// this.newhead.setRotationPoint(0F, 24.0F + 0, 0.0F);
 			this.newhead.rotateAngleX = r / 2;

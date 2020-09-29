@@ -95,6 +95,15 @@
       "locked_code": true,
       "ids": {},
       "registry_name": "dispenser_behavior"
+    },
+    {
+      "name": "Config",
+      "type": "code",
+      "sortid": 9,
+      "compiles": true,
+      "locked_code": true,
+      "ids": {},
+      "registry_name": "config"
     }
   ],
   "variable_elements": [],
@@ -111,10 +120,9 @@
   "workspaceSettings": {
     "modid": "dummmmmmy",
     "modName": "DuMmmMmmy",
-    "version": "1.0.0",
-    "description": "Don\u0027t hurt me ",
+    "version": "alpha",
+    "description": "Not released yet",
     "author": "MehVahdJukaar,  bonusboni",
-    "websiteURL": "https://mcreator.net",
     "disableForgeVersionCheck": true,
     "serverSideOnly": false,
     "modPicture": "icon",
