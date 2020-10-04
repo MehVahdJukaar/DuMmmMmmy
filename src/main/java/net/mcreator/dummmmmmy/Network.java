@@ -42,6 +42,8 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraft.item.ItemStack;
 import javax.annotation.Nonnull;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 @DummmmmmyModElements.ModElement.Tag
 public class Network extends DummmmmmyModElements.ModElement {
@@ -141,6 +143,36 @@ public class Network extends DummmmmmyModElements.ModElement {
 	}
 
 
+	public static class PacketChangeSkin extends myMessage {
+		private int entityID;
+		private boolean skin;
+
+		public PacketChangeSkin(PacketBuffer buf) {
+			this.entityID = buf.readInt();
+		    this.skin = buf.readBoolean();
+		}
+
+		public PacketChangeSkin(int entityId, boolean skin) {
+			this.entityID = entityId;
+			this.skin = skin;
+		}
+
+		public void toBytes(PacketBuffer buf) {
+			buf.writeInt(this.entityID);
+		    buf.writeBoolean(this.skin);  
+		}
+
+		public void handle(Supplier<NetworkEvent.Context> ctx) {
+			ctx.get().enqueueWork(() -> {
+				Entity entity = Minecraft.getInstance().world.getEntityByID(this.entityID);
+				if (entity != null && entity instanceof TargetDummyEntity.CustomEntity) {
+					TargetDummyEntity.CustomEntity dummy = (TargetDummyEntity.CustomEntity) entity;
+					dummy.sheared=this.skin;
+				}
+			});
+			ctx.get().setPacketHandled(true);
+		}
+	}
 
 
 
@@ -154,7 +186,7 @@ public class Network extends DummmmmmyModElements.ModElement {
 		}
 
 		public static void registerMessages() {
-			INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation("lightupmyenvironment:mychannel"), () -> "1.0", s -> true, s -> true);
+			INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation("dummmmmmy:mychannel"), () -> "1.0", s -> true, s -> true);
 			
 			INSTANCE.registerMessage(nextID(), PacketDamageNumber.class, PacketDamageNumber::toBytes, PacketDamageNumber::new,
 					PacketDamageNumber::handle);
@@ -162,6 +194,10 @@ public class Network extends DummmmmmyModElements.ModElement {
 
 			INSTANCE.registerMessage(nextID(), PacketSyncEquip.class, PacketSyncEquip::toBytes, PacketSyncEquip::new,
 					PacketSyncEquip::handle);
+
+			
+			INSTANCE.registerMessage(nextID(), PacketChangeSkin.class, PacketChangeSkin::toBytes, PacketChangeSkin::new,
+					PacketChangeSkin::handle);
 
 		}
 	}
@@ -176,4 +212,13 @@ public class Network extends DummmmmmyModElements.ModElement {
 					Networking.INSTANCE.toVanillaPacket(message, NetworkDirection.PLAY_TO_CLIENT));
 		}
 	}
+
+
+	public static void sendToAllTracking(World world, Entity entityIn, myMessage message){
+		if (world instanceof ServerWorld){
+		((ServerWorld)world).getChunkProvider().sendToAllTracking(entityIn, Networking.INSTANCE.toVanillaPacket(message, NetworkDirection.PLAY_TO_CLIENT));
+		}
+
+	}
+	
 }

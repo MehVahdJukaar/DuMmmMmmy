@@ -74,6 +74,8 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.world.raid.Raid;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.item.ShearsItem;
+import net.minecraft.network.play.server.SEntityEquipmentPacket;
 
 
 
@@ -103,7 +105,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 				// shadow size
 				@Override
 				public ResourceLocation getEntityTexture(Entity entity) {
-					return new ResourceLocation("dummmmmmy:textures/dummy.png");
+					return new ResourceLocation(Config.Configs.getSkin(entity));
 				}
 			};
 			customRender.addLayer(new LayerDummyArmor(customRender, new BipedModel(0.5f), new BipedModel(1)));
@@ -130,6 +132,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 		public int mobType =0; //0=undefined, 1=undead, 2=water, 3= illager
 		private List<ServerPlayerEntity> currentlyAttacking = new ArrayList<>();//players to which display dps message
 		private int mynumberpos =0;
+		public boolean sheared;
 		//public DummyNumberEntity.CustomEntity myLittleNumber;
 		private final NonNullList<ItemStack> inventoryArmor = NonNullList.withSize(4, ItemStack.EMPTY);
 
@@ -142,6 +145,8 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			experienceValue = 0;
 			setNoAI(true);
 			Arrays.fill(this.inventoryArmorDropChances, 1.1f);
+            this.sheared=false;
+	
 		}
 
 		public CustomEntity(World world) {
@@ -157,12 +162,16 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			this.critical=true;	
 		}
 
-		public void updatePostPlacement() {
+		public void updateOnLoadClient() {
 			float r = this.rotationYaw;
 			this.prevRotationYawHead = this.rotationYawHead = r;
 			this.prevRotationYaw = r;
 			this.prevRenderYawOffset = this.renderYawOffset = r;
+					
 		}
+	    public void updateOnLoadServer(){
+	    	this.applyEquipmentModifiers();	
+	    }
 
 		// dress it up! :D
 
@@ -197,11 +206,23 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 					invchanged=true;
 					
 				}
+				//remove sack
+				else if (itemstack.getItem() instanceof ShearsItem){
+					if(true){
+						this.sheared=true;
+						if(!this.world.isRemote){
+							Network.sendToAllTracking(this.world, this,
+								new Network.PacketChangeSkin(this.getEntityId(), true));
+						}
+						return ActionResultType.SUCCESS;
+					}
+					
+				}
+
 
 				if(invchanged){
-					//send packet
-					Network.sendToAllNear(this.getPosX(), this.getPosY(), this.getPosZ(), 128, this.world.getDimension().getType(),
-							new Network.PacketSyncEquip(this.getEntityId(), equipmentslottype.getIndex(), itemstack));
+
+					this.applyEquipmentModifiers();
 					return ActionResultType.SUCCESS;
 				}
 
@@ -216,7 +237,10 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			ItemStack itemstack2 = itemstack.copy();
 			player.setHeldItem(hand, itemstack2);
 			this.setItemStackToSlot(slot, stack);
-			this.getAttributes().removeAttributeModifiers(itemstack2.getAttributeModifiers(slot));
+
+			this.applyEquipmentModifiers();
+			//now done here^
+			//this.getAttributes().removeAttributeModifiers(itemstack2.getAttributeModifiers(slot));
 			//clear mob type
 			if(slot==EquipmentSlotType.HEAD)this.mobType=0;
 			
@@ -241,7 +265,10 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			}
 			this.playEquipSound(itemstack2);
 			this.setItemStackToSlot(slot, itemstack2);
-			this.getAttributes().applyAttributeModifiers(itemstack2.getAttributeModifiers(slot));
+			
+			this.applyEquipmentModifiers();
+			//now done here^
+			//this.getAttributes().applyAttributeModifiers(itemstack2.getAttributeModifiers(slot));
 			//add mob type
 			if(this.isUndeadSkull(itemstack2)){ 
 				this.mobType=1;
@@ -349,7 +376,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			if(source == DamageSource.MAGIC){
 				//would really like to detect poisn damage but i don't think there's simple way
 
-				return 0x00CCFF;
+				return 0x3399FF;
 			}
 			if (source ==DamageSource.HOT_FLOOR||source ==DamageSource.LAVA||source ==DamageSource.ON_FIRE||source ==DamageSource.IN_FIRE) return 0xFF9900;
 			if (source == DamageSource.LIGHTNING_BOLT) return 0xFFFF00;
@@ -475,9 +502,11 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			
 			if (!this.world.isRemote) {
 				//custom update packet
-				Network.sendToAllNear(this.getPosX(), this.getPosY(), this.getPosZ(), 128, this.world.getDimension().getType(),
+				/*Network.sendToAllNear(this.getPosX(), this.getPosY(), this.getPosZ(), 128, this.world.getDimension().getType(),
 							new Network.PacketDamageNumber(this.getEntityId(), damage, shake));
-
+				*/
+				Network.sendToAllTracking(this.world, this, new Network.PacketDamageNumber(this.getEntityId(), damage, shake));
+				
 				// damage numebrssss
 				int color = getColorFromDamageSource(source);
 				DummyNumberEntity.CustomEntity number = new DummyNumberEntity.CustomEntity(damage, color, this.mynumberpos++, this.world);
@@ -487,19 +516,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 				this.critical=false;
 
 						
-				/*
-				 * if(myLittleNumber != null && !myLittleNumber.isDead) {
-				 * myLittleNumber.setDead(); }
-				 * 
-				 * 
-				 * EntityFloatingNumber number = new EntityFloatingNumber(getEntityWorld(),
-				 * damage, this.posX, this.posY + 2, this.posZ); myLittleNumber = number;
-				 * getEntityWorld().spawnEntity(number);
-				 * 
-				 * TestDummyMod.proxy.network.sendToAllAround(new DamageMessage(lastDamage,
-				 * shake, this, myLittleNumber), new NetworkRegistry.TargetPoint(dimension,
-				 * posX, posY, posZ, 20));
-				 */
+
 				this.damageTaken += damage;
 				if (firstDamageTick == 0) {
 					firstDamageTick = this.ticksExisted;
@@ -509,6 +526,38 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 		}
 
 
+
+		public void applyEquipmentModifiers(){
+			//living entity code here. aparently every entity does this check every tick.
+			//trying insted to run it only when needed instead
+			if (!this.world.isRemote){		
+		         for(EquipmentSlotType equipmentslottype : EquipmentSlotType.values()) {
+		            ItemStack itemstack;
+		            switch(equipmentslottype.getSlotType()) {
+		            case ARMOR:
+		               itemstack = this.inventoryArmor.get(equipmentslottype.getIndex());
+		               break;
+		            default:
+		               continue;
+		            }
+		
+		            ItemStack itemstack1 = this.getItemStackFromSlot(equipmentslottype);
+		            if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
+		               if (!itemstack1.equals(itemstack, true))
+		               //TODO:add similar method to my network
+		               ((ServerWorld)this.world).getChunkProvider().sendToAllTracking(this, new SEntityEquipmentPacket(this.getEntityId(), equipmentslottype, itemstack1));
+		               net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslottype, itemstack, itemstack1));
+		               if (!itemstack.isEmpty()) {
+		                  this.getAttributes().removeAttributeModifiers(itemstack.getAttributeModifiers(equipmentslottype));
+		               }
+		
+		               if (!itemstack1.isEmpty()) {
+		                  this.getAttributes().applyAttributeModifiers(itemstack1.getAttributeModifiers(equipmentslottype));
+		               }
+		            }
+		         }
+			}	
+		}
 		 
 		@Override
 		public void tick() {
@@ -519,9 +568,6 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 					this.dismantle(true);
 				}
 			}
-
-
-			
 
 			
 			//used for fire damage, poison damage etc.
@@ -604,29 +650,34 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			return true;
 		}
 
+		//called when entity is first spawned/loaded
 		@Override
 		public void writeSpawnData(PacketBuffer buffer) {
+			buffer.writeFloat(this.shake);
+			buffer.writeBoolean(this.sheared);
+			//hijacking this method to do some other server calculations. ther's probably an event just for this but I havent found ti
+			this.updateOnLoadServer();
+
 		}
 
+		//called when entity is first spawned/loaded
 		@Override
 		public void readSpawnData(PacketBuffer additionalData) {
-			this.updatePostPlacement();
-			//other method not working. using this one 
+			this.shake = additionalData.readFloat();
+			this.sheared = additionalData.readBoolean();	
+			//and this as well to do some other client calculations
+			this.updateOnLoadClient();
+			
 		}
 
-		/*
-		 * @Override public ILivingEntityData onInitialSpawn(IWorld world,
-		 * DifficultyInstance difficulty, SpawnReason reason, ILivingEntityData
-		 * livingdata, CompoundNBT tag) { ILivingEntityData retval =
-		 * super.onInitialSpawn(world, difficulty, reason, livingdata, tag);
-		 * this.updatePostPlacement(); return retval; }
-		 */
+
 		@Override
 		public void writeAdditional(CompoundNBT tag) {
 			super.writeAdditional(tag);
 			tag.putFloat("shake", this.shake);
 			tag.putInt("type", this.mobType);
 			tag.putInt("damage number pos", this.mynumberpos);
+			tag.putBoolean("sheared", this.sheared);
 		}
 
 		@Override
@@ -635,6 +686,7 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			this.shake = tag.getFloat("shake");
 			this.mobType = tag.getInt("type");
 			this.mynumberpos = tag.getInt("damage number pos");
+			this.sheared = tag.getBoolean("sheared");
 		}
 
 
