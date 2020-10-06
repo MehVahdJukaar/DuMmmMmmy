@@ -103,9 +103,9 @@ public class Config extends DummmmmmyModElements.ModElement {
 					case 0:
 					return "dummmmmmy:textures/dummy_h.png";
 					case 1:
-					return "dummmmmmy:textures/dummy_h_1.png";
+					return "dummmmmmy:textures/dummy_1_h.png";
 					case 2:
-					return "dummmmmmy:textures/dummy_h_2.png";
+					return "dummmmmmy:textures/dummy_2_h.png";
 				}
 			}
 		}
