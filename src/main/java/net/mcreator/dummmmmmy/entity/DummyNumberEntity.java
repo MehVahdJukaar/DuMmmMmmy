@@ -161,7 +161,7 @@ public class DummyNumberEntity extends DummmmmmyModElements.ModElement {
 			}
 
 			float lenght=6;
-			this.fadeout = this.age>(MAXAGE-10)? (float)((float)10f-(this.age-30))/10f : 1;
+			this.fadeout = this.age>(MAXAGE-lenght)? (float)((float)MAXAGE-this.age)/lenght : 1;
 
 			
 			// this.forceSetPosition(this.getPosX(), this.getPosY() + (this.speed / 2),

@@ -208,20 +208,21 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 				}
 				//remove sack
 				else if (itemstack.getItem() instanceof ShearsItem){
-					if(true){
+					if(!this.sheared){
 						this.sheared=true;
 						if(!this.world.isRemote){
 							Network.sendToAllTracking(this.world, this,
 								new Network.PacketChangeSkin(this.getEntityId(), true));
 						}
 						return ActionResultType.SUCCESS;
-					}
 					
+						
+					}
 				}
 
 
 				if(invchanged){
-
+					Network.sendToAllTracking(this.world,this, new Network.PacketSyncEquip(this.getEntityId(), equipmentslottype.getIndex(), itemstack));
 					this.applyEquipmentModifiers();
 					return ActionResultType.SUCCESS;
 				}
@@ -544,8 +545,8 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 		            ItemStack itemstack1 = this.getItemStackFromSlot(equipmentslottype);
 		            if (!ItemStack.areItemStacksEqual(itemstack1, itemstack)) {
 		               if (!itemstack1.equals(itemstack, true))
-		               //TODO:add similar method to my network
-		               ((ServerWorld)this.world).getChunkProvider().sendToAllTracking(this, new SEntityEquipmentPacket(this.getEntityId(), equipmentslottype, itemstack1));
+
+		              // ((ServerWorld)this.world).getChunkProvider().sendToAllTracking(this, new SEntityEquipmentPacket(this.getEntityId(), equipmentslottype, itemstack1));
 		               net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslottype, itemstack, itemstack1));
 		               if (!itemstack.isEmpty()) {
 		                  this.getAttributes().removeAttributeModifiers(itemstack.getAttributeModifiers(equipmentslottype));
