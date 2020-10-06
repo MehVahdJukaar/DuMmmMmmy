@@ -222,8 +222,10 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 
 
 				if(invchanged){
+					//update client packet for visuals
 					Network.sendToAllTracking(this.world,this, new Network.PacketSyncEquip(this.getEntityId(), equipmentslottype.getIndex(), itemstack));
-					this.applyEquipmentModifiers();
+					//this.applyEquipmentModifiers();
+
 					return ActionResultType.SUCCESS;
 				}
 
@@ -239,9 +241,9 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			player.setHeldItem(hand, itemstack2);
 			this.setItemStackToSlot(slot, stack);
 
-			this.applyEquipmentModifiers();
+			//this.applyEquipmentModifiers();
 			//now done here^
-			//this.getAttributes().removeAttributeModifiers(itemstack2.getAttributeModifiers(slot));
+			this.getAttributes().removeAttributeModifiers(itemstack2.getAttributeModifiers(slot));
 			//clear mob type
 			if(slot==EquipmentSlotType.HEAD)this.mobType=0;
 			
@@ -267,9 +269,9 @@ public class TargetDummyEntity extends DummmmmmyModElements.ModElement {
 			this.playEquipSound(itemstack2);
 			this.setItemStackToSlot(slot, itemstack2);
 			
-			this.applyEquipmentModifiers();
+			//this.applyEquipmentModifiers();
 			//now done here^
-			//this.getAttributes().applyAttributeModifiers(itemstack2.getAttributeModifiers(slot));
+			this.getAttributes().applyAttributeModifiers(itemstack2.getAttributeModifiers(slot));
 			//add mob type
 			if(this.isUndeadSkull(itemstack2)){ 
 				this.mobType=1;

@@ -75,6 +75,18 @@
       "locked_code": true,
       "ids": {},
       "registry_name": "config"
+    },
+    {
+      "name": "Sayw",
+      "type": "procedure",
+      "sortid": 10,
+      "compiles": true,
+      "locked_code": false,
+      "ids": {},
+      "registry_name": "sayw",
+      "metadata": {
+        "dependencies": []
+      }
     }
   ],
   "variable_elements": [],
