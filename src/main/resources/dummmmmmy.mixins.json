@@ -1,0 +1,17 @@
+
+{
+  "minVersion": "0.8",
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "dummmmmmy.refmap.json",
+  "package": "net.mehvahdjukaar.dummmmmmy.mixins",
+  "mixins": [
+    "SwordItemMixin",
+    "ToolItemMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
