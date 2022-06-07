@@ -27,7 +27,10 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.*;
@@ -38,6 +41,8 @@ import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +70,7 @@ public class TargetDummyEntity extends Mob {
     public MobAttribute mobType = MobAttribute.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
-    //needed cause it's private and we arent calling le tick
+    //needed because it's private, and we aren't calling le tick
     private final NonNullList<ItemStack> lastArmorItems = NonNullList.withSize(4, ItemStack.EMPTY);
 
     private final Map<ServerPlayer, Integer> currentlyAttacking = new HashMap<>();
@@ -135,6 +140,11 @@ public class TargetDummyEntity extends Mob {
         float r = this.getYRot();
         this.yRotO = r;
         this.yHeadRotO = this.yHeadRot = r;
+    }
+
+    @Override
+    protected InteractionResult mobInteract(Player p_21472_, InteractionHand p_21473_) {
+        return super.mobInteract(p_21472_, p_21473_);
     }
 
     // dress it up! :D
@@ -280,23 +290,23 @@ public class TargetDummyEntity extends Mob {
         //living entity code here. apparently every entity does this check every tick.
         //trying instead to run it only when needed instead
         if (!this.level.isClientSide) {
-            for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 ItemStack itemstack;
-                if (equipmentslottype.getType() == EquipmentSlot.Type.ARMOR) {
-                    itemstack = this.lastArmorItems.get(equipmentslottype.getIndex());
+                if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
+                    itemstack = this.lastArmorItems.get(equipmentSlot.getIndex());
 
-                    ItemStack itemstack1 = this.getItemBySlot(equipmentslottype);
-                    if (!ItemStack.matches(itemstack1, itemstack)) {
-                        if (!itemstack1.equals(itemstack, true))
+                    ItemStack slot = this.getItemBySlot(equipmentSlot);
+                    if (!ItemStack.matches(slot, itemstack)) {
+                        if (!slot.equals(itemstack, true))
+                            //packets are already handled by livingEntity detectEquipmentChange
                             //send packet
                             //Network.sendToAllTracking(this.world,this, new Network.PacketSyncEquip(this.getEntityId(), equipmentslottype.getIndex(), itemstack));
-
-                            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslottype, itemstack, itemstack1));
+                            MinecraftForge.EVENT_BUS.post(new LivingEquipmentChangeEvent(this, equipmentSlot, itemstack, slot));
                         if (!itemstack.isEmpty()) {
-                            this.getAttributes().removeAttributeModifiers(itemstack.getAttributeModifiers(equipmentslottype));
+                            this.getAttributes().removeAttributeModifiers(itemstack.getAttributeModifiers(equipmentSlot));
                         }
-                        if (!itemstack1.isEmpty()) {
-                            this.getAttributes().addTransientAttributeModifiers(itemstack1.getAttributeModifiers(equipmentslottype));
+                        if (!slot.isEmpty()) {
+                            this.getAttributes().addTransientAttributeModifiers(slot.getAttributeModifiers(equipmentSlot));
                         }
                     }
                 }

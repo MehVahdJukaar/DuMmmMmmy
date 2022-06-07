@@ -25,6 +25,8 @@ import java.util.*;
 
 public class DummyNumberEntity extends Entity implements IEntityAdditionalSpawnData {
     protected static final int MAX_AGE = 35;
+    public static final List<Float> POSITIONS = new ArrayList<>(Arrays.asList(0f, -0.25f, 0.12f, -0.12f, 0.25f));
+
     private final Collection<UUID> targetPlayers = new HashSet<>();
     public int age;
     private float number = 69420;
@@ -38,8 +40,6 @@ public class DummyNumberEntity extends Entity implements IEntityAdditionalSpawnD
     public float fadeout = -1;
     public float prevFadeout = -1;
     private int type = -1; //used for location in array
-    protected final Random rand = new Random();
-    private final List<Float> list = List.of(0f, -0.25f, 0.12f, -0.12f, 0.25f);
 
     public DummyNumberEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModRegistry.DUMMY_NUMBER.get(), world);
@@ -83,10 +83,10 @@ public class DummyNumberEntity extends Entity implements IEntityAdditionalSpawnD
         this.color = buffer.readEnum(TargetDummyEntity.DamageType.class);
         int i = buffer.readInt();
         if (i != -1) {
-            this.speedX = list.get(i % list.size());
+            this.speedX = POSITIONS.get(i % POSITIONS.size());
         } else {
             //this.speedx = (this.rand.nextFloat() - 0.5f) / 2f;
-            this.speedX = list.get(this.rand.nextInt(list.size()));
+            this.speedX = POSITIONS.get(this.random.nextInt(POSITIONS.size()));
         }
         int size = buffer.readInt();
         this.targetPlayers.clear();

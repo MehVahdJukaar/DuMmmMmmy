@@ -22,5 +22,4 @@ public class TargetDummyRenderer extends HumanoidMobRenderer<TargetDummyEntity, 
         return Configs.cached.SKIN.getSkin(entity.isSheared());
     }
 
-
 }
