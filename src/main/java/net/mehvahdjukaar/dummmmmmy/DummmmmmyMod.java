@@ -44,7 +44,4 @@ public class DummmmmmyMod {
 		bus.addListener(ModSetup::init);
 
 	}
-
-
-
 }

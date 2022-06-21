@@ -18,10 +18,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 public class ModSetup {
 
     public static void init(final FMLCommonSetupEvent event) {
+        event.enqueueWork(()-> {
+            NetworkHandler.registerMessages();
 
-        NetworkHandler.registerMessages();
-
-        DispenserBlock.registerBehavior(ModRegistry.DUMMY_ITEM.get(), new SpawnDummyBehavior());
+            DispenserBlock.registerBehavior(ModRegistry.DUMMY_ITEM.get(), new SpawnDummyBehavior());
+        });
     }
 
     @SubscribeEvent

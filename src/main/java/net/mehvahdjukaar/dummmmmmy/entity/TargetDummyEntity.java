@@ -9,7 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -45,6 +45,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
@@ -228,7 +229,6 @@ public class TargetDummyEntity extends Mob {
 
         player.setItemInHand(hand, ItemUtils.createFilledResult(stack.copy(), player, currentItem, player.isCreative()));
 
-        this.equipEventAndSound(newItem);
         this.setItemSlot(slot, newItem);
 
         //this.applyEquipmentModifiers();
@@ -248,7 +248,7 @@ public class TargetDummyEntity extends Mob {
     private boolean isPumpkin(Item item) {
         if (item instanceof BlockItem) {
             Block block = ((BlockItem) item).getBlock();
-            String name = item.getRegistryName().getPath();
+            String name = ForgeRegistries.ITEMS.getKey(item).getPath();
             return block instanceof CarvedPumpkinBlock || name.contains("pumpkin") || name.contains("jack_o");
         }
         return false;
@@ -529,7 +529,7 @@ public class TargetDummyEntity extends Mob {
                         }
                         //here is to visually show dps on status message
                         if (showMessage && p.distanceTo(this) < 64) {
-                            p.displayClientMessage(new TranslatableComponent("message.dummmmmmy.dps",
+                            p.displayClientMessage(Component.translatable("message.dummmmmmy.dps",
                                     this.getDisplayName(),
                                     new DecimalFormat("#.##").format(dps)), true);
                         }

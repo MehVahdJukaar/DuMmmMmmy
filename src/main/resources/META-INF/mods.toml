@@ -1,6 +1,6 @@
 modLoader="javafml"
-loaderVersion="[31,)"
-license="don't know what to put here :/"
+loaderVersion="[40,)"
+license="Public Domain"
 
 itemIcon="dummmmmmy:target_dummy_placer" #catalogue icon
 
@@ -9,9 +9,9 @@ logoFile="logo.png"
 
 [[mods]]
     modId="dummmmmmy"
-    version="1.18-1.5.0" #mandatory
+    version="${file.jarVersion}" #mandatory
     displayName="MmmMmmMmmMmm"
-    credits="bonusboni, Gooigipunch"
+    credits="bonusboni, Gooigipunch, Plantkillable"
     displayURL="https://www.curseforge.com/minecraft/mc-mods/mmmmmmmmmmmm"
     authors="MehVahdJukaar, bonusboni"
     description='''don't hurt me pls :S'''
@@ -19,13 +19,13 @@ logoFile="logo.png"
 [[dependencies.dummmmmmy]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[32,)" #mandatory
+    versionRange="[40,)" #mandatory
     ordering="NONE"
     side="BOTH"
 [[dependencies.dummmmmmy]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.18,1.19]"
+    versionRange="[1.19,1.20]"
     ordering="NONE"
     side="BOTH"
 

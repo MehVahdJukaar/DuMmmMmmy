@@ -13,6 +13,7 @@ import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Events {
@@ -28,7 +29,7 @@ public class Events {
     }
 
     public static boolean isScared(Entity entity) {
-        String name = entity.getType().getRegistryName().toString();
+        String name = ForgeRegistries.ENTITIES.getKey(entity.getType()).toString();
         return (entity instanceof Animal || Configs.cachedServer.WHITELIST.contains(name))
                 && !Configs.cachedServer.BLACKLIST.contains(name);
     }
