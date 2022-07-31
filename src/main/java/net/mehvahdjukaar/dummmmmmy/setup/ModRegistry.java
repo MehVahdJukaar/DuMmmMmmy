@@ -17,7 +17,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class ModRegistry {
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, DummmmmmyMod.MOD_ID);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, DummmmmmyMod.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, DummmmmmyMod.MOD_ID);
 
     public static void init(IEventBus bus) {
         ITEMS.register(bus);
