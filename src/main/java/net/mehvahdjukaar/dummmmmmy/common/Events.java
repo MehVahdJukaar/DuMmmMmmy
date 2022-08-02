@@ -7,7 +7,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -29,7 +29,7 @@ public class Events {
     }
 
     public static boolean isScared(Entity entity) {
-        String name = ForgeRegistries.ENTITIES.getKey(entity.getType()).toString();
+        String name = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType()).toString();
         return (entity instanceof Animal || Configs.cachedServer.WHITELIST.contains(name))
                 && !Configs.cachedServer.BLACKLIST.contains(name);
     }
@@ -42,7 +42,7 @@ public class Events {
     //prevents them from spawning
     @SubscribeEvent
     public static void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
-        if (!(event.getWorld() instanceof Level)) return;
+        if (!(event.getLevel() instanceof Level)) return;
         Level world = event.getEntity().level;
 
         Entity entity = event.getEntity();
@@ -53,8 +53,8 @@ public class Events {
 
     //add goal
     @SubscribeEvent
-    public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (event.getWorld() == null) return;
+    public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
+        if (event.getLevel() == null) return;
         Entity e = event.getEntity();
         if (e instanceof PathfinderMob mob && isScared(e)) {
 
