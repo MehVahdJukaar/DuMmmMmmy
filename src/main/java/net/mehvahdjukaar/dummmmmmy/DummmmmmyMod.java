@@ -37,10 +37,10 @@ public class DummmmmmyMod {
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-
+        //TODO: turn damage number into particle
         ModRegistry.init(bus);
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> bus.register(ClientHandler.class));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> bus.register(ClientHandler.class));
 
         bus.addListener(ModSetup::init);
 

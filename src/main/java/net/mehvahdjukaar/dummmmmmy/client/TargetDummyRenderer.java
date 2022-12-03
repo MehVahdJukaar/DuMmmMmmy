@@ -19,7 +19,7 @@ public class TargetDummyRenderer extends HumanoidMobRenderer<TargetDummyEntity, 
 
     @Override
     public ResourceLocation getTextureLocation(TargetDummyEntity entity) {
-        return Configs.cached.SKIN.getSkin(entity.isSheared());
+        return Configs.Cached.SKIN.getSkin(entity.isSheared());
     }
 
 }

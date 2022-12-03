@@ -13,7 +13,7 @@ public class Configs {
 
     public static void reloadConfigsEvent(ModConfigEvent event) {
         if (event.getConfig().getSpec() == CLIENT_CONFIG)
-            cached.refresh();
+            Cached.refresh();
         else if (event.getConfig().getSpec() == SERVER_CONFIG) {
             cachedServer.refresh();
         }
@@ -85,8 +85,7 @@ public class Configs {
         builder.comment("lots of cosmetic stuff in here").push("visuals");
         ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt. default=0.75").defineInRange("animationIntensity", 0.75, 0.0, 2.0);
         SHOW_HEARTHS = builder.comment("Show hearths instead of damage dealt? (1 hearth = two damage)").define("showHearths", false);
-        DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse? ")
-                .defineEnum("DPS_mode", DpsMode.DYNAMIC);
+
 
 
         SKIN = builder.comment("Skin used by the dummy").defineEnum("texture", SkinType.DEFAULT);
@@ -122,6 +121,10 @@ public class Configs {
         RADIUS = serverBuilder.comment("Scaring radius").defineInRange("scare_radius", 12, 0, 100);
 
         serverBuilder.pop();
+        //TODO: move to client...
+        DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse? ")
+                .defineEnum("DPS_mode", DpsMode.DYNAMIC);
+
         DAMAGE_NUMBERS = serverBuilder.comment("Enable and disable damage numbers")
                 .define("damage_numbers", true);
 
@@ -175,7 +178,7 @@ public class Configs {
     }
 
 
-    public static class cached {
+    public static class Cached {
         public static double ANIMATION_INTENSITY;
         public static boolean SHOW_HEARTHS;
         public static DpsMode DYNAMIC_DPS;

@@ -65,7 +65,7 @@ public class NumberRenderer extends EntityRenderer<DummyNumberEntity> {
         matrixStackIn.scale(fadeout, fadeout, fadeout);
         matrixStackIn.translate(0, -d / 10d, 0);
 
-        float number = Configs.cached.SHOW_HEARTHS ? entityIn.getNumber() / 2f : entityIn.getNumber();
+        float number = Configs.Cached.SHOW_HEARTHS ? entityIn.getNumber() / 2f : entityIn.getNumber();
         String s = df.format(number);
         // center string
         matrixStackIn.translate((-fontRenderer.width(s) / 2f) + 0.5f, 0, 0);

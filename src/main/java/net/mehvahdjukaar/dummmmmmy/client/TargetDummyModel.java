@@ -95,7 +95,7 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
         float phase = Mth.lerp(partialTick, entityIn.prevShakeAmount, entityIn.shakeAmount);
         float swing = Mth.lerp(partialTick, entityIn.prevAnimationPosition, entityIn.animationPosition);
-        float shake = Math.min((float) (swing * Configs.cached.ANIMATION_INTENSITY), 40f);
+        float shake = Math.min((float) (swing * Configs.Cached.ANIMATION_INTENSITY), 40f);
 
         if (shake > 0) {
             this.r = (float) -(Mth.sin(phase) * Math.PI / 100f * shake);

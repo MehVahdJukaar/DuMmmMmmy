@@ -27,10 +27,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.Cow;
-import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.*;
@@ -509,7 +506,7 @@ public class TargetDummyEntity extends Mob {
             if (tracker.isInCombat() && this.totalDamageTakenInCombat > 0) {
 
                 float combatDuration = tracker.getCombatDuration();
-                Configs.DpsMode dpsMode = Configs.cached.DYNAMIC_DPS;
+                Configs.DpsMode dpsMode = Configs.Cached.DYNAMIC_DPS;
                 if (dpsMode != Configs.DpsMode.OFF && combatDuration > 0) {
 
                     boolean dynamic = dpsMode == Configs.DpsMode.DYNAMIC;
@@ -666,18 +663,18 @@ public class TargetDummyEntity extends Mob {
         //only client
         public int getColor() {
             return switch (this) {
-                case CRIT -> Configs.cached.DAMAGE_CRIT;
-                case FIRE -> Configs.cached.DAMAGE_FIRE;
-                case MAGIC -> Configs.cached.DAMAGE_MAGIC;
-                case CACTUS -> Configs.cached.DAMAGE_CACTUS;
-                case DRAGON -> Configs.cached.DAMAGE_DRAGON;
-                case WITHER -> Configs.cached.DAMAGE_WITHER;
-                case GENERIC -> Configs.cached.DAMAGE_GENERIC;
-                case TRIDENT -> Configs.cached.DAMAGE_TRIDENT;
-                case EXPLOSION -> Configs.cached.DAMAGE_EXPLOSION;
-                case IND_MAGIC -> Configs.cached.DAMAGE_IND_MAGIC;
-                case LIGHTNING -> Configs.cached.DAMAGE_LIGHTNING;
-                case TRUE -> Configs.cached.DAMAGE_TRUE;
+                case CRIT -> Configs.Cached.DAMAGE_CRIT;
+                case FIRE -> Configs.Cached.DAMAGE_FIRE;
+                case MAGIC -> Configs.Cached.DAMAGE_MAGIC;
+                case CACTUS -> Configs.Cached.DAMAGE_CACTUS;
+                case DRAGON -> Configs.Cached.DAMAGE_DRAGON;
+                case WITHER -> Configs.Cached.DAMAGE_WITHER;
+                case GENERIC -> Configs.Cached.DAMAGE_GENERIC;
+                case TRIDENT -> Configs.Cached.DAMAGE_TRIDENT;
+                case EXPLOSION -> Configs.Cached.DAMAGE_EXPLOSION;
+                case IND_MAGIC -> Configs.Cached.DAMAGE_IND_MAGIC;
+                case LIGHTNING -> Configs.Cached.DAMAGE_LIGHTNING;
+                case TRUE -> Configs.Cached.DAMAGE_TRUE;
             };
         }
     }
