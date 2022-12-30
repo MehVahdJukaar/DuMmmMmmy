@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "dummmmmmy",
+  "version": "${version}",
+  "name": "MmmMmmMmmMmm",
+  "description": "don't hurt me pls :S",
+  "authors": [
+    "Mehvahdjukaar, Bonusboni, Gooigipunch, Plantkillable"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/mmmmmmmmmmmm",
+    "sources": "https://github.com/MehVahdJukaar/dummmmmmy"
+  },
+  "license": "code: Public Domain, assets: ARR",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.mehvahdjukaar.carpeted.fabric.DummmmmmyFabric"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json",
+    "${mod_id}-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.19.2",
+    "moonlight": ">=1.19.2-2.0.35"
+  }
+}

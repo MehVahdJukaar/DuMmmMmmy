@@ -1,0 +1,45 @@
+
+modLoader="javafml" #mandatory
+
+loaderVersion="[40,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+
+license="code: Public Domain, assets: ARR"
+
+[[mods]] #mandatory
+
+modId= "dummmmmmy" #mandatory
+
+version = "${version}"
+
+displayName="MmmMmmMmmmmm" #mandatory
+
+logoFile="icon.png" #optional
+
+credits="Gooigipunch, Plantkillable" #optional
+
+authors="MehVahdJukaar, Bonusboni" #optional
+
+itemIcon="dummmmmmy:dummy" #catalogue icon
+description='''
+don't hurt me pls :S
+'''
+
+[[dependencies.dummmmmmy]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[40,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.dummmmmmy]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.19.2,1.20)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.dummmmmmy]]
+    modId="moonlight"
+    mandatory=true
+    versionRange="[1.19.2-2.1.20,]"
+    side="BOTH"
