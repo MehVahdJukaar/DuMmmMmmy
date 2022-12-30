@@ -3,9 +3,12 @@ package net.mehvahdjukaar.dummmmmmy.entity;
 
 import dev.architectury.injectables.annotations.PlatformOnly;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.client.DamageType;
+import net.mehvahdjukaar.dummmmmmy.common.DamageType;
 import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
-import net.mehvahdjukaar.dummmmmmy.common.NetworkHandler;
+import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
+import net.mehvahdjukaar.dummmmmmy.network.ClientBoundSyncEquipMessage;
+import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
+import net.mehvahdjukaar.moonlight.api.platform.ForgeHelper;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -42,8 +45,6 @@ import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
@@ -148,8 +149,7 @@ public class TargetDummyEntity extends Mob {
             Item item = itemstack.getItem();
 
             //special items
-            if (item instanceof BannerItem || this.isPumpkin(item) ||
-                    item.canEquip(itemstack, EquipmentSlot.HEAD, this)) {
+            if (item instanceof BannerItem || this.isPumpkin(item) || ForgeHelper.canEquipItem(this, itemstack, EquipmentSlot.HEAD)) {
                 equipmentSlot = EquipmentSlot.HEAD;
             }
 
@@ -185,7 +185,8 @@ public class TargetDummyEntity extends Mob {
             if (inventoryChanged) {
                 this.setLastArmorItem(equipmentSlot, itemstack);
                 if (!this.level.isClientSide) {
-                    NetworkHandler.sendToAllTracking(this, (ServerLevel) this.level, new NetworkHandler.PacketSyncEquip(this.getId(), equipmentSlot.getIndex(), this.getItemBySlot(equipmentSlot)));
+                    NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
+                            new ClientBoundSyncEquipMessage(this.getId(), equipmentSlot.getIndex(), this.getItemBySlot(equipmentSlot)));
                 }
                 //this.applyEquipmentModifiers();
                 return InteractionResult.SUCCESS;
@@ -287,11 +288,11 @@ public class TargetDummyEntity extends Mob {
 
                     ItemStack slot = this.getItemBySlot(equipmentSlot);
                     if (!ItemStack.matches(slot, itemstack)) {
-                        if (!slot.equals(itemstack, true))
+                        if (!slot.equals(itemstack))
                             //packets are already handled by livingEntity detectEquipmentChange
                             //send packet
                             //Network.sendToAllTracking(this.world,this, new Network.PacketSyncEquip(this.getEntityId(), equipmentslottype.getIndex(), itemstack));
-                            MinecraftForge.EVENT_BUS.post(new LivingEquipmentChangeEvent(this, equipmentSlot, itemstack, slot));
+                            ForgeHelper.onEquipmentChange(this, equipmentSlot, itemstack, slot);
                         if (!itemstack.isEmpty()) {
                             this.getAttributes().removeAttributeModifiers(itemstack.getAttributeModifiers(equipmentSlot));
                         }
@@ -420,7 +421,8 @@ public class TargetDummyEntity extends Mob {
 
     private void showDamageDealt(float damage, DamageType type) {
         //custom update packet
-        NetworkHandler.sendToAllTracking(this, (ServerLevel) this.level, new NetworkHandler.PacketDamageNumber(this.getId(), this.animationPosition));
+        NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
+                 new ClientBoundDamageNumberMessage(this.getId(), this.animationPosition));
 
         if (CommonConfigs.DAMAGE_NUMBERS.get()) {
             // damage numebrssss

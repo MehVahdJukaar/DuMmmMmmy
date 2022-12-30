@@ -1,6 +1,5 @@
-package net.mehvahdjukaar.dummmmmmy.client;
+package net.mehvahdjukaar.dummmmmmy.common;
 
-import net.mehvahdjukaar.dummmmmmy.common.ClientConfigs;
 import net.minecraft.world.damagesource.DamageSource;
 
 public enum DamageType {

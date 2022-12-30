@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.mixins;
 
-import net.mehvahdjukaar.dummmmmmy.common.Configs;
-import net.mehvahdjukaar.dummmmmmy.setup.ModRegistry;
+import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
+import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemStack;
@@ -16,7 +16,7 @@ public abstract class ToolItemMixin {
     @Inject(method = "hurtEnemy", at = @At("HEAD"),
             cancellable = true)
     public void hurtItem(ItemStack stack, LivingEntity entity, LivingEntity player, CallbackInfoReturnable<Boolean> cir) {
-        if(Configs.CachedServer.DAMAGE_EQUIPMENT && entity.getType() == ModRegistry.TARGET_DUMMY.get()){
+        if (entity.getType() == Dummmmmmy.TARGET_DUMMY.get() && CommonConfigs.DAMAGE_EQUIPMENT.get()) {
             cir.setReturnValue(true);
             cir.cancel();
         }

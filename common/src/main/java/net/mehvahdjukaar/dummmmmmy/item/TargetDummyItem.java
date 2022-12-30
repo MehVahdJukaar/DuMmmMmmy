@@ -31,10 +31,10 @@ public class TargetDummyItem extends Item {
             return InteractionResult.FAIL;
         } else {
             Level world = context.getLevel();
-            BlockPlaceContext blockitemusecontext = new BlockPlaceContext(context);
-            BlockPos blockpos = blockitemusecontext.getClickedPos();
-            BlockPos blockpos1 = blockpos.above();
-            if (blockitemusecontext.canPlace() && world.getBlockState(blockpos1).canBeReplaced(blockitemusecontext)) {
+            BlockPlaceContext placeContext = new BlockPlaceContext(context);
+            BlockPos blockpos = placeContext.getClickedPos();
+            BlockPos above = blockpos.above();
+            if (placeContext.canPlace() && world.getBlockState(above).canBeReplaced(placeContext)) {
                 double d0 = blockpos.getX();
                 double d1 = blockpos.getY();
                 double d2 = blockpos.getZ();
@@ -46,7 +46,7 @@ public class TargetDummyItem extends Item {
                     ItemStack itemstack = context.getItemInHand();
                     if (!world.isClientSide) {
                         world.removeBlock(blockpos, false);
-                        world.removeBlock(blockpos1, false);
+                        world.removeBlock(above, false);
                         TargetDummyEntity dummy = new TargetDummyEntity(world);
                         float f = Mth.floor((Mth.wrapDegrees(context.getRotation() - 180.0F) + 11.25) / 22.5F) * 22.5F;
                         dummy.moveTo(d0 + 0.5D, d1, d2 + 0.5D, f, 0.0F);

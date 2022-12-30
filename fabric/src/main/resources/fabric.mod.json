@@ -16,7 +16,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.mehvahdjukaar.carpeted.fabric.DummmmmmyFabric"
+      "net.mehvahdjukaar.dummmmmmy.fabric.DummmmmmyFabric"
     ]
   },
   "mixins": [

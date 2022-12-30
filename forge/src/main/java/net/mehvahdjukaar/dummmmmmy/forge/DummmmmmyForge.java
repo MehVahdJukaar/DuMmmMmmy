@@ -21,6 +21,8 @@ import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 /**
  * Author: MehVahdJukaar
@@ -35,8 +37,12 @@ public class DummmmmmyForge {
             DummmmmmyClient.init();
         }
         MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(DummmmmmyForge::setup);
     }
 
+    public static void setup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(Dummmmmmy::commonSetup);
+    }
 
     @SubscribeEvent
     public static void onEntityCriticalHit(CriticalHitEvent event) {

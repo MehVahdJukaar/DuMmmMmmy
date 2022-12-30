@@ -2,7 +2,7 @@ package net.mehvahdjukaar.dummmmmmy;
 
 import net.mehvahdjukaar.dummmmmmy.common.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
-import net.mehvahdjukaar.dummmmmmy.common.NetworkHandler;
+import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.dummmmmmy.entity.DummyNumberEntity;
 import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.item.TargetDummyItem;

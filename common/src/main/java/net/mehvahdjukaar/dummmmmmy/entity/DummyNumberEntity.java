@@ -1,8 +1,10 @@
 
 package net.mehvahdjukaar.dummmmmmy.entity;
 
-import net.mehvahdjukaar.dummmmmmy.setup.ModRegistry;
+import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
+import net.mehvahdjukaar.dummmmmmy.common.DamageType;
 import net.mehvahdjukaar.moonlight.api.entity.IExtraClientSpawnData;
+import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,9 +18,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -34,7 +33,7 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
     protected float speed = 1;
     public float dy = 0;
     public float prevDy = 0;
-    public TargetDummyEntity.DamageType color = TargetDummyEntity.DamageType.GENERIC;
+    public DamageType color = DamageType.GENERIC;
     public float dx = 0;
     public float prevDx = 0;
     private float speedX = 0;
@@ -46,8 +45,8 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
         super(type, world);
     }
 
-    public DummyNumberEntity(float number, TargetDummyEntity.DamageType color, int type, Level world, Collection<UUID> playersThatCanSee) {
-        this(ModRegistry.DUMMY_NUMBER.get(), world);
+    public DummyNumberEntity(float number, DamageType color, int type, Level world, Collection<UUID> playersThatCanSee) {
+        this(Dummmmmmy.DUMMY_NUMBER.get(), world);
         this.number = number;
         this.color = color;
         this.type = type;
@@ -77,7 +76,7 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
     @Override
     public void readSpawnData(FriendlyByteBuf buffer) {
         this.number = buffer.readFloat();
-        this.color = buffer.readEnum(TargetDummyEntity.DamageType.class);
+        this.color = buffer.readEnum(DamageType.class);
         int i = buffer.readInt();
         if (i != -1) {
             this.speedX = POSITIONS.get(i % POSITIONS.size());
@@ -95,7 +94,7 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         this.number = compound.getFloat("Number");
-        this.color = TargetDummyEntity.DamageType.values()[compound.getInt("Type")];
+        this.color = DamageType.values()[compound.getInt("Type")];
         this.age = compound.getInt("Age");
     }
 
@@ -112,7 +111,7 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
 
     @Override
     public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PlatformHelper.getEntitySpawnPacket(this);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class DummyNumberEntity extends Entity implements IExtraClientSpawnData {
     }
 
     @Override
-    public boolean causeFallDamage(float p_146828_, float p_146829_, DamageSource p_146830_) {
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource damageSource) {
         return false;
     }
 

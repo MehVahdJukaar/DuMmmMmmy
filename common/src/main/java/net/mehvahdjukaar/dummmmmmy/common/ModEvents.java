@@ -2,7 +2,6 @@ package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
-import net.mehvahdjukaar.dummmmmmy.setup.ModRegistry;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
 import net.minecraft.world.entity.Entity;
@@ -13,8 +12,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ModEvents {
 
@@ -54,7 +51,7 @@ public class ModEvents {
     public static void onEntityJoinWorld(Entity entity) {
         if (entity instanceof PathfinderMob mob && isScared(entity)) {
             mob.goalSelector.addGoal(0, new AvoidEntityGoal<>(mob, TargetDummyEntity.class,
-                   CommonConfigs.RADIUS.get(), 1.0D, 1.3D, d -> ((TargetDummyEntity) d).isScarecrow()));
+                    CommonConfigs.RADIUS.get(), 1.0D, 1.3D, d -> ((TargetDummyEntity) d).isScarecrow()));
         }
     }
 

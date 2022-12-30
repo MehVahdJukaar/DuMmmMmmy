@@ -1,12 +1,10 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.common.Configs;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigSpec;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.damagesource.DamageSource;
 
 import java.util.function.Supplier;
 

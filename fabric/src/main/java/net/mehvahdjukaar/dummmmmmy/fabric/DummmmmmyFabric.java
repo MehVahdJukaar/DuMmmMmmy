@@ -18,9 +18,7 @@ public class DummmmmmyFabric implements ModInitializer {
             FabricSetupCallbacks.CLIENT_SETUP.add(DummmmmmyClient::init);
         }
 
-        UseBlockCallback.EVENT.register(Dummmmmmy::onRightClickBlock);
-
-        FabricSetupCallbacks.finishModInit(Dummmmmmy.MOD_ID);
+        FabricSetupCallbacks.COMMON_SETUP.add(Dummmmmmy::commonSetup);
 
     }
 }
