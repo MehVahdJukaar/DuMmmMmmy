@@ -1,17 +1,15 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.common.DamageType;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -35,15 +33,11 @@ public class DamageNumberParticle extends Particle {
     private float fadeout = -1;
     private float prevFadeout = -1;
 
-    //idk what these do anymore...
-    private float speed = 1;
-    private float speedX;
-
     //visual offset
-    private float dy = 0;
-    private float prevDy = 0;
-    private float dx = 0;
-    private float prevDx = 0;
+    private float visualDY = 0;
+    private float prevVisualDY = 0;
+    private float visualDX = 0;
+    private float prevVisualDX = 0;
 
 
     public DamageNumberParticle(ClientLevel clientLevel, double x, double y, double z,
@@ -53,12 +47,13 @@ public class DamageNumberParticle extends Particle {
         int color = DamageType.values()[(int) damageType].getColor();
         this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         this.color = color;
-        this.darkColor = FastColor.ARGB32.color((int) (this.rCol*0.25f),(int)(this.rCol*0.25f),(int)(this.rCol*0.25),1);
+        this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
         double number = ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount;
         this.text = DF.format(number);
 
-        this.speedX = POSITIONS.get((int) (index % POSITIONS.size()));
+        this.yd = 1;
+        this.xd = POSITIONS.get((int) (index % POSITIONS.size()));
     }
 
     @Override
@@ -82,7 +77,7 @@ public class DamageNumberParticle extends Particle {
         double inc = Mth.clamp(distanceFromCam / 32f, 0, 5f);
 
         // animation
-        poseStack.translate(0, (1 + inc / 4f) * Mth.lerp(partialTicks, this.prevDy, this.dy), 0);
+        poseStack.translate(0, (1 + inc / 4f) * Mth.lerp(partialTicks, this.prevVisualDY, this.visualDY), 0);
         // rotate towards camera
 
         float fadeout = Mth.lerp(partialTicks, this.prevFadeout, this.fadeout);
@@ -92,7 +87,7 @@ public class DamageNumberParticle extends Particle {
         poseStack.mulPose(camera.rotation());
 
         // animation
-        poseStack.translate((1 + inc) * Mth.lerp(partialTicks, this.prevDx, this.dx), 0, 0);
+        poseStack.translate((1 + inc) * Mth.lerp(partialTicks, this.prevVisualDX, this.visualDX), 0, 0);
         // scale depending on distance so size remains the same
         poseStack.scale(-scale, -scale, scale);
         poseStack.translate(0, (4d * (1 - fadeout)), 0);
@@ -108,7 +103,7 @@ public class DamageNumberParticle extends Particle {
                 0, darkColor, false,
                 poseStack.last().pose(), buffer, false, 0, light);
 
-
+        RenderSystem.setShaderColor(1,1,1,1);
         poseStack.popPose();
         buffer.endBatch();
     }
@@ -125,18 +120,18 @@ public class DamageNumberParticle extends Particle {
             this.prevFadeout = this.fadeout;
             this.fadeout = this.age > (lifetime - length) ? ((float) lifetime - this.age) / length : 1;
 
-            this.prevDy = this.dy;
-            this.dy += this.speed;
-            this.prevDx = this.dx;
-            this.dx += this.speedX;
+            this.prevVisualDY = this.visualDY;
+            this.visualDY += this.yd;
+            this.prevVisualDX = this.visualDX;
+            this.visualDX += this.xd;
 
             //spawn numbers in a sort of ellipse centered on his torso
-            if (Math.sqrt(Math.pow(this.dx * 1.5, 2) + Math.pow(this.dy - 1, 2)) < 1.9 - 1) {
+            if (Math.sqrt(Math.pow(this.visualDX * 1.5, 2) + Math.pow(this.visualDY - 1, 2)) < 1.9 - 1) {
 
-                speed = speed / 2;
+                this.yd = this.yd / 2;
             } else {
-                speed = 0;
-                speedX = 0;
+                this.yd = 0;
+                this.xd = 0;
             }
         }
     }

@@ -93,8 +93,8 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
     @Override
     public void prepareMobModel(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
-        float phase = Mth.lerp(partialTick, entityIn.prevShakeAmount, entityIn.shakeAmount);
-        float swing = Mth.lerp(partialTick, entityIn.prevAnimationPosition, entityIn.animationPosition);
+        float phase = entityIn.getShake(partialTick);
+        float swing = entityIn.getAnimationPosition(partialTick);
         float shake = Math.min((float) (swing * ClientConfigs.ANIMATION_INTENSITY.get()), 40f);
 
         if (shake > 0) {

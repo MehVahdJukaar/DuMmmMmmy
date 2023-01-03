@@ -19,7 +19,7 @@ public class ModEvents {
     public static void onEntityCriticalHit(Player entity, Entity target, float damageModifier) {
         if (entity != null) {
             if (damageModifier == 1.5 && target instanceof TargetDummyEntity dummy) {
-                dummy.critical = true;
+                dummy.moist();
             }
         }
     }

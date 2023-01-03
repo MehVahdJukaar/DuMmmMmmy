@@ -54,18 +54,18 @@ public class TargetDummyEntity extends Mob {
     private static final EntityDataAccessor<Boolean> SHEARED = SynchedEntityData.defineId(TargetDummyEntity.class, EntityDataSerializers.BOOLEAN);
 
     //client values
-    public float prevAnimationPosition = 0;
+    private float prevAnimationPosition = 0;
     // used to have an independent start for the animation, otherwise the phase of the animation depends ont he damage dealt
-    public float shakeAmount = 0;
-    public float prevShakeAmount = 0;
+    private float shakeAmount = 0;
+    private float prevShakeAmount = 0;
 
     // used to calculate the whole damage in one tick, in case there are multiple sources
     private int lastTickActuallyDamaged;
     // currently, recording damage taken
-    public float totalDamageTakenInCombat;
+    private float totalDamageTakenInCombat;
     //has just been hit by critical?
-    public boolean critical = false;
-    public DummyMobType mobType = DummyMobType.UNDEFINED;
+    private boolean critical = false;
+    private DummyMobType mobType = DummyMobType.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
     //needed because it's private, and we aren't calling le tick
@@ -83,6 +83,14 @@ public class TargetDummyEntity extends Mob {
         this(Dummmmmmy.TARGET_DUMMY.get(), world);
         this.xpReward = 0;
         Arrays.fill(this.armorDropChances, 1.1f);
+    }
+
+    public float getShake(float partialTicks) {
+        return Mth.lerp(partialTicks, prevShakeAmount, shakeAmount);
+    }
+
+    public float getAnimationPosition(float partialTicks) {
+        return Mth.lerp(partialTicks, prevAnimationPosition, animationPosition);
     }
 
     @Override
@@ -190,8 +198,6 @@ public class TargetDummyEntity extends Mob {
                 //this.applyEquipmentModifiers();
                 return InteractionResult.SUCCESS;
             }
-
-
         }
         return InteractionResult.PASS;
     }
@@ -474,7 +480,7 @@ public class TargetDummyEntity extends Mob {
             // DPS!
             CombatTracker tracker = this.getCombatTracker();
 
-
+            //TODO: move dps mode logic to client
             //am i being attacked?
             if (tracker.isInCombat() && this.totalDamageTakenInCombat > 0) {
 
@@ -604,5 +610,9 @@ public class TargetDummyEntity extends Mob {
 
     public void updateAnimation(float shake) {
         this.animationPosition = shake;
+    }
+
+    public void moist() {
+        this.critical = true;
     }
 }

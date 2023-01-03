@@ -2,15 +2,16 @@ package net.mehvahdjukaar.dummmmmmy;
 
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
-import net.mehvahdjukaar.dummmmmmy.entity.DummyNumberEntity;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
+import net.minecraft.client.particle.CampfireSmokeParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -83,15 +84,6 @@ public class Dummmmmmy {
                             .sized(0.6f, 2f))
                     .build(TARGET_DUMMY_NAME));
 
-    public static final String DUMMY_NUMBER_NAME = "dummy_number";
-    public static final Supplier<EntityType<DummyNumberEntity>> DUMMY_NUMBER = RegHelper.registerEntityType(
-            res(DUMMY_NUMBER_NAME), () -> (
-                    EntityType.Builder.<DummyNumberEntity>of(DummyNumberEntity::new, MobCategory.MISC)
-                            //.setTrackingRange(64)
-                            //.setUpdateInterval(3)
-                            .sized(0.6f, 1.8f))
-                    .build(DUMMY_NUMBER_NAME));
-
 
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
             res(TARGET_DUMMY_NAME),
@@ -100,4 +92,5 @@ public class Dummmmmmy {
 
     public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(
             res("number"));
+
 }
