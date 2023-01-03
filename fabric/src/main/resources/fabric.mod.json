@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "net.mehvahdjukaar.dummmmmmy.fabric.DummmmmmyFabric"
+    ],
+    "modmenu": [
+      "net.mehvahdjukaar.dummmmmmy.integration.fabric.ModMenuCompat"
     ]
   },
   "mixins": [

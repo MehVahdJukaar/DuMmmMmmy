@@ -1,18 +1,18 @@
 
-package net.mehvahdjukaar.dummmmmmy.entity;
+package net.mehvahdjukaar.dummmmmmy.common;
 
 import dev.architectury.injectables.annotations.PlatformOnly;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.common.DamageType;
-import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundSyncEquipMessage;
+import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.ForgeHelper;
 import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -26,6 +26,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatEntry;
@@ -36,12 +37,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CarvedPumpkinBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -67,7 +65,7 @@ public class TargetDummyEntity extends Mob {
     public float totalDamageTakenInCombat;
     //has just been hit by critical?
     public boolean critical = false;
-    public MobAttribute mobType = MobAttribute.UNDEFINED;
+    public DummyMobType mobType = DummyMobType.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
     //needed because it's private, and we aren't calling le tick
@@ -119,7 +117,7 @@ public class TargetDummyEntity extends Mob {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.mobType = MobAttribute.values()[tag.getInt("Type")];
+        this.mobType = DummyMobType.values()[tag.getInt("Type")];
         this.damageNumberPos = tag.getInt("NumberPos");
         this.setSheared(tag.getBoolean("Sheared"));
     }
@@ -149,17 +147,18 @@ public class TargetDummyEntity extends Mob {
             Item item = itemstack.getItem();
 
             //special items
-            if (item instanceof BannerItem || this.isPumpkin(item) || ForgeHelper.canEquipItem(this, itemstack, EquipmentSlot.HEAD)) {
+            if (item instanceof BannerItem ||
+                    DummyMobType.get(itemstack) != DummyMobType.UNDEFINED ||
+                    ForgeHelper.canEquipItem(this, itemstack, EquipmentSlot.HEAD)) {
                 equipmentSlot = EquipmentSlot.HEAD;
             }
-
 
             // empty hand -> unequip
             if (itemstack.isEmpty() && hand == InteractionHand.MAIN_HAND) {
                 equipmentSlot = this.getClickedSlot(vec);
                 if (this.hasItemInSlot(equipmentSlot)) {
                     if (player.level.isClientSide) return InteractionResult.CONSUME;
-                    this.unequipArmor(player, equipmentSlot, itemstack, hand);
+                    this.unEquipArmor(player, equipmentSlot, itemstack, hand);
                     inventoryChanged = true;
 
                 }
@@ -197,7 +196,7 @@ public class TargetDummyEntity extends Mob {
         return InteractionResult.PASS;
     }
 
-    private void unequipArmor(Player player, EquipmentSlot slot, ItemStack stack, InteractionHand hand) {
+    private void unEquipArmor(Player player, EquipmentSlot slot, ItemStack stack, InteractionHand hand) {
         // set slot to stack which is empty stack
         ItemStack itemstack = this.getItemBySlot(slot);
         ItemStack itemstack2 = itemstack.copy();
@@ -209,7 +208,7 @@ public class TargetDummyEntity extends Mob {
         //now done here^
         this.getAttributes().removeAttributeModifiers(itemstack2.getAttributeModifiers(slot));
         //clear mob type
-        if (slot == EquipmentSlot.HEAD) this.mobType = MobAttribute.UNDEFINED;
+        if (slot == EquipmentSlot.HEAD) this.mobType = DummyMobType.UNDEFINED;
 
     }
 
@@ -226,34 +225,12 @@ public class TargetDummyEntity extends Mob {
         //now done here^
         this.getAttributes().addTransientAttributeModifiers(newItem.getAttributeModifiers(slot));
         if (slot == EquipmentSlot.HEAD) {
-            //add mob type
-            if (this.isUndeadSkull(newItem)) this.mobType = MobAttribute.UNDEAD;
-            else if (newItem.getItem() == Items.TURTLE_HELMET) this.mobType = MobAttribute.WATER;
-            else if (newItem.getItem() == Items.DRAGON_HEAD) this.mobType = MobAttribute.ARTHROPOD;
-            else if (ItemStack.matches(newItem, Raid.getLeaderBannerInstance())) this.mobType = MobAttribute.ILLAGER;
-            else if (this.isPumpkin(newItem.getItem())) this.mobType = MobAttribute.SCARECROW;
-            else this.mobType = MobAttribute.UNDEFINED;
+            this.mobType = DummyMobType.get(newItem);
         }
-    }
-
-    private boolean isPumpkin(Item item) {
-        if (item instanceof BlockItem bi) {
-            Block block = bi.getBlock();
-            String name = Registry.ITEM.getKey(item).getPath();
-            return block instanceof CarvedPumpkinBlock || name.contains("pumpkin") || name.contains("jack_o");
-        }
-        return false;
-    }
-
-    private boolean isUndeadSkull(ItemStack itemstack) {
-        Item i = itemstack.getItem();
-        return i == Items.WITHER_SKELETON_SKULL ||
-                i == Items.SKELETON_SKULL ||
-                i == Items.ZOMBIE_HEAD;
     }
 
     public boolean isScarecrow() {
-        return this.mobType == MobAttribute.SCARECROW;
+        return this.mobType == DummyMobType.SCARECROW;
     }
 
     private EquipmentSlot getClickedSlot(Vec3 vec3) {
@@ -271,7 +248,6 @@ public class TargetDummyEntity extends Mob {
         }
         return equipmentSlot;
     }
-
 
     private void setLastArmorItem(EquipmentSlot type, ItemStack stack) {
         this.lastArmorItems.set(type.getIndex(), stack);
@@ -367,7 +343,7 @@ public class TargetDummyEntity extends Mob {
             if (player instanceof ServerPlayer sp) {
                 currentlyAttacking.put(sp, CommonConfigs.MAX_COMBAT_INTERVAL.get());
             }
-            // shift-leftclick with empty hand dismantles
+            // shift-left-click with empty hand dismantles
             if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
                 dismantle(!player.isCreative());
                 return false;
@@ -382,6 +358,7 @@ public class TargetDummyEntity extends Mob {
         return result;
     }
 
+
     //all damaging stuff will inevitably call this function. intercepting to block damage and show it
     @Override
     public void setHealth(float newHealth) {
@@ -392,7 +369,6 @@ public class TargetDummyEntity extends Mob {
             float damage = this.getHealth() - newHealth;
             if (damage > 0) {
 
-
                 //if damage is in the same tick it gets added
                 if (this.lastTickActuallyDamaged != this.tickCount) {
                     this.animationPosition = 0;
@@ -401,19 +377,21 @@ public class TargetDummyEntity extends Mob {
                 this.lastTickActuallyDamaged = this.tickCount;
 
                 if (!this.level.isClientSide) {
-
-                    CombatEntry e = this.getCombatTracker().getLastEntry();
-                    DamageSource s = null;
-                    //is same damage as
-                    if (currentDamageSource != null) {
-                        if (e != null && e.getTime() == this.tickCount && Math.abs(damage - e.getDamage()) < 0.001) {
-                            s = e.getSource();
+                    DamageSource actualSource = null;
+                    //accounts for forge event modifying damage... I think. On fabric this isn't set yet
+                    if (PlatformHelper.getPlatform().isForge()) {
+                        CombatEntry currentCombatEntry = this.getCombatTracker().getLastEntry();
+                        //is same damage as current one. Sanity check I guess
+                        if (currentCombatEntry != null && currentCombatEntry.getTime() == this.tickCount &&
+                                Mth.equal(damage, currentCombatEntry.getDamage())) {
+                            actualSource = currentCombatEntry.getSource();
                         }
-                    }
+                    } else actualSource = currentDamageSource;
 
-                    this.showDamageDealt(damage, DamageType.get(s, this.critical));
+                    if (currentDamageSource != null) {
+                        this.showDamageDealt(damage, DamageType.get(actualSource, this.critical));
+                    }
                     this.critical = false;
-                    //this.currentDamageSource = null;
                 }
             }
         }
@@ -422,13 +400,11 @@ public class TargetDummyEntity extends Mob {
     private void showDamageDealt(float damage, DamageType type) {
         //custom update packet
         NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
-                 new ClientBoundDamageNumberMessage(this.getId(), this.animationPosition));
+                new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
 
-        if (CommonConfigs.DAMAGE_NUMBERS.get()) {
-            // damage numebrssss
-            DummyNumberEntity number = new DummyNumberEntity(damage, type, this.damageNumberPos++, this.level, this.currentlyAttacking.keySet().stream().map(Entity::getUUID).collect(Collectors.toSet()));
-            number.moveTo(this.getX(), this.getY() + 1, this.getZ(), 0.0F, 0.0F);
-            this.level.addFreshEntity(number);
+        for(var p : this.currentlyAttacking.keySet()){
+            NetworkHandler.CHANNEL.sendToClientPlayer(p,
+                    new ClientBoundDamageNumberMessage(this.getId(), damage, type.ordinal()));
         }
 
         this.totalDamageTakenInCombat += damage;
@@ -454,6 +430,7 @@ public class TargetDummyEntity extends Mob {
                 this.dismantle(true);
                 return;
             }
+
         }
 
         this.setNoGravity(true);
@@ -510,10 +487,10 @@ public class TargetDummyEntity extends Mob {
                     float dps = totalDamageTakenInCombat / seconds;
                     List<ServerPlayer> outOfCombat = new ArrayList<>();
 
-                    for (ServerPlayer p : this.currentlyAttacking.keySet()) {
-                        int timer = this.currentlyAttacking.get(p) - 1;
+                    for (var e : this.currentlyAttacking.entrySet()) {
+                        ServerPlayer p = e.getKey();
+                        int timer = e.getValue() - 1;
                         this.currentlyAttacking.replace(p, timer);
-
 
                         boolean showMessage = dynamic && this.lastTickActuallyDamaged + 1 == this.tickCount;
                         if (timer <= 0) {
@@ -525,6 +502,7 @@ public class TargetDummyEntity extends Mob {
                             p.displayClientMessage(Component.translatable("message.dummmmmmy.dps",
                                     this.getDisplayName(),
                                     new DecimalFormat("#.##").format(dps)), true);
+
                         }
                     }
 
@@ -604,7 +582,7 @@ public class TargetDummyEntity extends Mob {
 
     @Override
     public @NotNull MobType getMobType() {
-        return this.mobType.get();
+        return this.mobType.getType();
     }
 
     public static AttributeSupplier.Builder makeAttributes() {
@@ -617,23 +595,14 @@ public class TargetDummyEntity extends Mob {
                 .add(Attributes.FLYING_SPEED, 0D);
     }
 
-
-    private enum MobAttribute {
-        UNDEFINED,
-        UNDEAD,
-        WATER,
-        ILLAGER,
-        ARTHROPOD,
-        SCARECROW;
-
-        public MobType get() {
-            return switch (this) {
-                case UNDEFINED, SCARECROW -> MobType.UNDEFINED;
-                case UNDEAD -> MobType.UNDEAD;
-                case WATER -> MobType.WATER;
-                case ILLAGER -> MobType.ILLAGER;
-                case ARTHROPOD -> MobType.ARTHROPOD;
-            };
+    public void updateClientDamage(float damage, int damageType) {
+        if(ClientConfigs.DAMAGE_NUMBERS.get()) {
+            this.level.addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
+                    this.getX(), this.getY() + 1, this.getZ(), damage, damageType, this.damageNumberPos++);
         }
+    }
+
+    public void updateAnimation(float shake) {
+        this.animationPosition = shake;
     }
 }

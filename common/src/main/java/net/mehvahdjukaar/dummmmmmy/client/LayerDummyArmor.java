@@ -1,6 +1,6 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;

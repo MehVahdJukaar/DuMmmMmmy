@@ -3,8 +3,8 @@ package net.mehvahdjukaar.dummmmmmy.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.mehvahdjukaar.dummmmmmy.common.ClientConfigs;
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;

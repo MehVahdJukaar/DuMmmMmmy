@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
 import net.minecraft.world.entity.Entity;

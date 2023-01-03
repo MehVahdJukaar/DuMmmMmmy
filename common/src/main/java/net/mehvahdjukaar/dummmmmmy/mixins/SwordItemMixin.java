@@ -1,7 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.mixins;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;

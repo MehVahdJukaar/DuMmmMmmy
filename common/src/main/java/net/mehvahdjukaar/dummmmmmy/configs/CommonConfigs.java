@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.dummmmmmy.common;
+package net.mehvahdjukaar.dummmmmmy.configs;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
@@ -20,7 +20,6 @@ public class CommonConfigs {
     public static final Supplier<List<String>> BLACKLIST;
     public static final Supplier<Integer> RADIUS;
     public static final Supplier<Boolean> DAMAGE_EQUIPMENT;
-    public static final Supplier<Boolean> DAMAGE_NUMBERS;
     public static final Supplier<DpsMode> DYNAMIC_DPS;
     public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
 
@@ -41,9 +40,6 @@ public class CommonConfigs {
         //TODO: move to client...
         DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse? ")
                 .define("DPS_mode", DpsMode.DYNAMIC);
-
-        DAMAGE_NUMBERS = builder.comment("Enable and disable damage numbers")
-                .define("damage_numbers", true);
 
         DAMAGE_EQUIPMENT = builder.comment("Enable this to prevent your equipment from getting damaged when attacking the dummy")
                 .define("disable_equipment_damage", true);

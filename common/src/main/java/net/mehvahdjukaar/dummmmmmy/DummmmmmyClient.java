@@ -1,6 +1,6 @@
 package net.mehvahdjukaar.dummmmmmy;
 
-import net.mehvahdjukaar.dummmmmmy.client.NumberRenderer;
+import net.mehvahdjukaar.dummmmmmy.client.DamageNumberParticle;
 import net.mehvahdjukaar.dummmmmmy.client.TargetDummyModel;
 import net.mehvahdjukaar.dummmmmmy.client.TargetDummyRenderer;
 import net.mehvahdjukaar.moonlight.api.platform.ClientPlatformHelper;
@@ -11,8 +11,9 @@ public class DummmmmmyClient {
     public static void init() {
         ClientPlatformHelper.addModelLayerRegistration(DummmmmmyClient::registerLayers);
         ClientPlatformHelper.addEntityRenderersRegistration(DummmmmmyClient::registerEntityRenderers);
-
+        ClientPlatformHelper.addParticleRegistration(DummmmmmyClient::registerParticles);
     }
+
 
     public static void setup() {
 
@@ -35,7 +36,11 @@ public class DummmmmmyClient {
 
     private static void registerEntityRenderers(ClientPlatformHelper.EntityRendererEvent event) {
         event.register(Dummmmmmy.TARGET_DUMMY.get(), TargetDummyRenderer::new);
-        event.register(Dummmmmmy.DUMMY_NUMBER.get(), NumberRenderer::new);
+    }
+
+
+    private static void registerParticles(ClientPlatformHelper.ParticleEvent event) {
+        event.register(Dummmmmmy.NUMBER_PARTICLE.get(), DamageNumberParticle.Factory::new);
     }
 
 

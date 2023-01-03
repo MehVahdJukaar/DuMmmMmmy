@@ -1,8 +1,8 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
 import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
-import net.mehvahdjukaar.dummmmmmy.common.ClientConfigs;
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.resources.ResourceLocation;

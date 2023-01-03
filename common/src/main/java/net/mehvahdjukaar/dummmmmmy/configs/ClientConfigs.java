@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.dummmmmmy.common;
+package net.mehvahdjukaar.dummmmmmy.configs;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
@@ -19,6 +19,7 @@ public class ClientConfigs {
     public static final Supplier<Double> ANIMATION_INTENSITY;
     public static final Supplier<Boolean> SHOW_HEARTHS;
     public static final Supplier<SkinType> SKIN;
+    public static final Supplier<Boolean> DAMAGE_NUMBERS;
 
     public static final Supplier<Integer> DAMAGE_GENERIC;
     public static final Supplier<Integer> DAMAGE_CRIT;
@@ -50,12 +51,15 @@ public class ClientConfigs {
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("client"), ConfigType.CLIENT);
 
 
-        builder.comment("lots of cosmetic stuff in here").push("visuals");
+        builder.comment("lots of cosmetic stuff in here");
+
+        builder.push("visuals");
         ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt. default=0.75")
                 .define("animationIntensity", 0.75, 0.0, 2.0);
         SHOW_HEARTHS = builder.comment("Show hearths instead of damage dealt? (1 hearth = two damage)")
                 .define("showHearths", false);
-
+        DAMAGE_NUMBERS = builder.comment("Show damange numbers on entity")
+                .define("damage_numbers", true);
 
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
 
@@ -82,10 +86,10 @@ public class ClientConfigs {
     }
 
     public enum SkinType {
-        DEFAULT("dummy","dummy_h"),
-        ORIGINAL("dummy_1","dummy_1"),
-        DUNGEONS("dummy_3","dummy_3_h"),
-        ALTERNATIVE("dummy_2","dummy_2_h");
+        DEFAULT("dummy", "dummy_h"),
+        ORIGINAL("dummy_1", "dummy_1"),
+        DUNGEONS("dummy_3", "dummy_3_h"),
+        ALTERNATIVE("dummy_2", "dummy_2_h");
 
         private final ResourceLocation texture;
         private final ResourceLocation shearedTexture;
@@ -99,8 +103,6 @@ public class ClientConfigs {
             return sheared ? shearedTexture : texture;
         }
     }
-
-
 
 
 }

@@ -1,7 +1,7 @@
 
-package net.mehvahdjukaar.dummmmmmy.item;
+package net.mehvahdjukaar.dummmmmmy.common;
 
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;

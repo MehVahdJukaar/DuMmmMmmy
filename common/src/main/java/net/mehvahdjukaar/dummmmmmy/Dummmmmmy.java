@@ -1,16 +1,17 @@
 package net.mehvahdjukaar.dummmmmmy;
 
-import net.mehvahdjukaar.dummmmmmy.common.ClientConfigs;
-import net.mehvahdjukaar.dummmmmmy.common.CommonConfigs;
-import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.entity.DummyNumberEntity;
-import net.mehvahdjukaar.dummmmmmy.entity.TargetDummyEntity;
-import net.mehvahdjukaar.dummmmmmy.item.TargetDummyItem;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
+import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -77,9 +78,7 @@ public class Dummmmmmy {
     public static final Supplier<EntityType<TargetDummyEntity>> TARGET_DUMMY = RegHelper.registerEntityType(
             res(TARGET_DUMMY_NAME), () -> (
                     EntityType.Builder.<TargetDummyEntity>of(TargetDummyEntity::new, MobCategory.MISC)
-                            //.setShouldReceiveVelocityUpdates(true)
                             //.setTrackingRange(64)
-                            //.setCustomClientFactory(TargetDummyEntity::new)
                             //.setUpdateInterval(3)
                             .sized(0.6f, 2f))
                     .build(TARGET_DUMMY_NAME));
@@ -87,17 +86,18 @@ public class Dummmmmmy {
     public static final String DUMMY_NUMBER_NAME = "dummy_number";
     public static final Supplier<EntityType<DummyNumberEntity>> DUMMY_NUMBER = RegHelper.registerEntityType(
             res(DUMMY_NUMBER_NAME), () -> (
-            EntityType.Builder.<DummyNumberEntity>of(DummyNumberEntity::new, MobCategory.MISC)
-                    //.setShouldReceiveVelocityUpdates(true)
-                    //.setTrackingRange(64)
-                    //.setCustomClientFactory(DummyNumberEntity::new)
-                    //.setUpdateInterval(3)
-                    .sized(0.6f, 1.8f))
-            .build(DUMMY_NUMBER_NAME));
+                    EntityType.Builder.<DummyNumberEntity>of(DummyNumberEntity::new, MobCategory.MISC)
+                            //.setTrackingRange(64)
+                            //.setUpdateInterval(3)
+                            .sized(0.6f, 1.8f))
+                    .build(DUMMY_NUMBER_NAME));
 
 
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
             res(TARGET_DUMMY_NAME),
             () -> new TargetDummyItem(
                     new Item.Properties().tab(CreativeModeTab.TAB_COMBAT).stacksTo(16)));
+
+    public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(
+            res("number"));
 }
