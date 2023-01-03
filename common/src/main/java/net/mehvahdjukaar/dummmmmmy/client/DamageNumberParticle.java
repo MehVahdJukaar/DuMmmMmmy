@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -63,7 +64,6 @@ public class DamageNumberParticle extends Particle {
         float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
-        var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
 
         int light = this.getLightColor(1);
 
@@ -94,6 +94,8 @@ public class DamageNumberParticle extends Particle {
         poseStack.scale(fadeout, fadeout, fadeout);
         poseStack.translate(0, -distanceFromCam / 10d, 0);
 
+        var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        
         float x1 = 0.5f - fontRenderer.width(text) / 2f;
         fontRenderer.drawInBatch(text, x1,
                 0, color, false,
@@ -103,9 +105,10 @@ public class DamageNumberParticle extends Particle {
                 0, darkColor, false,
                 poseStack.last().pose(), buffer, false, 0, light);
 
-        RenderSystem.setShaderColor(1,1,1,1);
         poseStack.popPose();
         buffer.endBatch();
+
+        //TODO: figure out why other particles get messed up
     }
 
     @Override

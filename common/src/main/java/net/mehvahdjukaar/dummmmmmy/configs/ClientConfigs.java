@@ -55,10 +55,10 @@ public class ClientConfigs {
 
         builder.push("visuals");
         ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt. default=0.75")
-                .define("animationIntensity", 0.75, 0.0, 2.0);
+                .define("animation_intensity", 0.75, 0.0, 2.0);
         SHOW_HEARTHS = builder.comment("Show hearths instead of damage dealt? (1 hearth = two damage)")
-                .define("showHearths", false);
-        DAMAGE_NUMBERS = builder.comment("Show damange numbers on entity")
+                .define("show_hearths", false);
+        DAMAGE_NUMBERS = builder.comment("Show damage numbers on entity")
                 .define("damage_numbers", true);
 
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
