@@ -1,9 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.fabric;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
@@ -23,6 +21,10 @@ public class DummmmmmyFabric implements ModInitializer {
 
         FabricSetupCallbacks.COMMON_SETUP.add(Dummmmmmy::commonSetup);
 
-        ServerEntityEvents.ENTITY_LOAD.register((e,w)-> ModEvents.onEntityJoinWorld(e));
+        if (PlatformHelper.isModLoaded("lithium")) {
+            Dummmmmmy.LOGGER.warn("Lithium detected. MmmMmmMmmMmm scarecrow mode has been disabled as lithium doesnt have a way to add goals to new entities");
+        } else {
+            ServerEntityEvents.ENTITY_LOAD.register((e, w) -> ModEvents.onEntityJoinWorld(e));
+        }
     }
 }

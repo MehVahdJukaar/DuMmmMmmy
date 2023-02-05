@@ -1,7 +1,6 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.minecraft.core.Registry;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.BlockItem;
@@ -17,7 +16,8 @@ public enum DummyMobType {
     WATER(MobType.WATER),
     ILLAGER(MobType.ILLAGER),
     ARTHROPOD(MobType.ARTHROPOD),
-    SCARECROW(MobType.UNDEFINED);
+    SCARECROW(MobType.UNDEFINED),
+    DECOY(MobType.UNDEFINED);
     private final MobType type;
 
     DummyMobType(MobType type) {
@@ -32,6 +32,7 @@ public enum DummyMobType {
         if (isUndeadSkull(headStack)) return UNDEAD;
         else if (headStack.is(Items.TURTLE_HELMET)) return WATER;
         else if (headStack.is(Items.DRAGON_HEAD)) return ARTHROPOD;
+        else if (headStack.is(Items.PLAYER_HEAD)) return DECOY;
         else if (ItemStack.matches(headStack, Raid.getLeaderBannerInstance())) return ILLAGER;
         else if (isPumpkin(headStack.getItem())) return SCARECROW;
         else return UNDEFINED;
@@ -52,8 +53,6 @@ public enum DummyMobType {
                 i == Items.SKELETON_SKULL ||
                 i == Items.ZOMBIE_HEAD;
     }
-
-
 
 
 }

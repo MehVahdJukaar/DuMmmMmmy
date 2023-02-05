@@ -20,6 +20,7 @@ public class CommonConfigs {
     public static final Supplier<List<String>> BLACKLIST;
     public static final Supplier<Integer> RADIUS;
     public static final Supplier<Boolean> DAMAGE_EQUIPMENT;
+    public static final Supplier<Boolean> DECOY;
     public static final Supplier<DpsMode> DYNAMIC_DPS;
     public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
 
@@ -46,7 +47,8 @@ public class CommonConfigs {
 
         MAX_COMBAT_INTERVAL = builder.comment("Time in ticks that it takes for a dummy to be considered out of combat after having recieved damage")
                 .define("maximum_out_of_combat_interval", 6 * 20, 20, 1000);
-
+        DECOY = builder.comment("Makes monsters target a dummy that is wearing a player head")
+                .define("dummy_decoy", false);
 
         SPEC = builder.buildAndRegister();
     }

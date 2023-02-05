@@ -5,24 +5,33 @@ loaderVersion="[40,)" #mandatory This is typically bumped every Minecraft versio
 
 license="code: Public Domain, assets: ARR"
 
+issueTrackerURL = "https://github.com/MehVahdJukaar/DuMmmMmmy/issues"
+
+
 [[mods]] #mandatory
 
-modId= "dummmmmmy" #mandatory
+modUrl = "https://www.curseforge.com/minecraft/mmmmmmmmmmmm/labels"
 
-version = "${version}"
+    modId= "dummmmmmy" #mandatory
 
-displayName="MmmMmmMmmmmm" #mandatory
+    version = "${version}"
 
-logoFile="icon.png" #optional
+    displayName="MmmMmmMmmmmm" #mandatory
 
-credits="Gooigipunch, Plantkillable" #optional
+    logoFile="icon.png" #optional
 
-authors="MehVahdJukaar, Bonusboni" #optional
+    credits="Gooigipunch, Plantkillable" #optional
 
-itemIcon="dummmmmmy:dummy" #catalogue icon
-description='''
-don't hurt me pls :S
-'''
+    authors="MehVahdJukaar, Bonusboni" #optional
+
+    description='''
+    don't hurt me pls :S
+    '''
+
+[modproperties.dummmmmmy]
+    catalogueItemIcon="dummmmmmy:dummy"
+    configuredBackground = "minecraft:textures/block/hay_block_side.png"
+
 
 [[dependencies.dummmmmmy]] #optional
     modId="forge" #mandatory

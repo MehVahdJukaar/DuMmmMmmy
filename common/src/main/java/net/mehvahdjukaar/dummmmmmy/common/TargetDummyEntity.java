@@ -47,7 +47,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class TargetDummyEntity extends Mob {
 
@@ -235,8 +234,12 @@ public class TargetDummyEntity extends Mob {
         }
     }
 
-    public boolean isScarecrow() {
+    public boolean canScare() {
         return this.mobType == DummyMobType.SCARECROW;
+    }
+
+    public boolean canAttract() {
+        return this.mobType == DummyMobType.DECOY;
     }
 
     private EquipmentSlot getClickedSlot(Vec3 vec3) {

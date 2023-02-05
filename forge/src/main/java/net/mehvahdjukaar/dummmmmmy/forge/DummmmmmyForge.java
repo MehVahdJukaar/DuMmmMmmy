@@ -35,13 +35,13 @@ public class DummmmmmyForge {
     }
 
     @SubscribeEvent
-    public static void onEntityCriticalHit(CriticalHitEvent event) {
+    public void onEntityCriticalHit(CriticalHitEvent event) {
         ModEvents.onEntityCriticalHit(event.getEntity(), event.getTarget(), event.getDamageModifier());
     }
 
     //prevents them from spawning
     @SubscribeEvent
-    public static void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
+    public void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
        if(ModEvents.onCheckSpawn(event.getEntity(), event.getLevel())){
            event.setResult(Event.Result.DENY);
        }
@@ -49,7 +49,7 @@ public class DummmmmmyForge {
 
     //add goal
     @SubscribeEvent
-    public static void onEntityJoinWorld(EntityJoinLevelEvent event) {
+    public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         ModEvents.onEntityJoinWorld(event.getEntity());
     }
 

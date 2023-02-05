@@ -41,7 +41,6 @@ public class Dummmmmmy {
     public static void commonInit() {
         CommonConfigs.init();
         ClientConfigs.init();
-
         RegHelper.addAttributeRegistration(Dummmmmmy::registerEntityAttributes);
     }
 
@@ -84,13 +83,11 @@ public class Dummmmmmy {
                             .sized(0.6f, 2f))
                     .build(TARGET_DUMMY_NAME));
 
-
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
             res(TARGET_DUMMY_NAME),
             () -> new TargetDummyItem(
                     new Item.Properties().tab(CreativeModeTab.TAB_COMBAT).stacksTo(16)));
 
-    public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(
-            res("number"));
+    public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(res("number"));
 
 }
