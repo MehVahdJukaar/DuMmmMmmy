@@ -1,8 +1,9 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Vector3f;
 import net.mehvahdjukaar.dummmmmmy.common.DamageType;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.Camera;
@@ -10,7 +11,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -20,6 +24,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 
 public class DamageNumberParticle extends Particle {
 
@@ -59,6 +69,7 @@ public class DamageNumberParticle extends Particle {
 
     @Override
     public void render(VertexConsumer consumer, Camera camera, float partialTicks) {
+
         Vec3 cameraPos = camera.getPosition();
         float particleX = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
@@ -66,6 +77,7 @@ public class DamageNumberParticle extends Particle {
 
 
         int light = this.getLightColor(1);
+
 
         PoseStack poseStack = new PoseStack();
         poseStack.pushPose();
@@ -94,9 +106,14 @@ public class DamageNumberParticle extends Particle {
         poseStack.scale(fadeout, fadeout, fadeout);
         poseStack.translate(0, -distanceFromCam / 10d, 0);
 
-        var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        var buffer =  Minecraft.getInstance().renderBuffers().bufferSource();
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(770, 771, 1, 0);
         
         float x1 = 0.5f - fontRenderer.width(text) / 2f;
+
         fontRenderer.drawInBatch(text, x1,
                 0, color, false,
                 poseStack.last().pose(), buffer, false, 0, light);
@@ -105,11 +122,11 @@ public class DamageNumberParticle extends Particle {
                 0, darkColor, false,
                 poseStack.last().pose(), buffer, false, 0, light);
 
-        poseStack.popPose();
         buffer.endBatch();
 
-        //TODO: figure out why other particles get messed up
+        poseStack.popPose();
     }
+
 
     @Override
     public void tick() {
@@ -141,7 +158,7 @@ public class DamageNumberParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+        return ParticleRenderType.CUSTOM;
     }
 
 

@@ -165,7 +165,7 @@ public class TargetDummyEntity extends Mob {
                 equipmentSlot = this.getClickedSlot(vec);
                 if (this.hasItemInSlot(equipmentSlot)) {
                     if (player.level.isClientSide) return InteractionResult.CONSUME;
-                    this.unEquipArmor(player, equipmentSlot, itemstack, hand);
+                    this.unEquipArmor(player, equipmentSlot, hand);
                     inventoryChanged = true;
 
                 }
@@ -201,13 +201,14 @@ public class TargetDummyEntity extends Mob {
         return InteractionResult.PASS;
     }
 
-    private void unEquipArmor(Player player, EquipmentSlot slot, ItemStack stack, InteractionHand hand) {
+    private void unEquipArmor(Player player, EquipmentSlot slot, InteractionHand hand) {
         // set slot to stack which is empty stack
         ItemStack itemstack = this.getItemBySlot(slot);
         ItemStack itemstack2 = itemstack.copy();
 
         player.setItemInHand(hand, itemstack2);
-        this.setItemSlot(slot, stack);
+        //clear armor
+        this.setItemSlot(slot, ItemStack.EMPTY);
 
         //this.applyEquipmentModifiers();
         //now done here^
