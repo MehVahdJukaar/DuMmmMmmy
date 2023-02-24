@@ -304,7 +304,7 @@ public class TargetDummyEntity extends Mob {
     }
 
     public void dismantle(boolean drops) {
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide && this.isAlive()) {
             if (drops) {
                 this.dropEquipment();
                 this.spawnAtLocation(Dummmmmmy.DUMMY_ITEM.get(), 1);
