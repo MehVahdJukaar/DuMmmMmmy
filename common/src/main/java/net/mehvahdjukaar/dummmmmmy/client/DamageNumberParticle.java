@@ -12,6 +12,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -76,7 +77,7 @@ public class DamageNumberParticle extends Particle {
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
 
-        int light = this.getLightColor(1);
+        int light = ClientConfigs.LIT_UP_PARTICLES.get()? LightTexture.FULL_BRIGHT : this.getLightColor(partialTicks);
 
 
         PoseStack poseStack = new PoseStack();

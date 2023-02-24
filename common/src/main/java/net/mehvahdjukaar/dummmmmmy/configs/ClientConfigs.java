@@ -20,6 +20,7 @@ public class ClientConfigs {
     public static final Supplier<Boolean> SHOW_HEARTHS;
     public static final Supplier<SkinType> SKIN;
     public static final Supplier<Boolean> DAMAGE_NUMBERS;
+    public static final Supplier<Boolean> LIT_UP_PARTICLES;
 
     public static final Supplier<Integer> DAMAGE_GENERIC;
     public static final Supplier<Integer> DAMAGE_CRIT;
@@ -60,6 +61,8 @@ public class ClientConfigs {
                 .define("show_hearths", false);
         DAMAGE_NUMBERS = builder.comment("Show damage numbers on entity")
                 .define("damage_numbers", true);
+        LIT_UP_PARTICLES = builder.comment("Display particles fullbright")
+                .define("full_bright_damage_numbers",true);
 
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
 
