@@ -5,8 +5,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
-import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
-import net.mehvahdjukaar.moonlight.fabric.FabricSetupCallbacks;
+import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
+import net.mehvahdjukaar.moonlight.fabric.MLFabricSetupCallbacks;
 
 public class DummmmmmyFabric implements ModInitializer {
 
@@ -15,13 +15,13 @@ public class DummmmmmyFabric implements ModInitializer {
 
         Dummmmmmy.commonInit();
 
-        if (PlatformHelper.getEnv().isClient()) {
-            FabricSetupCallbacks.CLIENT_SETUP.add(DummmmmmyClient::init);
+        if (PlatHelper.getPhysicalSide().isClient()) {
+            MLFabricSetupCallbacks.CLIENT_SETUP.add(DummmmmmyClient::init);
         }
 
-        FabricSetupCallbacks.COMMON_SETUP.add(Dummmmmmy::commonSetup);
+        MLFabricSetupCallbacks.COMMON_SETUP.add(Dummmmmmy::commonSetup);
 
-        if (PlatformHelper.isModLoaded("lithium")) {
+        if (PlatHelper.isModLoaded("lithium")) {
             Dummmmmmy.LOGGER.warn("Lithium detected. MmmMmmMmmMmm scarecrow mode has been disabled as lithium doesnt have a way to add goals to new entities");
         } else {
             ServerEntityEvents.ENTITY_LOAD.register((e, w) -> ModEvents.onEntityJoinWorld(e));
