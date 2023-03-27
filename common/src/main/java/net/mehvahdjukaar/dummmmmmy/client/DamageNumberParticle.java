@@ -1,21 +1,19 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Vector3f;
-import net.mehvahdjukaar.dummmmmmy.common.DamageType;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.mehvahdjukaar.dummmmmmy.common.DamageGroup;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -25,12 +23,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL14.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
 
 public class DamageNumberParticle extends Particle {
 
@@ -56,7 +48,7 @@ public class DamageNumberParticle extends Particle {
                                 double amount, double damageType, double index) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
-        int color = DamageType.values()[(int) damageType].getColor();
+        int color = DamageGroup.values()[(int) damageType].getColor();
         this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         this.color = color;
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
@@ -77,7 +69,7 @@ public class DamageNumberParticle extends Particle {
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
 
-        int light = ClientConfigs.LIT_UP_PARTICLES.get()? LightTexture.FULL_BRIGHT : this.getLightColor(partialTicks);
+        int light = ClientConfigs.LIT_UP_PARTICLES.get() ? LightTexture.FULL_BRIGHT : this.getLightColor(partialTicks);
 
 
         PoseStack poseStack = new PoseStack();
@@ -107,21 +99,21 @@ public class DamageNumberParticle extends Particle {
         poseStack.scale(fadeout, fadeout, fadeout);
         poseStack.translate(0, -distanceFromCam / 10d, 0);
 
-        var buffer =  Minecraft.getInstance().renderBuffers().bufferSource();
+        var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
 
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-        
+
         float x1 = 0.5f - fontRenderer.width(text) / 2f;
 
         fontRenderer.drawInBatch(text, x1,
                 0, color, false,
-                poseStack.last().pose(), buffer, false, 0, light);
+                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
         poseStack.translate(1, 1, +0.03);
         fontRenderer.drawInBatch(text, x1,
                 0, darkColor, false,
-                poseStack.last().pose(), buffer, false, 0, light);
+                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
 
         buffer.endBatch();
 

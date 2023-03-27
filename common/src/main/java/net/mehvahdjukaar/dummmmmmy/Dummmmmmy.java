@@ -1,24 +1,26 @@
 package net.mehvahdjukaar.dummmmmmy;
 
-import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
-import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
-import net.minecraft.client.particle.CampfireSmokeParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +44,8 @@ public class Dummmmmmy {
         CommonConfigs.init();
         ClientConfigs.init();
         RegHelper.addAttributeRegistration(Dummmmmmy::registerEntityAttributes);
+        //TODO: damage numbers for other entities
+        RegHelper.addItemsToTabsRegistration(Dummmmmmy::registerItemsToTab);
     }
 
 
@@ -49,6 +53,10 @@ public class Dummmmmmy {
         NetworkHandler.registerMessages();
 
         DispenserBlock.registerBehavior(DUMMY_ITEM.get(), new SpawnDummyBehavior());
+    }
+
+    private static void registerItemsToTab(RegHelper.ItemToTabEvent event) {
+        event.addBefore(CreativeModeTabs.COMBAT, i -> i.is(Items.END_CRYSTAL), DUMMY_ITEM.get());
     }
 
     private static void registerEntityAttributes(RegHelper.AttributeEvent event) {
@@ -84,10 +92,11 @@ public class Dummmmmmy {
                     .build(TARGET_DUMMY_NAME));
 
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
-            res(TARGET_DUMMY_NAME),
-            () -> new TargetDummyItem(
-                    new Item.Properties().tab(CreativeModeTab.TAB_COMBAT).stacksTo(16)));
+            res(TARGET_DUMMY_NAME), () -> new TargetDummyItem(new Item.Properties().stacksTo(16)));
 
     public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(res("number"));
+
+
+    public static final TagKey<DamageType> IS_THORN = TagKey.create(Registries.DAMAGE_TYPE, res("is_thorn"));
 
 }

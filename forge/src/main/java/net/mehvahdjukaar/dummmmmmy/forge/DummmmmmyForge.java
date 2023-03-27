@@ -3,9 +3,10 @@ package net.mehvahdjukaar.dummmmmmy.forge;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
-import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
+import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -23,7 +24,7 @@ public class DummmmmmyForge {
     public DummmmmmyForge() {
         Dummmmmmy.commonInit();
 
-        if (PlatformHelper.getEnv().isClient()) {
+        if (PlatHelper.getPhysicalSide().isClient()) {
             DummmmmmyClient.init();
         }
         MinecraftForge.EVENT_BUS.register(this);
@@ -51,6 +52,11 @@ public class DummmmmmyForge {
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         ModEvents.onEntityJoinWorld(event.getEntity());
+    }
+
+    @SubscribeEvent
+    public void onEntityHit(LivingDamageEvent event){
+        ModEvents.onEntityDamage(event.getEntity(), event.getAmount(), event.getSource());
     }
 
 }

@@ -10,7 +10,7 @@ import net.mehvahdjukaar.dummmmmmy.network.ClientBoundSyncEquipMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.ForgeHelper;
-import net.mehvahdjukaar.moonlight.api.platform.PlatformHelper;
+import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -18,6 +18,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -54,6 +55,8 @@ public class TargetDummyEntity extends Mob {
 
     //client values
     private float prevAnimationPosition = 0;
+    private float animationPosition;
+
     // used to have an independent start for the animation, otherwise the phase of the animation depends ont he damage dealt
     private float shakeAmount = 0;
     private float prevShakeAmount = 0;
@@ -107,8 +110,8 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        return PlatformHelper.getEntitySpawnPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return PlatHelper.getEntitySpawnPacket(this);
     }
 
     @Override
@@ -333,13 +336,14 @@ public class TargetDummyEntity extends Mob {
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return super.isInvulnerableTo(source) || source == DamageSource.DROWN || source == DamageSource.IN_WALL;
+        return super.isInvulnerableTo(source) || source == this.damageSources().drown() ||
+                source == this.damageSources().inWall();
     }
 
     @Override
     public boolean hurt(DamageSource source, float damage) {
         //not immune to void damage, immune to drown, wall
-        if (source == DamageSource.OUT_OF_WORLD) {
+        if (source == this.damageSources().outOfWorld()) {
             this.remove(RemovalReason.KILLED);
             return true;
         }
@@ -389,7 +393,7 @@ public class TargetDummyEntity extends Mob {
                 if (!this.level.isClientSide) {
                     DamageSource actualSource = null;
                     //accounts for forge event modifying damage... I think. On fabric this isn't set yet
-                    if (PlatformHelper.getPlatform().isForge()) {
+                    if (PlatHelper.getPlatform().isForge()) {
                         CombatEntry currentCombatEntry = this.getCombatTracker().getLastEntry();
                         //is same damage as current one. Sanity check I guess
                         if (currentCombatEntry != null && currentCombatEntry.getTime() == this.tickCount &&
@@ -399,7 +403,7 @@ public class TargetDummyEntity extends Mob {
                     } else actualSource = currentDamageSource;
 
                     if (currentDamageSource != null) {
-                        this.showDamageDealt(damage, DamageType.get(actualSource, this.critical));
+                        this.showDamageDealt(damage, DamageGroup.get(actualSource, this.level, this.critical));
                     }
                     this.critical = false;
                 }
@@ -407,7 +411,7 @@ public class TargetDummyEntity extends Mob {
         }
     }
 
-    private void showDamageDealt(float damage, DamageType type) {
+    private void showDamageDealt(float damage, DamageGroup type) {
         //custom update packet
         NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
                 new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
@@ -428,7 +432,7 @@ public class TargetDummyEntity extends Mob {
             float trueDamage = this.getMaxHealth() - this.getHealth();
             if (trueDamage > 0) {
                 this.heal(trueDamage);
-                this.showDamageDealt(trueDamage, DamageType.TRUE);
+                this.showDamageDealt(trueDamage, DamageGroup.TRUE);
             }
         }
 

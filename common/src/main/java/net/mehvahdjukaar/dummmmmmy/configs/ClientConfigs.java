@@ -27,9 +27,9 @@ public class ClientConfigs {
     public static final Supplier<Integer> DAMAGE_DRAGON;
     public static final Supplier<Integer> DAMAGE_WITHER;
     public static final Supplier<Integer> DAMAGE_EXPLOSION;
-    public static final Supplier<Integer> DAMAGE_IND_MAGIC;
-    public static final Supplier<Integer> DAMAGE_TRIDENT;
     public static final Supplier<Integer> DAMAGE_MAGIC;
+    public static final Supplier<Integer> DAMAGE_TRIDENT;
+    public static final Supplier<Integer> DAMAGE_FREEZING;
     public static final Supplier<Integer> DAMAGE_FIRE;
     public static final Supplier<Integer> DAMAGE_LIGHTNING;
     public static final Supplier<Integer> DAMAGE_CACTUS;
@@ -72,8 +72,8 @@ public class ClientConfigs {
         DAMAGE_DRAGON = builder.defineColor("dragon_breath", COLOR_DRAGON);
         DAMAGE_WITHER = builder.defineColor("wither", COLOR_WITHER);
         DAMAGE_EXPLOSION = builder.defineColor("explosion", COLOR_EXPLOSION);
-        DAMAGE_IND_MAGIC = builder.defineColor("magic_indirect", COLOR_IND_MAGIC);
-        DAMAGE_MAGIC = builder.defineColor("magic", COLOR_MAGIC);
+        DAMAGE_MAGIC = builder.defineColor("magic_indirect", COLOR_IND_MAGIC);
+        DAMAGE_FREEZING = builder.defineColor("magic", COLOR_MAGIC);
         DAMAGE_TRIDENT = builder.defineColor("trident", COLOR_TRIDENT);
         DAMAGE_FIRE = builder.defineColor("fire", COLOR_FIRE);
         DAMAGE_LIGHTNING = builder.defineColor("lightning", COLOR_LIGHTNING);
@@ -98,8 +98,8 @@ public class ClientConfigs {
         private final ResourceLocation shearedTexture;
 
         SkinType(String name, String shearedName) {
-            texture = new ResourceLocation(Dummmmmmy.MOD_ID + ":textures/" + name + ".png");
-            shearedTexture = new ResourceLocation(Dummmmmmy.MOD_ID + ":textures/" + shearedName + ".png");
+            texture = new ResourceLocation(Dummmmmmy.MOD_ID + ":textures/entity/" + name + ".png");
+            shearedTexture = new ResourceLocation(Dummmmmmy.MOD_ID + ":textures/entity/" + shearedName + ".png");
         }
 
         public ResourceLocation getSkin(Boolean sheared) {

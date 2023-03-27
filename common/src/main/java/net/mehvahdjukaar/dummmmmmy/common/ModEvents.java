@@ -2,9 +2,13 @@ package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
+import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
+import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -19,9 +23,11 @@ public class ModEvents {
 
     @EventCalled
     public static void onEntityCriticalHit(Player entity, Entity target, float damageModifier) {
-        if (entity != null) {
-            if (damageModifier == 1.5 && target instanceof TargetDummyEntity dummy) {
+        if (entity != null && damageModifier == 1.5) {
+            if (target instanceof TargetDummyEntity dummy) {
                 dummy.moist();
+            }else{
+
             }
         }
     }
@@ -61,4 +67,13 @@ public class ModEvents {
         }
     }
 
+    @EventCalled
+    public static void onEntityDamage(LivingEntity entity, float amount, DamageSource source) {
+        if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+            if (CommonConfigs.PLAYER_ONLY.get() && !(source.getEntity() instanceof Player)) return;
+            DamageGroup t = DamageGroup.get(source,entity.level, false);
+            NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
+                    new ClientBoundDamageNumberMessage(entity.getId(), amount, t.ordinal()));
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package net.mehvahdjukaar.dummmmmmy.network;
 
+import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.moonlight.api.platform.network.ChannelHandler;
 import net.mehvahdjukaar.moonlight.api.platform.network.Message;
@@ -36,6 +37,9 @@ public class ClientBoundDamageNumberMessage implements Message {
         Entity entity = Minecraft.getInstance().level.getEntity(this.entityID);
         if (entity instanceof TargetDummyEntity dummy) {
             dummy.updateClientDamage(damage, damageType);
+        }else{
+            entity.level.addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
+                    entity.getX(), entity.getY() + 1, entity.getZ(), damage, damageType,0);
         }
     }
 }

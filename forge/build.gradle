@@ -103,6 +103,6 @@ dependencies {
     implementation 'org.jetbrains:annotations:22.0.0'
 
     modImplementation("net.mehvahdjukaar:moonlight-forge:${project.moonlight_version}")
-    modImplementation ("curse.maven:jei-238222:3884337")
-    modImplementation ("curse.maven:configured-457570:4011355")
+   // modImplementation ("curse.maven:jei-238222:3884337")
+    //modImplementation ("curse.maven:configured-457570:4011355")
 }

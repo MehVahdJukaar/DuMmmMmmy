@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 public class CommonConfigs {
 
+
     public static void init() {
     }
 
@@ -23,6 +24,10 @@ public class CommonConfigs {
     public static final Supplier<Boolean> DECOY;
     public static final Supplier<DpsMode> DYNAMIC_DPS;
     public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
+
+    public static final Supplier<Boolean> EXTRA_DAMAGE_NUMBERS;
+    public static final Supplier<Boolean> PLAYER_ONLY;
+
 
     static {
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("common"), ConfigType.COMMON);
@@ -38,6 +43,8 @@ public class CommonConfigs {
         RADIUS = builder.comment("Scaring radius").define("scare_radius", 12, 0, 100);
 
         builder.pop();
+
+        builder.push("general");
         //TODO: move to client...
         DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse? ")
                 .define("DPS_mode", DpsMode.DYNAMIC);
@@ -49,6 +56,12 @@ public class CommonConfigs {
                 .define("maximum_out_of_combat_interval", 6 * 20, 20, 1000);
         DECOY = builder.comment("Makes monsters target a dummy that is wearing a player head")
                 .define("dummy_decoy", false);
+        builder.pop();
+
+        builder.push("mobs_damage_numbers");
+        EXTRA_DAMAGE_NUMBERS = builder.define("enabled", false);
+        PLAYER_ONLY = builder.define("player_only", true);
+        builder.pop();
 
         SPEC = builder.buildAndRegister();
     }

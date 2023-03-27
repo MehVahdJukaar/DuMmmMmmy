@@ -1,6 +1,8 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.BlockItem;
@@ -41,7 +43,7 @@ public enum DummyMobType {
     private static boolean isPumpkin(Item item) {
         if (item instanceof BlockItem bi) {
             Block block = bi.getBlock();
-            String name = Registry.ITEM.getKey(item).getPath();
+            String name = BuiltInRegistries.ITEM.getKey(item).getPath();
             return block instanceof CarvedPumpkinBlock || name.contains("pumpkin") || name.contains("jack_o");
         }
         return false;
