@@ -53,14 +53,6 @@ public class TargetDummyEntity extends Mob {
 
     private static final EntityDataAccessor<Boolean> SHEARED = SynchedEntityData.defineId(TargetDummyEntity.class, EntityDataSerializers.BOOLEAN);
 
-    //client values
-    private float prevAnimationPosition = 0;
-    private float animationPosition;
-
-    // used to have an independent start for the animation, otherwise the phase of the animation depends ont he damage dealt
-    private float shakeAmount = 0;
-    private float prevShakeAmount = 0;
-
     // used to calculate the whole damage in one tick, in case there are multiple sources
     private int lastTickActuallyDamaged;
     // currently, recording damage taken
@@ -75,6 +67,16 @@ public class TargetDummyEntity extends Mob {
 
     private final Map<ServerPlayer, Integer> currentlyAttacking = new HashMap<>();
     private DamageSource currentDamageSource = null;
+    private boolean unbreakable = false;
+
+
+    //client values
+    private float prevAnimationPosition = 0;
+    private float animationPosition;
+
+    // used to have an independent start for the animation, otherwise the phase of the animation depends ont he damage dealt
+    private float shakeAmount = 0;
+    private float prevShakeAmount = 0;
 
 
     public TargetDummyEntity(EntityType<TargetDummyEntity> type, Level world) {
@@ -120,7 +122,7 @@ public class TargetDummyEntity extends Mob {
         tag.putInt("Type", this.mobType.ordinal());
         tag.putInt("NumberPos", this.damageNumberPos);
         tag.putBoolean("Sheared", this.isSheared());
-
+        if(this.unbreakable) tag.putBoolean("Unbreakable", true);
         this.applyEquipmentModifiers();
     }
 
@@ -130,6 +132,9 @@ public class TargetDummyEntity extends Mob {
         this.mobType = DummyMobType.values()[tag.getInt("Type")];
         this.damageNumberPos = tag.getInt("NumberPos");
         this.setSheared(tag.getBoolean("Sheared"));
+        if(tag.contains("unbreakable")){
+            this.unbreakable = tag.getBoolean("unbreakable");
+        }
     }
 
     @Override
@@ -358,7 +363,7 @@ public class TargetDummyEntity extends Mob {
                 currentlyAttacking.put(sp, CommonConfigs.MAX_COMBAT_INTERVAL.get());
             }
             // shift-left-click with empty hand dismantles
-            if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
+            if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty() && !this.unbreakable) {
                 dismantle(!player.isCreative());
                 return false;
             }

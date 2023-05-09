@@ -4,10 +4,13 @@ import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
+import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
+import net.minecraft.world.entity.animal.Sheep;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.entity.player.CriticalHitEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,6 +30,7 @@ public class DummmmmmyForge {
         if (PlatHelper.getPhysicalSide().isClient()) {
             DummmmmmyClient.init();
         }
+
         MinecraftForge.EVENT_BUS.register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(DummmmmmyForge::setup);
     }
@@ -42,9 +46,9 @@ public class DummmmmmyForge {
 
     //prevents them from spawning
     @SubscribeEvent
-    public void onCheckSpawn(LivingSpawnEvent.CheckSpawn event) {
+    public void onCheckSpawn(MobSpawnEvent.FinalizeSpawn event) {
        if(ModEvents.onCheckSpawn(event.getEntity(), event.getLevel())){
-           event.setResult(Event.Result.DENY);
+           event.setSpawnCancelled(true);
        }
     }
 
