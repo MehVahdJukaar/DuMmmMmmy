@@ -32,7 +32,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatEntry;
 import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -40,7 +43,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -72,6 +77,7 @@ public class TargetDummyEntity extends Mob {
 
     private final Map<ServerPlayer, Integer> currentlyAttacking = new HashMap<>();
     private DamageSource currentDamageSource = null;
+    private boolean unbreakable = false;
 
 
     public TargetDummyEntity(EntityType<TargetDummyEntity> type, Level world) {
@@ -117,6 +123,7 @@ public class TargetDummyEntity extends Mob {
         tag.putInt("Type", this.mobType.ordinal());
         tag.putInt("NumberPos", this.damageNumberPos);
         tag.putBoolean("Sheared", this.isSheared());
+        if (this.unbreakable) tag.putBoolean("unbreakable", true);
 
         this.applyEquipmentModifiers();
     }
@@ -127,6 +134,9 @@ public class TargetDummyEntity extends Mob {
         this.mobType = DummyMobType.values()[tag.getInt("Type")];
         this.damageNumberPos = tag.getInt("NumberPos");
         this.setSheared(tag.getBoolean("Sheared"));
+        if (tag.contains("unbreakable")) {
+            this.unbreakable = tag.getBoolean("unbreakable");
+        }
     }
 
     @Override
@@ -354,7 +364,7 @@ public class TargetDummyEntity extends Mob {
                 currentlyAttacking.put(sp, CommonConfigs.MAX_COMBAT_INTERVAL.get());
             }
             // shift-left-click with empty hand dismantles
-            if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty()) {
+            if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty() && !this.unbreakable) {
                 dismantle(!player.isCreative());
                 return false;
             }
@@ -400,6 +410,7 @@ public class TargetDummyEntity extends Mob {
 
                     if (currentDamageSource != null) {
                         this.showDamageDealt(damage, DamageType.get(actualSource, this.critical));
+                        this.updateTargetBlock(damage);
                     }
                     this.critical = false;
                 }
@@ -412,12 +423,25 @@ public class TargetDummyEntity extends Mob {
         NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
                 new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
 
-        for(var p : this.currentlyAttacking.keySet()){
+        for (var p : this.currentlyAttacking.keySet()) {
             NetworkHandler.CHANNEL.sendToClientPlayer(p,
                     new ClientBoundDamageNumberMessage(this.getId(), damage, type.ordinal()));
         }
 
         this.totalDamageTakenInCombat += damage;
+    }
+
+    private void updateTargetBlock(float damage) {
+        if (damage <= 0) return;
+        BlockPos pos = this.getOnPos();
+        BlockState state = this.getBlockStateOn();
+        if (state.getBlock() instanceof TargetBlock) {
+            if (!level.getBlockTicks().hasScheduledTick(pos, state.getBlock())) {
+                int power = (int) Mth.clamp((damage / this.getHealth()) * 15, 1, 15);
+                level.setBlock(pos, state.setValue(BlockStateProperties.POWER, power), 3);
+                level.scheduleTick(pos, state.getBlock(), 20);
+            }
+        }
     }
 
     @Override
@@ -606,7 +630,7 @@ public class TargetDummyEntity extends Mob {
     }
 
     public void updateClientDamage(float damage, int damageType) {
-        if(ClientConfigs.DAMAGE_NUMBERS.get()) {
+        if (ClientConfigs.DAMAGE_NUMBERS.get()) {
             this.level.addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
                     this.getX(), this.getY() + 1, this.getZ(), damage, damageType, this.damageNumberPos++);
         }
