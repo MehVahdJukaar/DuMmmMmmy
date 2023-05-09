@@ -41,7 +41,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -409,6 +411,7 @@ public class TargetDummyEntity extends Mob {
 
                     if (currentDamageSource != null) {
                         this.showDamageDealt(damage, DamageGroup.get(actualSource, this.level, this.critical));
+                        updateTargetBlock(damage);
                     }
                     this.critical = false;
                 }
@@ -427,6 +430,18 @@ public class TargetDummyEntity extends Mob {
         }
 
         this.totalDamageTakenInCombat += damage;
+    }
+
+    private void updateTargetBlock(float damage) {
+        BlockPos pos = this.getOnPos();
+        BlockState state = this.getBlockStateOn();
+        if (state.getBlock() instanceof TargetBlock) {
+            if (!level.getBlockTicks().hasScheduledTick(pos, state.getBlock())) {
+                int power = (int) Mth.clamp((damage / this.getHealth()) * 15, 1, 15);
+                level.setBlock(pos, state.setValue(BlockStateProperties.POWER, power), 3);
+                level.scheduleTick(pos, state.getBlock(), 20);
+            }
+        }
     }
 
     @Override
