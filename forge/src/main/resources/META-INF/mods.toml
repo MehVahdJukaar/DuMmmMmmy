@@ -43,12 +43,12 @@ modUrl = "https://www.curseforge.com/minecraft/mmmmmmmmmmmm/labels"
 [[dependencies.dummmmmmy]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.2,1.20)"
+    versionRange="[1.20,1.21)"
     ordering="NONE"
     side="BOTH"
 
 [[dependencies.dummmmmmy]]
     modId="moonlight"
     mandatory=true
-    versionRange="[1.19.2-2.1.20,]"
+    versionRange="[1.20-2.5.0,]"
     side="BOTH"

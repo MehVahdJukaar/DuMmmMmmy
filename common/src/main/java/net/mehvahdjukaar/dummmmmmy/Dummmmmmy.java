@@ -56,7 +56,7 @@ public class Dummmmmmy {
     }
 
     private static void registerItemsToTab(RegHelper.ItemToTabEvent event) {
-        event.addBefore(CreativeModeTabs.COMBAT, i -> i.is(Items.END_CRYSTAL), DUMMY_ITEM.get());
+        event.addBefore(CreativeModeTabs.COMBAT, i -> i.is(Items.TOTEM_OF_UNDYING), DUMMY_ITEM.get());
     }
 
     private static void registerEntityAttributes(RegHelper.AttributeEvent event) {

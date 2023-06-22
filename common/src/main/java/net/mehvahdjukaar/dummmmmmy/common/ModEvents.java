@@ -71,7 +71,7 @@ public class ModEvents {
     public static void onEntityDamage(LivingEntity entity, float amount, DamageSource source) {
         if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
             if (CommonConfigs.PLAYER_ONLY.get() && !(source.getEntity() instanceof Player)) return;
-            DamageGroup t = DamageGroup.get(source,entity.level, false);
+            DamageGroup t = DamageGroup.get(source,entity.level(), false);
             NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
                     new ClientBoundDamageNumberMessage(entity.getId(), amount, t.ordinal()));
         }

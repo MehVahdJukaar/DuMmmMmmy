@@ -38,7 +38,7 @@ public class ClientBoundDamageNumberMessage implements Message {
         if (entity instanceof TargetDummyEntity dummy) {
             dummy.updateClientDamage(damage, damageType);
         }else{
-            entity.level.addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
+            entity.level().addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
                     entity.getX(), entity.getY() + 1, entity.getZ(), damage, damageType,0);
         }
     }

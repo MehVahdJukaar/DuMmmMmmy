@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -171,10 +172,11 @@ public class TargetDummyEntity extends Mob {
             }
 
             // empty hand -> unequip
+            Level level = player.level();
             if (itemstack.isEmpty() && hand == InteractionHand.MAIN_HAND) {
                 equipmentSlot = this.getClickedSlot(vec);
                 if (this.hasItemInSlot(equipmentSlot)) {
-                    if (player.level.isClientSide) return InteractionResult.CONSUME;
+                    if (level.isClientSide) return InteractionResult.CONSUME;
                     this.unEquipArmor(player, equipmentSlot, hand);
                     inventoryChanged = true;
 
@@ -182,7 +184,7 @@ public class TargetDummyEntity extends Mob {
             }
             // armor item in hand -> equip/swap
             else if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
-                if (player.level.isClientSide) return InteractionResult.CONSUME;
+                if (level.isClientSide) return InteractionResult.CONSUME;
                 this.equipArmor(player, equipmentSlot, itemstack, hand);
                 inventoryChanged = true;
 
@@ -191,7 +193,7 @@ public class TargetDummyEntity extends Mob {
             else if (item instanceof ShearsItem) {
                 if (!this.isSheared()) {
                     level.playSound(player, this, SoundEvents.GROWING_PLANT_CROP, SoundSource.BLOCKS, 1.0F, 1.0F);
-                    if (player.level.isClientSide) return InteractionResult.CONSUME;
+                    if (level.isClientSide) return InteractionResult.CONSUME;
                     this.setSheared(true);
                     return InteractionResult.SUCCESS;
                 }
@@ -200,7 +202,7 @@ public class TargetDummyEntity extends Mob {
 
             if (inventoryChanged) {
                 this.setLastArmorItem(equipmentSlot, itemstack);
-                if (!this.level.isClientSide) {
+                if (!level.isClientSide) {
                     NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
                             new ClientBoundSyncEquipMessage(this.getId(), equipmentSlot.getIndex(), this.getItemBySlot(equipmentSlot)));
                 }
@@ -276,7 +278,7 @@ public class TargetDummyEntity extends Mob {
     public void applyEquipmentModifiers() {
         //living entity code here. apparently every entity does this check every tick.
         //trying instead to run it only when needed instead
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 ItemStack itemstack;
                 if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
@@ -315,15 +317,16 @@ public class TargetDummyEntity extends Mob {
     }
 
     public void dismantle(boolean drops) {
-        if (!this.level.isClientSide && this.isAlive()) {
+        Level level = this.level();
+        if (!level.isClientSide && this.isAlive()) {
             if (drops) {
                 this.dropEquipment();
                 this.spawnAtLocation(Dummmmmmy.DUMMY_ITEM.get(), 1);
             }
-            this.level.playSound(null, this.getX(), this.getY(), this.getZ(), this.getDeathSound(),
+            level.playSound(null, this.getX(), this.getY(), this.getZ(), this.getDeathSound(),
                     this.getSoundSource(), 1.0F, 1.0F);
 
-            ((ServerLevel) this.level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),
+            ((ServerLevel) level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),
                     this.getX(), this.getY(0.6666666666666666D), this.getZ(), 10, (this.getBbWidth() / 4.0F),
                     (this.getBbHeight() / 4.0F), (this.getBbWidth() / 4.0F), 0.05D);
             this.remove(RemovalReason.KILLED);
@@ -350,7 +353,7 @@ public class TargetDummyEntity extends Mob {
     @Override
     public boolean hurt(DamageSource source, float damage) {
         //not immune to void damage, immune to drown, wall
-        if (source == this.damageSources().outOfWorld()) {
+        if (source == this.damageSources().fellOutOfWorld()) {
             this.remove(RemovalReason.KILLED);
             return true;
         }
@@ -397,26 +400,36 @@ public class TargetDummyEntity extends Mob {
                 this.animationPosition = Math.min(this.animationPosition + damage, 60f);
                 this.lastTickActuallyDamaged = this.tickCount;
 
-                if (!this.level.isClientSide) {
+                Level level = this.level();
+                if (!level.isClientSide) {
                     DamageSource actualSource = null;
                     //accounts for forge event modifying damage... I think. On fabric this isn't set yet
                     if (PlatHelper.getPlatform().isForge()) {
-                        CombatEntry currentCombatEntry = this.getCombatTracker().getLastEntry();
+                        CombatEntry currentCombatEntry = getLastEntry();
                         //is same damage as current one. Sanity check I guess
-                        if (currentCombatEntry != null && currentCombatEntry.getTime() == this.tickCount &&
-                                Mth.equal(damage, currentCombatEntry.getDamage())) {
-                            actualSource = currentCombatEntry.getSource();
+                        if (currentCombatEntry != null && getCombatTracker().lastDamageTime == this.tickCount &&
+                                Mth.equal(damage, currentCombatEntry.damage())) {
+                            actualSource = currentCombatEntry.source();
                         }
                     } else actualSource = currentDamageSource;
 
                     if (currentDamageSource != null) {
-                        this.showDamageDealt(damage, DamageGroup.get(actualSource, this.level, this.critical));
+                        this.showDamageDealt(damage, DamageGroup.get(actualSource, level, this.critical));
                         updateTargetBlock(damage);
                     }
                     this.critical = false;
                 }
             }
         }
+    }
+
+    @Nullable
+    public CombatEntry getLastEntry() {
+        CombatTracker tracker = this.getCombatTracker();
+        if (tracker.entries.isEmpty()) {
+            return null;
+        }
+        return tracker.entries.get(tracker.entries.size() - 1);
     }
 
     private void showDamageDealt(float damage, DamageGroup type) {
@@ -436,6 +449,7 @@ public class TargetDummyEntity extends Mob {
         BlockPos pos = this.getOnPos();
         BlockState state = this.getBlockStateOn();
         if (state.getBlock() instanceof TargetBlock) {
+            Level level = level();
             if (!level.getBlockTicks().hasScheduledTick(pos, state.getBlock())) {
                 int power = (int) Mth.clamp((damage / this.getHealth()) * 15, 1, 15);
                 level.setBlock(pos, state.setValue(BlockStateProperties.POWER, power), 3);
@@ -448,7 +462,8 @@ public class TargetDummyEntity extends Mob {
     public void tick() {
 
         //show true damage that has bypassed hurt method
-        if (lastTickActuallyDamaged + 1 == this.tickCount && !this.level.isClientSide) {
+        Level level = this.level();
+        if (lastTickActuallyDamaged + 1 == this.tickCount && !level.isClientSide) {
             float trueDamage = this.getMaxHealth() - this.getHealth();
             if (trueDamage > 0) {
                 this.heal(trueDamage);
@@ -459,7 +474,7 @@ public class TargetDummyEntity extends Mob {
         BlockPos onPos = this.getOnPos();
 
         //check if on stable ground. used for automation
-        if (this.level.getGameTime() % 20L == 0L && !this.level.isClientSide) {
+        if (level.getGameTime() % 20L == 0L && !level.isClientSide) {
             if (level.isEmptyBlock(onPos)) {
                 this.dismantle(true);
                 return;
@@ -468,8 +483,8 @@ public class TargetDummyEntity extends Mob {
         }
 
         this.setNoGravity(true);
-        BlockState onState = this.level.getBlockState(onPos);
-        onState.getBlock().stepOn(this.level, onPos, onState, this);
+        BlockState onState = level.getBlockState(onPos);
+        onState.getBlock().stepOn(level, onPos, onState, this);
 
         //used for fire damage, poison damage etc.
         //so you can damage it like any mob
@@ -477,18 +492,18 @@ public class TargetDummyEntity extends Mob {
         this.baseTick();
 
 
-        this.level.getProfiler().push("travel");
+        level.getProfiler().push("travel");
         this.travel(new Vec3(this.xxa, this.yya, this.zza));
-        this.level.getProfiler().pop();
+        level.getProfiler().pop();
 
 
-        this.level.getProfiler().push("push");
+        level.getProfiler().push("push");
         this.pushEntities();
-        this.level.getProfiler().pop();
+        level.getProfiler().pop();
         //end living tick stuff
 
 
-        if (this.level.isClientSide) {
+        if (level.isClientSide) {
             //set to 0 to disable red glow that happens when hurt
             this.hurtTime = 0;//this.maxHurtTime;
             this.prevShakeAmount = this.shakeAmount;
@@ -510,7 +525,8 @@ public class TargetDummyEntity extends Mob {
 
             //TODO: move dps mode logic to client
             //am i being attacked?
-            if (tracker.isInCombat() && this.totalDamageTakenInCombat > 0) {
+            tracker.recheckStatus();
+            if (tracker.inCombat && this.totalDamageTakenInCombat > 0) {
 
                 float combatDuration = tracker.getCombatDuration();
                 CommonConfigs.DpsMode dpsMode = CommonConfigs.DYNAMIC_DPS.get();
@@ -631,7 +647,7 @@ public class TargetDummyEntity extends Mob {
 
     public void updateClientDamage(float damage, int damageType) {
         if(ClientConfigs.DAMAGE_NUMBERS.get()) {
-            this.level.addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
+            this.level().addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
                     this.getX(), this.getY() + 1, this.getZ(), damage, damageType, this.damageNumberPos++);
         }
     }
