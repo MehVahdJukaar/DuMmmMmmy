@@ -39,7 +39,7 @@ public class Dummmmmmy {
     public static ResourceLocation res(String name) {
         return new ResourceLocation(MOD_ID, name);
     }
-
+//TODO: fix max 100 damage??
     public static void commonInit() {
         CommonConfigs.init();
         ClientConfigs.init();

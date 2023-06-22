@@ -1,1 +1,1 @@
-- placing a target block underneath the dummy will output power when the dummy is hit
+- fixed a crash
