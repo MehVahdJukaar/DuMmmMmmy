@@ -5,6 +5,7 @@ import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
+import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
@@ -39,17 +40,26 @@ public class Dummmmmmy {
     public static ResourceLocation res(String name) {
         return new ResourceLocation(MOD_ID, name);
     }
-//TODO: fix max 100 damage??
-    public static void commonInit() {
+
+    public static void init() {
+        if (PlatHelper.getPhysicalSide().isClient()) {
+            DummmmmmyClient.init();
+            ClientConfigs.init();
+        }
+        PlatHelper.addCommonSetup(Dummmmmmy::setup);
         CommonConfigs.init();
-        ClientConfigs.init();
+
         RegHelper.addAttributeRegistration(Dummmmmmy::registerEntityAttributes);
-        //TODO: damage numbers for other entities
         RegHelper.addItemsToTabsRegistration(Dummmmmmy::registerItemsToTab);
+
+        //TODO: damage numbers for other entities
+        // TODO: fix max 100 damage??
+        // add straw particles
+        // make so when you kil the dummy it has a death animation and them respawns after a bit. Optional in configs
     }
 
 
-    public static void commonSetup() {
+    public static void setup() {
         NetworkHandler.registerMessages();
 
         DispenserBlock.registerBehavior(DUMMY_ITEM.get(), new SpawnDummyBehavior());
