@@ -35,10 +35,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatEntry;
 import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -65,8 +62,9 @@ public class TargetDummyEntity extends Mob {
     private int lastTickActuallyDamaged;
     // currently, recording damage taken
     private float totalDamageTakenInCombat;
-    //has just been hit by critical?
-    private boolean critical = false;
+    //has just been hit by critical? server side
+    @Nullable
+    private Entity entityThatCritMeThisTick = null;
     private DummyMobType mobType = DummyMobType.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
@@ -420,10 +418,10 @@ public class TargetDummyEntity extends Mob {
                     } else actualSource = currentDamageSource;
 
                     if (actualSource != null) {
-                        this.showDamageDealt(damage, actualSource, this.critical);
+                      boolean isCrit =  actualSource.getEntity() == entityThatCritMeThisTick;
+                        this.showDamageDealt(damage, actualSource, isCrit);
                         updateTargetBlock(damage);
                     }
-                    this.critical = false;
                 }
             }
         }
@@ -480,6 +478,8 @@ public class TargetDummyEntity extends Mob {
 
     @Override
     public void tick() {
+
+        this.entityThatCritMeThisTick = null;
 
         //show true damage that has bypassed hurt method
         Level level = this.level();
@@ -667,7 +667,7 @@ public class TargetDummyEntity extends Mob {
         this.animationPosition = shake;
     }
 
-    public void moist() {
-        this.critical = true;
+    public void moist(Entity attacker) {
+        this.entityThatCritMeThisTick = attacker;
     }
 }

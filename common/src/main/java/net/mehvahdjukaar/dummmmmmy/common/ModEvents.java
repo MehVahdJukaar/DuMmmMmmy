@@ -22,12 +22,10 @@ import net.minecraft.world.level.LevelAccessor;
 public class ModEvents {
 
     @EventCalled
-    public static void onEntityCriticalHit(Player entity, Entity target, float damageModifier) {
-        if (entity != null && damageModifier == 1.5) {
+    public static void onEntityCriticalHit(Player attacker, Entity target, float damageModifier) {
+        if (attacker != null && !attacker.level().isClientSide && damageModifier == 1.5) {
             if (target instanceof TargetDummyEntity dummy) {
-                dummy.moist();
-            }else{
-
+                dummy.moist(attacker);
             }
         }
     }

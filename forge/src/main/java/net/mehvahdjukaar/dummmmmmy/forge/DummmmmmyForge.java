@@ -30,7 +30,9 @@ public class DummmmmmyForge {
 
     @SubscribeEvent
     public void onEntityCriticalHit(CriticalHitEvent event) {
-        ModEvents.onEntityCriticalHit(event.getEntity(), event.getTarget(), event.getDamageModifier());
+       if(!event.isCanceled()) {
+           ModEvents.onEntityCriticalHit(event.getEntity(), event.getTarget(), event.getDamageModifier());
+       }
     }
 
     //prevents them from spawning

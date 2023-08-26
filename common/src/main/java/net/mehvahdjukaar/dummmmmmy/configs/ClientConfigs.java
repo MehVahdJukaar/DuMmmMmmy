@@ -15,13 +15,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
-import org.checkerframework.checker.units.qual.C;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static net.mehvahdjukaar.dummmmmmy.Dummmmmmy.*;
 
 public class ClientConfigs {
 
@@ -54,13 +54,15 @@ public class ClientConfigs {
     private static final int COLOR_TRUE = 0x910038;
     private static final int COLOR_WARDEN = 0x074550;
     private static final int COLOR_BLEED = 0x810A0A;
+
+
     static {
 
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("client"), ConfigType.CLIENT);
 
         builder.comment("lots of cosmetic stuff in here");
 
-        builder.push("visuals");
+        builder.push("visuals").comment("To edit the damage numbers color you'll have to edit the config file manually");
         ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt. default=0.75")
                 .define("animation_intensity", 0.75, 0.0, 2.0);
         SHOW_HEARTHS = builder.comment("Show hearths instead of damage dealt? (1 hearth = two damage)")
@@ -74,24 +76,24 @@ public class ClientConfigs {
 
 
         Map<IdOrTagPredicate, Integer> map = new HashMap<>();
-        map.put(new IdPredicate(Dummmmmmy.res("true")), COLOR_TRUE);
-        map.put(new IdPredicate(Dummmmmmy.res("crit")), COLOR_CRIT);
+        map.put(new IdPredicate(TRUE_DAMAGE), COLOR_TRUE);
+        map.put(new IdPredicate(CRITICAL_DAMAGE), COLOR_CRIT);
         map.put(new IdPredicate("generic"), COLOR_GENERIC);
         map.put(new IdPredicate("trident"), COLOR_TRIDENT);
         map.put(new IdPredicate("dragon_breath"), COLOR_DRAGON);
         map.put(new IdPredicate("sonic_boom"), COLOR_WARDEN);
         map.put(new IdPredicate("attributeslib:bleeding"), COLOR_BLEED);
-        map.put(new TagPredicate(Dummmmmmy.res("is_explosion")), COLOR_EXPLOSION);
-        map.put(new TagPredicate(Dummmmmmy.res("is_cold")), COLOR_FREEZING);
-        map.put(new TagPredicate(Dummmmmmy.res("is_thorn")), COLOR_CACTUS);
-        map.put(new TagPredicate(Dummmmmmy.res("is_fire")), COLOR_FIRE);
-        map.put(new TagPredicate(Dummmmmmy.res("is_wither")), COLOR_WITHER);
+        map.put(new TagPredicate(IS_EXPLOSION), COLOR_EXPLOSION);
+        map.put(new TagPredicate(IS_COLD), COLOR_FREEZING);
+        map.put(new TagPredicate(IS_THORN), COLOR_CACTUS);
+        map.put(new TagPredicate(IS_FIRE), COLOR_FIRE);
+        map.put(new TagPredicate(IS_WITHER), COLOR_WITHER);
         map.put(new TagPredicate(DamageTypeTags.IS_LIGHTNING), COLOR_LIGHTNING);
         map.put(new TagPredicate(DamageTypeTags.IS_DROWNING), COLOR_WATER);
         map.put(new TagPredicate(DamageTypeTags.WITCH_RESISTANT_TO), COLOR_IND_MAGIC);
 
         DAMAGE_TO_COLORS = builder.comment("Add here custom colors (in hex format) to associate with your damage types. This is a map from damage source ID to a color where you can add new entries for each")
-                .defineObject("damage_number_colors", () -> map,
+                .defineObject("damage_type_colors", () -> map,
                         Codec.unboundedMap(IdOrTagPredicate.CODEC, ColorUtil.CODEC));
 
 
@@ -103,6 +105,7 @@ public class ClientConfigs {
     // suboptimal but eh
     public static int getDamageColor(ResourceLocation damageTypeId) {
         var values = ClientConfigs.DAMAGE_TO_COLORS.get();
+
         var opt = Utils.hackyGetRegistry(Registries.DAMAGE_TYPE)
                 .getHolder(ResourceKey.create(Registries.DAMAGE_TYPE, damageTypeId));
         if (opt.isEmpty()) {

@@ -1,4 +1,2 @@
-- added new configs that allow to add any color to any arbitrary damage types
-- added related apotheosis integration
-- fixed a rare issue preventing damage from being displayed
-- improved dummy logic, now calling LivingEntity tick which should improve compatibility
+- fixed true and crit damage not having correct colors
+- improved crit damage to apply to all damage that an entity deals the same tick. Normally not possible in vanilla it can come in handy when mods allow for it

@@ -108,5 +108,13 @@ public class Dummmmmmy {
 
 
     public static final TagKey<DamageType> IS_THORN = TagKey.create(Registries.DAMAGE_TYPE, res("is_thorn"));
+    public static final TagKey<DamageType> IS_FIRE = TagKey.create(Registries.DAMAGE_TYPE, res("is_fire"));
+    public static final TagKey<DamageType> IS_EXPLOSION = TagKey.create(Registries.DAMAGE_TYPE, res("is_explosion"));
+    public static final TagKey<DamageType> IS_WITHER = TagKey.create(Registries.DAMAGE_TYPE, res("is_wither"));
+    public static final TagKey<DamageType> IS_COLD = TagKey.create(Registries.DAMAGE_TYPE, res("is_cold"));
+
+
+    public static final ResourceLocation TRUE_DAMAGE = Dummmmmmy.res("true");
+    public static final ResourceLocation CRITICAL_DAMAGE = Dummmmmmy.res("critical");
 
 }

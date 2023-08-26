@@ -29,8 +29,8 @@ public class ClientBoundDamageNumberMessage implements Message {
     }
 
     public static ResourceLocation encodeDamage(DamageSource source,  boolean critical) {
-        if (source == null) return Dummmmmmy.res("true");
-        if (critical) return Dummmmmmy.res("critical");
+        if (source == null) return Dummmmmmy.TRUE_DAMAGE;
+        if (critical) return Dummmmmmy.CRITICAL_DAMAGE;
         return Utils.hackyGetRegistry(Registries.DAMAGE_TYPE).getKey(source.type());
     }
 
