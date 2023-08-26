@@ -418,9 +418,11 @@ public class TargetDummyEntity extends Mob {
                     } else actualSource = currentDamageSource;
 
                     if (actualSource != null) {
-                      boolean isCrit =  actualSource.getEntity() == entityThatCritMeThisTick;
+                        boolean isCrit = actualSource.getEntity() == entityThatCritMeThisTick;
                         this.showDamageDealt(damage, actualSource, isCrit);
                         updateTargetBlock(damage);
+                        // if (isCrit)
+                        entityThatCritMeThisTick = null;
                     }
                 }
             }
@@ -478,8 +480,6 @@ public class TargetDummyEntity extends Mob {
 
     @Override
     public void tick() {
-
-        this.entityThatCritMeThisTick = null;
 
         //show true damage that has bypassed hurt method
         Level level = this.level();
