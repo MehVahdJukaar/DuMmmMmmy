@@ -1,11 +1,26 @@
 package net.mehvahdjukaar.dummmmmmy.configs;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
+import net.mehvahdjukaar.moonlight.api.client.util.ColorUtil;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigSpec;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigType;
+import net.mehvahdjukaar.moonlight.api.util.Utils;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
+import org.checkerframework.checker.units.qual.C;
 
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ClientConfigs {
@@ -22,18 +37,7 @@ public class ClientConfigs {
     public static final Supplier<Boolean> DAMAGE_NUMBERS;
     public static final Supplier<Boolean> LIT_UP_PARTICLES;
 
-    public static final Supplier<Integer> DAMAGE_GENERIC;
-    public static final Supplier<Integer> DAMAGE_CRIT;
-    public static final Supplier<Integer> DAMAGE_DRAGON;
-    public static final Supplier<Integer> DAMAGE_WITHER;
-    public static final Supplier<Integer> DAMAGE_EXPLOSION;
-    public static final Supplier<Integer> DAMAGE_MAGIC;
-    public static final Supplier<Integer> DAMAGE_TRIDENT;
-    public static final Supplier<Integer> DAMAGE_FREEZING;
-    public static final Supplier<Integer> DAMAGE_FIRE;
-    public static final Supplier<Integer> DAMAGE_LIGHTNING;
-    public static final Supplier<Integer> DAMAGE_CACTUS;
-    public static final Supplier<Integer> DAMAGE_TRUE;
+    public static final Supplier<Map<IdOrTagPredicate, Integer>> DAMAGE_TO_COLORS;
 
     private static final int COLOR_GENERIC = 0xffffff;
     private static final int COLOR_CRIT = 0xff0000;
@@ -41,16 +45,18 @@ public class ClientConfigs {
     private static final int COLOR_WITHER = 0x666666;
     private static final int COLOR_EXPLOSION = 0xFFBB29;
     private static final int COLOR_IND_MAGIC = 0x844CE7;
-    private static final int COLOR_MAGIC = 0x33B1FF;
+    private static final int COLOR_WATER = 0x1898E3;
+    private static final int COLOR_FREEZING = 0x09D2FF;
     private static final int COLOR_TRIDENT = 0x00FF9D;
     private static final int COLOR_FIRE = 0xFF7700;
     private static final int COLOR_LIGHTNING = 0xFFF200;
     private static final int COLOR_CACTUS = 0x0FA209;
     private static final int COLOR_TRUE = 0x910038;
-
+    private static final int COLOR_WARDEN = 0x074550;
+    private static final int COLOR_BLEED = 0x810A0A;
     static {
-        ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("client"), ConfigType.CLIENT);
 
+        ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("client"), ConfigType.CLIENT);
 
         builder.comment("lots of cosmetic stuff in here");
 
@@ -62,30 +68,54 @@ public class ClientConfigs {
         DAMAGE_NUMBERS = builder.comment("Show damage numbers on entity")
                 .define("damage_numbers", true);
         LIT_UP_PARTICLES = builder.comment("Display particles fullbright")
-                .define("full_bright_damage_numbers",true);
+                .define("full_bright_damage_numbers", true);
 
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
 
-        builder.push("damage_number_colors").comment("hex color for various damage sources");
-        DAMAGE_GENERIC = builder.defineColor("genetic", COLOR_GENERIC);
-        DAMAGE_CRIT = builder.defineColor("crit", COLOR_CRIT);
-        DAMAGE_DRAGON = builder.defineColor("dragon_breath", COLOR_DRAGON);
-        DAMAGE_WITHER = builder.defineColor("wither", COLOR_WITHER);
-        DAMAGE_EXPLOSION = builder.defineColor("explosion", COLOR_EXPLOSION);
-        DAMAGE_MAGIC = builder.defineColor("magic_indirect", COLOR_IND_MAGIC);
-        DAMAGE_FREEZING = builder.defineColor("magic", COLOR_MAGIC);
-        DAMAGE_TRIDENT = builder.defineColor("trident", COLOR_TRIDENT);
-        DAMAGE_FIRE = builder.defineColor("fire", COLOR_FIRE);
-        DAMAGE_LIGHTNING = builder.defineColor("lightning", COLOR_LIGHTNING);
-        DAMAGE_CACTUS = builder.defineColor("cactus", COLOR_CACTUS);
-        DAMAGE_TRUE = builder.defineColor("true_damage", COLOR_TRUE);
+
+        Map<IdOrTagPredicate, Integer> map = new HashMap<>();
+        map.put(new IdPredicate(Dummmmmmy.res("true")), COLOR_TRUE);
+        map.put(new IdPredicate(Dummmmmmy.res("crit")), COLOR_CRIT);
+        map.put(new IdPredicate("generic"), COLOR_GENERIC);
+        map.put(new IdPredicate("trident"), COLOR_TRIDENT);
+        map.put(new IdPredicate("dragon_breath"), COLOR_DRAGON);
+        map.put(new IdPredicate("sonic_boom"), COLOR_WARDEN);
+        map.put(new IdPredicate("attributeslib:bleeding"), COLOR_BLEED);
+        map.put(new TagPredicate(Dummmmmmy.res("is_explosion")), COLOR_EXPLOSION);
+        map.put(new TagPredicate(Dummmmmmy.res("is_cold")), COLOR_FREEZING);
+        map.put(new TagPredicate(Dummmmmmy.res("is_thorn")), COLOR_CACTUS);
+        map.put(new TagPredicate(Dummmmmmy.res("is_fire")), COLOR_FIRE);
+        map.put(new TagPredicate(Dummmmmmy.res("is_wither")), COLOR_WITHER);
+        map.put(new TagPredicate(DamageTypeTags.IS_LIGHTNING), COLOR_LIGHTNING);
+        map.put(new TagPredicate(DamageTypeTags.IS_DROWNING), COLOR_WATER);
+        map.put(new TagPredicate(DamageTypeTags.WITCH_RESISTANT_TO), COLOR_IND_MAGIC);
+
+        DAMAGE_TO_COLORS = builder.comment("Add here custom colors (in hex format) to associate with your damage types. This is a map from damage source ID to a color where you can add new entries for each")
+                .defineObject("damage_number_colors", () -> map,
+                        Codec.unboundedMap(IdOrTagPredicate.CODEC, ColorUtil.CODEC));
+
 
         builder.pop();
-
-        builder.pop();
-
 
         SPEC = builder.buildAndRegister();
+    }
+
+    // suboptimal but eh
+    public static int getDamageColor(ResourceLocation damageTypeId) {
+        var values = ClientConfigs.DAMAGE_TO_COLORS.get();
+        var opt = Utils.hackyGetRegistry(Registries.DAMAGE_TYPE)
+                .getHolder(ResourceKey.create(Registries.DAMAGE_TYPE, damageTypeId));
+        if (opt.isEmpty()) {
+            Dummmmmmy.LOGGER.error("Received invalid damage type: " + damageTypeId);
+        } else {
+            var holder = opt.get();
+            for (var e : values.entrySet()) {
+                if (e.getKey().test(holder)) {
+                    return e.getValue();
+                }
+            }
+        }
+        return -1;
     }
 
     public enum SkinType {
@@ -107,5 +137,51 @@ public class ClientConfigs {
         }
     }
 
+    public interface IdOrTagPredicate extends Predicate<Holder<DamageType>> {
+        String toString();
+
+        Codec<IdOrTagPredicate> CODEC = Codec.STRING.comapFlatMap(IdOrTagPredicate::read, IdOrTagPredicate::toString).stable();
+
+        static DataResult<IdOrTagPredicate> read(String location) {
+            if (location.startsWith("#")) {
+                return ResourceLocation.read(location.substring(1)).map(TagPredicate::new);
+            } else {
+                return ResourceLocation.read(location).map(IdPredicate::new);
+            }
+        }
+    }
+
+    record IdPredicate(ResourceLocation resourceLocation) implements IdOrTagPredicate {
+        public IdPredicate(String name) {
+            this(new ResourceLocation(name));
+        }
+
+        @Override
+        public String toString() {
+            return resourceLocation.toString();
+        }
+
+        @Override
+        public boolean test(Holder<DamageType> id) {
+            return id.unwrapKey().get().location().equals(resourceLocation);
+        }
+    }
+
+    record TagPredicate(TagKey<DamageType> tag) implements IdOrTagPredicate {
+
+        public TagPredicate(ResourceLocation resourceLocation) {
+            this(new TagKey<>(Registries.DAMAGE_TYPE, resourceLocation));
+        }
+
+        @Override
+        public String toString() {
+            return "#" + tag.location();
+        }
+
+        @Override
+        public boolean test(Holder<DamageType> holder) {
+            return holder.is(tag);
+        }
+    }
 
 }

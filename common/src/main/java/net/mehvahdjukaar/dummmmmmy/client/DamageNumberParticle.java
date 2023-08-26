@@ -3,7 +3,6 @@ package net.mehvahdjukaar.dummmmmmy.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.mehvahdjukaar.dummmmmmy.common.DamageGroup;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -45,10 +44,10 @@ public class DamageNumberParticle extends Particle {
 
 
     public DamageNumberParticle(ClientLevel clientLevel, double x, double y, double z,
-                                double amount, double damageType, double index) {
+                                double amount, double dColor, double index) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
-        int color = DamageGroup.values()[(int) damageType].getColor();
+        int color = (int) dColor;
         this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         this.color = color;
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));

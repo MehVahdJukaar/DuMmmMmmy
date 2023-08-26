@@ -10,9 +10,7 @@ public class DummmmmmyFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
         Dummmmmmy.init();
-
 
         if (PlatHelper.isModLoaded("lithium")) {
             Dummmmmmy.LOGGER.warn("Lithium detected. MmmMmmMmmMmm scarecrow mode has been disabled as lithium doesnt have a way to add goals to new entities");

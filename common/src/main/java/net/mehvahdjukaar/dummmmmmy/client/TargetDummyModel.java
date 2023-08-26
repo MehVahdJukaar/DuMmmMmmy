@@ -9,6 +9,7 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -73,19 +74,20 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, float red, float green,
+    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int overlayIn, float red, float green,
                                float blue, float alpha) {
+       int overlay = OverlayTexture.NO_OVERLAY;
         matrixStackIn.pushPose();
 
-        this.standPlate.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        this.standPlate.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
 
-        this.head.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-        this.rightArm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-        this.leftArm.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-        this.body.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-        this.leftLeg.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        this.head.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
+        this.rightArm.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
+        this.leftArm.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
+        this.body.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
+        this.leftLeg.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
 
-        this.hat.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+        this.hat.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
         matrixStackIn.popPose();
     }
 

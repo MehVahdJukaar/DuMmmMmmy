@@ -1,1 +1,4 @@
-- fixed a crash
+- added new configs that allow to add any color to any arbitrary damage types
+- added related apotheosis integration
+- fixed a rare issue preventing damage from being displayed
+- improved dummy logic, now calling LivingEntity tick which should improve compatibility
