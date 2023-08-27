@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CritMode;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -14,10 +15,12 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,11 +29,12 @@ import java.util.List;
 public class DamageNumberParticle extends Particle {
 
     private static final List<Float> POSITIONS = new ArrayList<>(Arrays.asList(0f, -0.25f, 0.12f, -0.12f, 0.25f));
-    private static final DecimalFormat DF = new DecimalFormat("#.##");
+    private static final DecimalFormat DF2 = new DecimalFormat("#.##");
+    private static final DecimalFormat DF1 = new DecimalFormat("#.#");
 
     private final Font fontRenderer = Minecraft.getInstance().font;
 
-    private final String text;
+    private final Component text;
     private final int color;
     private final int darkColor;
     private float fadeout = -1;
@@ -44,19 +48,28 @@ public class DamageNumberParticle extends Particle {
 
 
     public DamageNumberParticle(ClientLevel clientLevel, double x, double y, double z,
-                                double amount, double dColor, double index) {
+                                double amount, double dColor, double dz) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
         int color = (int) dColor;
-        this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
+        //this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         this.color = color;
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
         double number = ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount;
-        this.text = DF.format(number);
 
         this.yd = 1;
-        this.xd = POSITIONS.get((int) (index % POSITIONS.size()));
+
+        int index = CritMode.extractIntegerPart(dz);
+        float critMult = CritMode.extractFloatPart(dz);
+        if(critMult == 0){
+            this.text = Component.literal(DF2.format(number));
+        }
+        else{
+            this.text = Component.translatable("message.dummmmmmy.crit",  DF1.format(number), DF1.format(critMult));
+        }
+
+        this.xd = POSITIONS.get((index % POSITIONS.size()));
     }
 
     @Override

@@ -25,7 +25,7 @@ public class ModEvents {
     public static void onEntityCriticalHit(Player attacker, Entity target, float damageModifier) {
         if (attacker != null && !attacker.level().isClientSide) { // && damageModifier == 1.5
             if (target instanceof TargetDummyEntity dummy) {
-                dummy.moist(attacker);
+                dummy.moist(attacker, damageModifier);
             }
         }
     }
@@ -71,7 +71,7 @@ public class ModEvents {
         if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
             if (CommonConfigs.PLAYER_ONLY.get() && !(source.getEntity() instanceof Player)) return;
             NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
-                    new ClientBoundDamageNumberMessage(entity.getId(), amount, source, false));
+                    new ClientBoundDamageNumberMessage(entity.getId(), amount, source, false, 0));
         }
     }
 }

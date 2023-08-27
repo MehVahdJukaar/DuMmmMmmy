@@ -4,7 +4,6 @@ package net.mehvahdjukaar.dummmmmmy.common;
 import com.google.common.math.DoubleMath;
 import dev.architectury.injectables.annotations.PlatformOnly;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundSyncEquipMessage;
@@ -23,7 +22,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -63,8 +61,8 @@ public class TargetDummyEntity extends Mob {
     // currently, recording damage taken
     private float totalDamageTakenInCombat;
     //has just been hit by critical? server side
-    @Nullable
-    private Entity entityThatCritMeThisTick = null;
+    private List<CritRecord> critRecordsThisTick = new ArrayList<>();
+    private float critModifier = 0;
     private DummyMobType mobType = DummyMobType.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
@@ -75,8 +73,8 @@ public class TargetDummyEntity extends Mob {
     private DamageSource currentDamageSource = null;
     private boolean unbreakable = false;
 
-
     //client values
+
     private float prevAnimationPosition = 0;
     private float animationPosition;
 
@@ -377,9 +375,17 @@ public class TargetDummyEntity extends Mob {
             }
         }
         if (level().isClientSide) return false;
+        //for recursion
+        var old = currentDamageSource;
         this.currentDamageSource = source;
+        if(!this.critRecordsThisTick.isEmpty()){
+            CritRecord critRecord = this.critRecordsThisTick.get(this.critRecordsThisTick.size() - 1);
+            if(!critRecord.canCompleteWith(source)) {
+                critRecord.addSource(source);
+            }
+        }
         boolean result = super.hurt(source, damage);
-        this.currentDamageSource = null;
+        this.currentDamageSource = old;
         //set to zero to disable a red glow that happens when hurt
         this.hurtTime = 0;
 
@@ -388,43 +394,36 @@ public class TargetDummyEntity extends Mob {
 
 
     //all damaging stuff will inevitably call this function. intercepting to block damage and show it
+    //this is only called server side
     @Override
     public void setHealth(float newHealth) {
         if (newHealth == this.getMaxHealth()) {
             super.setHealth(newHealth);
         } else {
+            // should not happen
+            Level level = this.level();
 
+            if (level.isClientSide) return;
             float damage = this.getHealth() - newHealth;
             if (damage > 0) {
-
-                //if damage is in the same tick, it gets added
-                if (this.lastTickActuallyDamaged != this.tickCount) {
-                    this.animationPosition = 0;
-                }
-                this.animationPosition = Math.min(this.animationPosition + damage, 60f);
-                this.lastTickActuallyDamaged = this.tickCount;
-
-                Level level = this.level();
-                if (!level.isClientSide) {
-                    DamageSource actualSource = null;
-                    //accounts for forge event modifying damage... I think. On fabric this isn't set yet
-                    if (PlatHelper.getPlatform().isForge()) {
-                        CombatEntry currentCombatEntry = getLastEntry();
-                        //Is same damage as current one. Sanity-check, I guess
-                        if (currentCombatEntry != null && getCombatTracker().lastDamageTime == this.tickCount &&
-                                DoubleMath.fuzzyEquals(damage, currentCombatEntry.damage(), 0.000001)) {
-                            actualSource = currentCombatEntry.source();
-                        }
-                    } else actualSource = currentDamageSource;
-
-                    if (actualSource != null) {
-                        boolean isCrit = actualSource.getEntity() == entityThatCritMeThisTick;
-                        this.showDamageDealt(damage, actualSource, isCrit);
-                        updateTargetBlock(damage);
-                        // if (isCrit)
-                        entityThatCritMeThisTick = null;
+                DamageSource actualSource = null;
+                //Accounts for forge event modifying damage... I think. On fabric this isn't set yet
+                if (PlatHelper.getPlatform().isForge()) {
+                    CombatEntry currentCombatEntry = getLastEntry();
+                    //Is same damage as current one. Sanity-check, I guess
+                    if (currentCombatEntry != null && getCombatTracker().lastDamageTime == this.tickCount &&
+                            DoubleMath.fuzzyEquals(damage, currentCombatEntry.damage(), 0.000001)) {
+                        actualSource = currentCombatEntry.source();
                     }
+                } else actualSource = currentDamageSource;
+
+                if (actualSource != null) {
+
+                    showDamageAndAnimationsToClients(damage, actualSource);
+                    updateTargetBlock(damage);
                 }
+
+                this.lastTickActuallyDamaged = this.tickCount;
             }
         }
     }
@@ -438,16 +437,39 @@ public class TargetDummyEntity extends Mob {
         return tracker.entries.get(tracker.entries.size() - 1);
     }
 
-    private void showDamageDealt(float damage, @Nullable DamageSource source, boolean critical) {
-        //custom update packet
+    private void showDamageAndAnimationsToClients(float damage, @Nullable DamageSource source) {
+        //if damage is in the same tick, it gets added otherwise we reset
+        // this is also used server side to track added damage
+        if (this.lastTickActuallyDamaged != this.tickCount) {
+            this.animationPosition = 0;
+        }
+        this.animationPosition = Math.min(this.animationPosition + damage, 60f);
+
+        //custom update packet to send animation position
         NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
                 new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
 
-        for (var p : this.currentlyAttacking.keySet()) {
-            NetworkHandler.CHANNEL.sendToClientPlayer(p,
-                    new ClientBoundDamageNumberMessage(this.getId(), damage, source, critical));
-        }
+        if(source != null) {
+            if (!currentlyAttacking.isEmpty()) {
+                CritRecord critRec = null;
+                    for (int j = critRecordsThisTick.size()-1;  j>=0;j--) {
+                        var c = critRecordsThisTick.get(j);
+                        if(c.matches(source)){
+                            critRec = c;
+                            break;
+                        }
+                    }
 
+                for (var p : this.currentlyAttacking.keySet()) {
+                    NetworkHandler.CHANNEL.sendToClientPlayer(p,
+                            new ClientBoundDamageNumberMessage(this.getId(), damage, source,
+                                    critRec != null, this.critModifier));
+                }
+                if (critRec != null){
+                    this.critRecordsThisTick.remove(critRec);
+                }
+            }
+        }
         this.totalDamageTakenInCombat += damage;
     }
 
@@ -481,13 +503,15 @@ public class TargetDummyEntity extends Mob {
     @Override
     public void tick() {
 
+        this.critRecordsThisTick.clear();
+
         //show true damage that has bypassed hurt method
         Level level = this.level();
         if (lastTickActuallyDamaged + 1 == this.tickCount && !level.isClientSide) {
             float trueDamage = this.getMaxHealth() - this.getHealth();
             if (trueDamage > 0) {
                 this.heal(trueDamage);
-                this.showDamageDealt(trueDamage, null, false);
+                this.showDamageAndAnimationsToClients(trueDamage, null);
             }
         }
 
@@ -655,19 +679,40 @@ public class TargetDummyEntity extends Mob {
                 .add(Attributes.FLYING_SPEED, 0D);
     }
 
-    public void spawnDamageParticle(float damage, ResourceLocation damageType) {
-        if (ClientConfigs.DAMAGE_NUMBERS.get()) {
-            int color = ClientConfigs.getDamageColor(damageType);
-            this.level().addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
-                    this.getX(), this.getY() + 1, this.getZ(), damage, color, this.damageNumberPos++);
-        }
-    }
-
     public void updateAnimation(float shake) {
         this.animationPosition = shake;
     }
 
-    public void moist(Entity attacker) {
-        this.entityThatCritMeThisTick = attacker;
+    public void moist(Entity attacker, float critModifier) {
+        this.critRecordsThisTick.add(new CritRecord(attacker));
+        this.critModifier = critModifier;
+    }
+
+    public int getNextNumberPos() {
+        return damageNumberPos++;
+    }
+
+    private static class CritRecord{
+        private final Entity critter;
+        private DamageSource source;
+
+        public CritRecord(Entity critter) {
+            this.critter = critter;
+        }
+
+        // we don't have this info when crit is generated,
+        // yet It's needed to determine to which damage the crit belongs too.
+        // we need this as hurt calls can be chained, so just checking a boolean field won't be enough
+        public void addSource(DamageSource source){
+            this.source = source;
+        }
+
+        public boolean canCompleteWith(DamageSource source){
+            return source != null && (source.getEntity() == critter || source.getDirectEntity() == critter);
+        }
+
+        public boolean matches(DamageSource source) {
+            return this.source == source;
+        }
     }
 }
