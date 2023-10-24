@@ -51,11 +51,5 @@ public class DummmmmmyForge {
     public void onEntityJoinWorld(EntityJoinLevelEvent event) {
         ModEvents.onEntityJoinWorld(event.getEntity());
     }
-
-    @SubscribeEvent
-    public void onEntityHit(LivingDamageEvent event){
-        ModEvents.onEntityDamage(event.getEntity(), event.getAmount(), event.getSource());
-    }
-
 }
 
