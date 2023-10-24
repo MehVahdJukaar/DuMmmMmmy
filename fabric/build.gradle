@@ -32,7 +32,7 @@ dependencies {
         exclude module: "fabric-api"
     }
 
-    modImplementation ("curse.maven:selene-499980:4806892")
+    modImplementation ("curse.maven:selene-499980:4800626")
 
 
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
