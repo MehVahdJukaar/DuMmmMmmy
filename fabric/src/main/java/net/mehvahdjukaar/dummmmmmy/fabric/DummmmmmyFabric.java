@@ -1,6 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
@@ -17,5 +18,9 @@ public class DummmmmmyFabric implements ModInitializer {
         } else {
             ServerEntityEvents.ENTITY_LOAD.register((e, w) -> ModEvents.onEntityJoinWorld(e));
         }
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            ModEvents.onEntityDamage(entity, amount, source);
+            return true;
+        });
     }
 }

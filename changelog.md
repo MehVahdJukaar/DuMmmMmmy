@@ -1,2 +1,1 @@
-- fixed true and crit damage not having correct colors
-- improved crit damage to apply to all damage that an entity deals the same tick. Normally not possible in vanilla it can come in handy when mods allow for it
+added damage event to fabris so it works like forge allowing damage numbers for other mobs. Note that these numbers arent as accurate as the dummy as they only represent raw non mitigated damage

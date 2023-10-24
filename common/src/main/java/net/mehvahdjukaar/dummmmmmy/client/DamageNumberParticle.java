@@ -20,7 +20,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,9 +50,8 @@ public class DamageNumberParticle extends Particle {
                                 double amount, double dColor, double dz) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
-        int color = (int) dColor;
         //this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
-        this.color = color;
+        this.color = (int) dColor;
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
         double number = ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount;
@@ -62,11 +60,10 @@ public class DamageNumberParticle extends Particle {
 
         int index = CritMode.extractIntegerPart(dz);
         float critMult = CritMode.extractFloatPart(dz);
-        if(critMult == 0){
+        if (critMult == 0) {
             this.text = Component.literal(DF2.format(number));
-        }
-        else{
-            this.text = Component.translatable("message.dummmmmmy.crit",  DF1.format(number), DF1.format(critMult));
+        } else {
+            this.text = Component.translatable("message.dummmmmmy.crit", DF1.format(number), DF1.format(critMult));
         }
 
         this.xd = POSITIONS.get((index % POSITIONS.size()));
@@ -151,7 +148,7 @@ public class DamageNumberParticle extends Particle {
             this.visualDX += this.xd;
 
             //spawn numbers in a sort of ellipse centered on his torso
-            if (Math.sqrt(Math.pow(this.visualDX * 1.5, 2) + Math.pow(this.visualDY - 1, 2)) < 1.9 - 1) {
+            if (Math.sqrt(Mth.square(this.visualDX * 1.5) + Mth.square(this.visualDY - 1)) < 1.9 - 1) {
 
                 this.yd = this.yd / 2;
             } else {

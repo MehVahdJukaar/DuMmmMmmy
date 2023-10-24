@@ -102,7 +102,8 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:22.0.0'
 
-    modImplementation("net.mehvahdjukaar:moonlight-forge:${project.moonlight_version}")
+    //modImplementation("net.mehvahdjukaar:moonlight-forge:${project.moonlight_version}")
+    modImplementation ("curse.maven:selene-499980:4806892")
     modImplementation ("curse.maven:apotheosis-313970:4714951")
     modImplementation ("curse.maven:placebo-283644:4711254")
     modImplementation ("curse.maven:apothic-attributes-898963:4721213")
