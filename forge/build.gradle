@@ -103,9 +103,13 @@ dependencies {
     implementation 'org.jetbrains:annotations:22.0.0'
 
     //modImplementation("net.mehvahdjukaar:moonlight-forge:${project.moonlight_version}")
-    modImplementation ("curse.maven:selene-499980:4806892")
+    modImplementation ("curse.maven:selene-499980:4806893")
     modImplementation ("curse.maven:apotheosis-313970:4714951")
     modImplementation ("curse.maven:placebo-283644:4711254")
     modImplementation ("curse.maven:apothic-attributes-898963:4721213")
     //modImplementation ("curse.maven:configured-457570:4011355")
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5'
+
 }

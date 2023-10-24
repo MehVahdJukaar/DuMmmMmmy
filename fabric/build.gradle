@@ -36,11 +36,12 @@ dependencies {
         exclude module: "fabric-api"
     }
 
-    modImplementation ("curse.maven:selene-499980:4806892")
+    modImplementation ("curse.maven:selene-499980:4800626")
 
-   // modImplementation ("net.mehvahdjukaar:moonlight-fabric:${project.moonlight_version}")
-    implementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
+    include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixin_extras_version}")))
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5'
+
+    // modImplementation ("net.mehvahdjukaar:moonlight-fabric:${project.moonlight_version}")
 }
 
 

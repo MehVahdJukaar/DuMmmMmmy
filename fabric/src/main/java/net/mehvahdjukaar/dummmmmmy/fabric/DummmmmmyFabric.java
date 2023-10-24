@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
+import net.mehvahdjukaar.moonlight.api.platform.fabric.ClientHelperImpl;
 
 public class DummmmmmyFabric implements ModInitializer {
 

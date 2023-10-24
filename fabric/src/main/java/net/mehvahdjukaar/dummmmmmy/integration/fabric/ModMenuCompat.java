@@ -25,7 +25,7 @@ public class ModMenuCompat implements ModMenuApi {
 
         public ModConfigSelectScreen(Screen parent) {
             super(Dummmmmmy.MOD_ID, Dummmmmmy.DUMMY_ITEM.get().getDefaultInstance(),
-                    Component.literal("\u00A76MmmMmmMmmMmm Configs"), new ResourceLocation("textures/block/hay_block_side.png"),
+                    Component.literal("§6MmmMmmMmmMmm Configs"), new ResourceLocation("textures/block/hay_block_side.png"),
                     parent, ClientConfigs.SPEC, CommonConfigs.SPEC);
         }
 

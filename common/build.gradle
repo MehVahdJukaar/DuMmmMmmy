@@ -12,6 +12,9 @@ dependencies {
 
     modImplementation ("curse.maven:selene-499980:4806892")
 
+    annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    implementation("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5'
 //    modImplementation("net.mehvahdjukaar:moonlight:${project.moonlight_version}")
 }
 
