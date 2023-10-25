@@ -51,17 +51,17 @@ public class DamageNumberParticle extends Particle {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
         //this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
-        this.color = (int) dColor;
+        this.color = amount<0 ? 0xff00ff00 : (int) dColor ;
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
-        double number = ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount;
+        double number = Math.abs(ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount);
 
         this.yd = 1;
 
         int index = CritMode.extractIntegerPart(dz);
         float critMult = CritMode.extractFloatPart(dz);
         if (critMult == 0) {
-            this.text = Component.literal(DF2.format(number));
+            this.text =  Component.literal((amount<0 ? "+" : "") +DF2.format(number));
         } else {
             this.text = Component.translatable("message.dummmmmmy.crit", DF1.format(number), DF1.format(critMult));
         }

@@ -81,6 +81,7 @@ public class ClientBoundDamageNumberMessage implements Message {
         }
         double z = CritMode.encodeIntFloatToDouble(animationPos, mult);
         int color = ClientConfigs.getDamageColor(type);
+
         entity.level().addParticle(Dummmmmmy.NUMBER_PARTICLE.get(),
                 entity.getX(), entity.getY() + 1, entity.getZ(), damageAmount, color, z);
     }

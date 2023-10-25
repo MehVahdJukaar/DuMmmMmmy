@@ -61,7 +61,7 @@ public class CommonConfigs {
 
         builder.push("mobs_damage_numbers");
         EXTRA_DAMAGE_NUMBERS = builder.define("enabled", false);
-        PLAYER_ONLY = builder.define("player_only", true);
+        PLAYER_ONLY = builder.define("player_only", false);
         builder.pop();
 
         SPEC = builder.buildAndRegister();

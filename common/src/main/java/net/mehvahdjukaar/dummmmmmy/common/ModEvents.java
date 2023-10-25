@@ -76,5 +76,14 @@ public class ModEvents {
     }
 
     public static void onEntityHeal(LivingEntity entity, float amount) {
+        if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+            if (entity instanceof Player p) {
+                if (p.isLocalPlayer()) return;
+            } else {
+                if (CommonConfigs.PLAYER_ONLY.get()) return;
+            }
+            NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
+                    new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, false, 0));
+        }
     }
 }

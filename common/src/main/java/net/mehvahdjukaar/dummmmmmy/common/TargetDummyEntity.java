@@ -392,8 +392,8 @@ public class TargetDummyEntity extends Mob {
         return result;
     }
 
-
-    //all damaging stuff will inevitably call this function. intercepting to block damage and show it
+    //all damaging stuff will inevitably call this function.
+    //intercepting to block damage and show it
     //this is only called server side
     @Override
     public void setHealth(float newHealth) {
