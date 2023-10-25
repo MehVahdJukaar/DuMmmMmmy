@@ -19,9 +19,5 @@ public class DummmmmmyFabric implements ModInitializer {
         } else {
             ServerEntityEvents.ENTITY_LOAD.register((e, w) -> ModEvents.onEntityJoinWorld(e));
         }
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
-            ModEvents.onEntityDamage(entity, amount, source);
-            return true;
-        });
     }
 }
