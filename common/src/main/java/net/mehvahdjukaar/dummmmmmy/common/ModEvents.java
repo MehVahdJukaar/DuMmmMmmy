@@ -74,4 +74,7 @@ public class ModEvents {
                     new ClientBoundDamageNumberMessage(entity.getId(), amount, source, false, 0));
         }
     }
+
+    public static void onEntityHeal(LivingEntity entity, float amount) {
+    }
 }
