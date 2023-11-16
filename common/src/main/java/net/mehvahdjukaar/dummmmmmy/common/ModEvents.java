@@ -69,7 +69,11 @@ public class ModEvents {
     public static void onEntityDamage(LivingEntity entity, float amount, DamageSource source) {
         //this should be client sided buuut its only fired on server
         if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
-            if (CommonConfigs.PLAYER_ONLY.get() && !(source.getEntity() instanceof Player)) return;
+            if (entity instanceof Player p) {
+                if (p.isLocalPlayer()) return;
+            } else {
+                if (CommonConfigs.MODE.get()!= CommonConfigs.Mode.ALL_ENTITIES) return;
+            }
             NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
                     new ClientBoundDamageNumberMessage(entity.getId(), amount, source, false, 0));
         }
@@ -80,7 +84,7 @@ public class ModEvents {
             if (entity instanceof Player p) {
                 if (p.isLocalPlayer()) return;
             } else {
-                if (CommonConfigs.PLAYER_ONLY.get()) return;
+                if (CommonConfigs.MODE.get()!= CommonConfigs.Mode.ALL_ENTITIES) return;
             }
             NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
                     new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, false, 0));

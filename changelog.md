@@ -1,1 +1,1 @@
-added damage event to fabris so it works like forge allowing damage numbers for other mobs. Note that these numbers arent as accurate as the dummy as they only represent raw non mitigated damage
+fixed an issue with player dmg particles

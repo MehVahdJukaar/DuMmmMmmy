@@ -1,10 +1,11 @@
 package net.mehvahdjukaar.dummmmmmy.configs;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigSpec;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +28,19 @@ public class CommonConfigs {
     public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
 
     public static final Supplier<Boolean> EXTRA_DAMAGE_NUMBERS;
-    public static final Supplier<Boolean> PLAYER_ONLY;
+    public static final Supplier<Mode> MODE;
 
+    public enum Mode {
+        ALL_ENTITIES, ALL_PLAYERS, LOCAL_PLAYER;
+
+        public boolean canSee(Entity e) {
+            return switch (this) {
+                case ALL_PLAYERS -> e instanceof Player;
+                case LOCAL_PLAYER -> e instanceof Player p && p.isLocalPlayer();
+                case ALL_ENTITIES -> true;
+            };
+        }
+    }
 
     static {
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("common"), ConfigType.COMMON);
@@ -61,7 +73,7 @@ public class CommonConfigs {
 
         builder.push("mobs_damage_numbers");
         EXTRA_DAMAGE_NUMBERS = builder.define("enabled", false);
-        PLAYER_ONLY = builder.define("player_only", false);
+        MODE = builder.define("mode", Mode.ALL_ENTITIES);
         builder.pop();
 
         SPEC = builder.buildAndRegister();

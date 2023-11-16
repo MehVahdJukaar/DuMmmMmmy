@@ -3,6 +3,7 @@ package net.mehvahdjukaar.dummmmmmy.network;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
+import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CritMode;
 import net.mehvahdjukaar.moonlight.api.platform.network.ChannelHandler;
 import net.mehvahdjukaar.moonlight.api.platform.network.Message;
@@ -13,6 +14,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 public class ClientBoundDamageNumberMessage implements Message {
     private final int entityID;
@@ -65,7 +67,8 @@ public class ClientBoundDamageNumberMessage implements Message {
                 spawnParticle(entity, i);
             }
         } else if (entity != null) {
-            spawnParticle(entity, 0);
+            if(CommonConfigs.MODE.get().canSee(entity))
+                spawnParticle(entity, 0);
         }
     }
 
