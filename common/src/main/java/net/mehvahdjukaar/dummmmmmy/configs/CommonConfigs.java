@@ -4,8 +4,6 @@ import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigBuilder;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigSpec;
 import net.mehvahdjukaar.moonlight.api.platform.configs.ConfigType;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,20 +24,11 @@ public class CommonConfigs {
     public static final Supplier<Boolean> DECOY;
     public static final Supplier<DpsMode> DYNAMIC_DPS;
     public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
-
-    public static final Supplier<Boolean> EXTRA_DAMAGE_NUMBERS;
-    public static final Supplier<Mode> MODE;
+    public static final Supplier<Mode> DAMAGE_NUMBERS_MODE;
+    public static final Supplier<Mode> HEALING_NUMBERS_MODE;
 
     public enum Mode {
-        ALL_ENTITIES, ALL_PLAYERS, LOCAL_PLAYER;
-
-        public boolean canSee(Entity e) {
-            return switch (this) {
-                case ALL_PLAYERS -> e instanceof Player;
-                case LOCAL_PLAYER -> e instanceof Player p && p.isLocalPlayer();
-                case ALL_ENTITIES -> true;
-            };
-        }
+        ALL_ENTITIES, ALL_PLAYERS, LOCAL_PLAYER, NONE;
     }
 
     static {
@@ -72,8 +61,10 @@ public class CommonConfigs {
         builder.pop();
 
         builder.push("mobs_damage_numbers");
-        EXTRA_DAMAGE_NUMBERS = builder.define("enabled", false);
-        MODE = builder.define("mode", Mode.ALL_ENTITIES);
+        DAMAGE_NUMBERS_MODE = builder.comment("Show damage taken form")
+                .define("damage_mode", Mode.ALL_ENTITIES);
+        HEALING_NUMBERS_MODE = builder.comment("Show healing taken for")
+                .define("healing_mode", Mode.ALL_ENTITIES);
         builder.pop();
 
         SPEC = builder.buildAndRegister();

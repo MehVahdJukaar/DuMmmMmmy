@@ -6,6 +6,7 @@ import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.misc.EventCalled;
 import net.mehvahdjukaar.moonlight.api.util.Utils;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -66,28 +67,52 @@ public class ModEvents {
     }
 
     @EventCalled
-    public static void onEntityDamage(LivingEntity entity, float amount, DamageSource source) {
+    public static void onEntityDamage(LivingEntity target, float amount, DamageSource source) {
         //this should be client sided buuut its only fired on server
-        if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
-            if (entity instanceof Player p) {
-                if (p.isLocalPlayer()) return;
-            } else {
-                if (CommonConfigs.MODE.get()!= CommonConfigs.Mode.ALL_ENTITIES) return;
+        if (target.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+            var message = new ClientBoundDamageNumberMessage(target.getId(), amount, source, false, 0);
+            switch (CommonConfigs.DAMAGE_NUMBERS_MODE.get()) {
+                case ALL_ENTITIES -> {
+                    NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(target, message);
+                }
+                case ALL_PLAYERS -> {
+                    if (source.getEntity() instanceof ServerPlayer) {
+                        NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(target, message);
+                    }
+                }
+                case LOCAL_PLAYER -> {
+                    if (source.getEntity() instanceof ServerPlayer attackingPlayer) {
+                        NetworkHandler.CHANNEL.sendToClientPlayer(attackingPlayer, message);
+                    }
+               }
+               case NONE -> {
+                    // Nothing to do :)
+               }
             }
-            NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
-                    new ClientBoundDamageNumberMessage(entity.getId(), amount, source, false, 0));
         }
     }
 
     public static void onEntityHeal(LivingEntity entity, float amount) {
-        if (CommonConfigs.EXTRA_DAMAGE_NUMBERS.get() && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
-            if (entity instanceof Player p) {
-                if (p.isLocalPlayer()) return;
-            } else {
-                if (CommonConfigs.MODE.get()!= CommonConfigs.Mode.ALL_ENTITIES) return;
+        if (entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+            var message = new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, false, 0);
+            switch (CommonConfigs.HEALING_NUMBERS_MODE.get()) {
+                case ALL_ENTITIES -> {
+                    NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity, message);
+                }
+                case ALL_PLAYERS -> {
+                    if (entity instanceof ServerPlayer) {
+                        NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity, message);
+                    }
+                }
+                case LOCAL_PLAYER -> {
+                    if (entity instanceof ServerPlayer player) {
+                        NetworkHandler.CHANNEL.sendToClientPlayer(player, message);
+                    }
+                }
+                case NONE -> {
+                    // Nothing to do :)
+                }
             }
-            NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(entity,
-                    new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, false, 0));
         }
     }
 }
