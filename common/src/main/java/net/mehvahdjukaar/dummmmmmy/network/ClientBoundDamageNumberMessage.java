@@ -67,8 +67,7 @@ public class ClientBoundDamageNumberMessage implements Message {
                 spawnParticle(entity, i);
             }
         } else if (entity != null) {
-            if(CommonConfigs.MODE.get().canSee(entity))
-                spawnParticle(entity, 0);
+            spawnParticle(entity, 0);
         }
     }
 
