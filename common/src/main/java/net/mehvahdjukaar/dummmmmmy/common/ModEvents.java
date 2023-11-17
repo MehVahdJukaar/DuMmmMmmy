@@ -69,7 +69,7 @@ public class ModEvents {
     @EventCalled
     public static void onEntityDamage(LivingEntity target, float amount, DamageSource source) {
         //this should be client sided buuut its only fired on server
-        if (target.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+        if (!target.level().isClientSide && target.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
             var message = new ClientBoundDamageNumberMessage(target.getId(), amount, source, false, 0);
             switch (CommonConfigs.DAMAGE_NUMBERS_MODE.get()) {
                 case ALL_ENTITIES -> {
@@ -93,7 +93,7 @@ public class ModEvents {
     }
 
     public static void onEntityHeal(LivingEntity entity, float amount) {
-        if (entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
+        if (!entity.level().isClientSide && entity.getType() != Dummmmmmy.TARGET_DUMMY.get()) {
             var message = new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, false, 0);
             switch (CommonConfigs.HEALING_NUMBERS_MODE.get()) {
                 case ALL_ENTITIES -> {

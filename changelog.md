@@ -1,1 +1,1 @@
-changed config defaults
+fixed client side stuff
