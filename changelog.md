@@ -1,1 +1,1 @@
-fixed an issue with player dmg particles
+changed config defaults

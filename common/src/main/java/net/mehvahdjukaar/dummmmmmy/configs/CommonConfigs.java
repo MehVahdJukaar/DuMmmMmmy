@@ -62,9 +62,9 @@ public class CommonConfigs {
 
         builder.push("mobs_damage_numbers");
         DAMAGE_NUMBERS_MODE = builder.comment("Show damage taken form")
-                .define("damage_mode", Mode.ALL_ENTITIES);
+                .define("damage_mode", Mode.NONE);
         HEALING_NUMBERS_MODE = builder.comment("Show healing taken for")
-                .define("healing_mode", Mode.ALL_ENTITIES);
+                .define("healing_mode", Mode.NONE);
         builder.pop();
 
         SPEC = builder.buildAndRegister();
