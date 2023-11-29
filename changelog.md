@@ -1,1 +1,1 @@
-fixed client side stuff
+removed extra entity goals from fabric version. no more scarcrow and dummy behavior
