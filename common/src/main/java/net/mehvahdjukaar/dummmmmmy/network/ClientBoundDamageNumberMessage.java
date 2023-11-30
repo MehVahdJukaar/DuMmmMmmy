@@ -1,6 +1,7 @@
 package net.mehvahdjukaar.dummmmmmy.network;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
+import net.mehvahdjukaar.dummmmmmy.common.CritRecord;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
@@ -15,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientBoundDamageNumberMessage implements Message {
     private final int entityID;
@@ -31,8 +33,8 @@ public class ClientBoundDamageNumberMessage implements Message {
         this.critMult = isCrit ? buf.readFloat() : 0;
     }
 
-    public ClientBoundDamageNumberMessage(int id, float damage, DamageSource source, boolean critical, float critMult) {
-        this(id, damage, encodeDamage(source), critical, critMult);
+    public ClientBoundDamageNumberMessage(int id, float damage, DamageSource source, @Nullable CritRecord critical) {
+        this(id, damage, encodeDamage(source), critical != null, critical == null ? 0 : critical.getMultiplier());
     }
 
     public static ResourceLocation encodeDamage(DamageSource source) {

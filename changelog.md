@@ -1,1 +1,1 @@
-removed extra entity goals from fabric version. no more scarcrow and dummy behavior
+updated placement logic

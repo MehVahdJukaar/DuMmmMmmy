@@ -61,8 +61,7 @@ public class TargetDummyEntity extends Mob {
     // currently, recording damage taken
     private float totalDamageTakenInCombat;
     //has just been hit by critical? server side
-    private List<CritRecord> critRecordsThisTick = new ArrayList<>();
-    private float critModifier = 0;
+    private final List<CritRecord> critRecordsThisTick = new ArrayList<>();
     private DummyMobType mobType = DummyMobType.UNDEFINED;
     //position of damage number in the semicircle
     private int damageNumberPos = 0;
@@ -322,7 +321,7 @@ public class TargetDummyEntity extends Mob {
         if (!level.isClientSide && this.isAlive()) {
             if (drops) {
                 this.dropEquipment();
-                this.spawnAtLocation(Dummmmmmy.DUMMY_ITEM.get(), 1);
+                this.spawnAtLocation(this.getItemForm(), 1);
             }
             level.playSound(null, this.getX(), this.getY(), this.getZ(), this.getDeathSound(),
                     this.getSoundSource(), 1.0F, 1.0F);
@@ -334,6 +333,14 @@ public class TargetDummyEntity extends Mob {
         }
     }
 
+    private ItemStack getItemForm() {
+        ItemStack itemStack = new ItemStack(Dummmmmmy.DUMMY_ITEM.get());
+        if (this.hasCustomName()) {
+            itemStack.setHoverName(this.getCustomName());
+        }
+        return itemStack;
+    }
+
     @Override
     public void kill() {
         this.dismantle(true);
@@ -342,7 +349,7 @@ public class TargetDummyEntity extends Mob {
     //@Override
     @PlatformOnly(PlatformOnly.FORGE)
     public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(Dummmmmmy.DUMMY_ITEM.get());
+        return getItemForm();
     }
 
     @Override
@@ -378,9 +385,9 @@ public class TargetDummyEntity extends Mob {
         //for recursion
         var old = currentDamageSource;
         this.currentDamageSource = source;
-        if(!this.critRecordsThisTick.isEmpty()){
+        if (!this.critRecordsThisTick.isEmpty()) {
             CritRecord critRecord = this.critRecordsThisTick.get(this.critRecordsThisTick.size() - 1);
-            if(!critRecord.canCompleteWith(source)) {
+            if (critRecord.canCompleteWith(source)) {
                 critRecord.addSource(source);
             }
         }
@@ -449,23 +456,22 @@ public class TargetDummyEntity extends Mob {
         NetworkHandler.CHANNEL.sentToAllClientPlayersTrackingEntity(this,
                 new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
 
-        if(source != null) {
+        if (source != null) {
             if (!currentlyAttacking.isEmpty()) {
                 CritRecord critRec = null;
-                    for (int j = critRecordsThisTick.size()-1;  j>=0;j--) {
-                        var c = critRecordsThisTick.get(j);
-                        if(c.matches(source)){
-                            critRec = c;
-                            break;
-                        }
+                for (int j = critRecordsThisTick.size() - 1; j >= 0; j--) {
+                    var c = critRecordsThisTick.get(j);
+                    if (c.matches(source)) {
+                        critRec = c;
+                        break;
                     }
+                }
 
                 for (var p : this.currentlyAttacking.keySet()) {
                     NetworkHandler.CHANNEL.sendToClientPlayer(p,
-                            new ClientBoundDamageNumberMessage(this.getId(), damage, source,
-                                    critRec != null, this.critModifier));
+                            new ClientBoundDamageNumberMessage(this.getId(), damage, source, critRec));
                 }
-                if (critRec != null){
+                if (critRec != null) {
                     this.critRecordsThisTick.remove(critRec);
                 }
             }
@@ -684,35 +690,11 @@ public class TargetDummyEntity extends Mob {
     }
 
     public void moist(Entity attacker, float critModifier) {
-        this.critRecordsThisTick.add(new CritRecord(attacker));
-        this.critModifier = critModifier;
+        this.critRecordsThisTick.add(new CritRecord(attacker, critModifier));
     }
 
     public int getNextNumberPos() {
         return damageNumberPos++;
     }
 
-    private static class CritRecord{
-        private final Entity critter;
-        private DamageSource source;
-
-        public CritRecord(Entity critter) {
-            this.critter = critter;
-        }
-
-        // we don't have this info when crit is generated,
-        // yet It's needed to determine to which damage the crit belongs too.
-        // we need this as hurt calls can be chained, so just checking a boolean field won't be enough
-        public void addSource(DamageSource source){
-            this.source = source;
-        }
-
-        public boolean canCompleteWith(DamageSource source){
-            return source != null && (source.getEntity() == critter || source.getDirectEntity() == critter);
-        }
-
-        public boolean matches(DamageSource source) {
-            return this.source == source;
-        }
-    }
 }
