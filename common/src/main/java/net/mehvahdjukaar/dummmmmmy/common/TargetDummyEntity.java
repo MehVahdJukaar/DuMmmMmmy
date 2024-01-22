@@ -2,7 +2,6 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import com.google.common.math.DoubleMath;
-import dev.architectury.injectables.annotations.PlatformOnly;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
@@ -44,7 +43,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -314,26 +313,29 @@ public class TargetDummyEntity extends Mob {
                 this.spawnAtLocation(armor, 1.0f);
             }
         }
+        this.spawnAtLocation(this.getPickResult(), 1);
     }
 
     public void dismantle(boolean drops) {
         Level level = this.level();
         if (!level.isClientSide && this.isAlive()) {
-            if (drops) {
-                this.dropEquipment();
-                this.spawnAtLocation(this.getItemForm(), 1);
-            }
+            if (drops) this.dropEquipment();
+
             level.playSound(null, this.getX(), this.getY(), this.getZ(), this.getDeathSound(),
                     this.getSoundSource(), 1.0F, 1.0F);
 
             ((ServerLevel) level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),
                     this.getX(), this.getY(0.6666666666666666D), this.getZ(), 10, (this.getBbWidth() / 4.0F),
                     (this.getBbHeight() / 4.0F), (this.getBbWidth() / 4.0F), 0.05D);
+
             this.remove(RemovalReason.KILLED);
+            this.gameEvent(GameEvent.ENTITY_DIE);
         }
     }
 
-    private ItemStack getItemForm() {
+    @Override
+    @NotNull
+    public ItemStack getPickResult() {
         ItemStack itemStack = new ItemStack(Dummmmmmy.DUMMY_ITEM.get());
         if (this.hasCustomName()) {
             itemStack.setHoverName(this.getCustomName());
@@ -344,12 +346,6 @@ public class TargetDummyEntity extends Mob {
     @Override
     public void kill() {
         this.dismantle(true);
-    }
-
-    //@Override
-    @PlatformOnly(PlatformOnly.FORGE)
-    public ItemStack getPickedResult(HitResult target) {
-        return getItemForm();
     }
 
     @Override
@@ -524,7 +520,7 @@ public class TargetDummyEntity extends Mob {
         BlockPos onPos = this.getOnPos();
 
         //check if on stable ground. used for automation
-        if (level.getGameTime() % 20L == 0L && !level.isClientSide) {
+        if (!level.isClientSide && level.getGameTime() % 20L == 0L) {
             if (level.isEmptyBlock(onPos)) {
                 this.dismantle(true);
                 return;

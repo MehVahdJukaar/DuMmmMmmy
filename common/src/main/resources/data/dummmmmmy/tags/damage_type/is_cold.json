@@ -1,6 +1,7 @@
 {
   "values": [
     "minecraft:freeze",
-    "attributeslib:cold_damage"
+    {"id":"attributeslib:cold_damage","required":false},
+    {"id":"attributeslib:cold","required":false}
   ]
 }

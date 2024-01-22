@@ -1,1 +1,1 @@
-updated placement logic
+fixed some damange number colors not working

@@ -3,8 +3,8 @@ package net.mehvahdjukaar.dummmmmmy.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -76,7 +76,7 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
     @Override
     public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int overlayIn, float red, float green,
                                float blue, float alpha) {
-       int overlay = OverlayTexture.NO_OVERLAY;
+        int overlay = OverlayTexture.NO_OVERLAY;
         matrixStackIn.pushPose();
 
         this.standPlate.render(matrixStackIn, bufferIn, packedLightIn, overlay, red, green, blue, alpha);
@@ -93,10 +93,10 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
 
     //TODO: this is horrible
     @Override
-    public void prepareMobModel(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
-        super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
-        float phase = entityIn.getShake(partialTick);
-        float swing = entityIn.getAnimationPosition(partialTick);
+    public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
+        super.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);
+        float phase = entity.getShake(partialTick);
+        float swing = entity.getAnimationPosition(partialTick);
         float shake = Math.min((float) (swing * ClientConfigs.ANIMATION_INTENSITY.get()), 40f);
 
         if (shake > 0) {
@@ -107,15 +107,16 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
             this.r2 = 0;
         }
 
+        // un-rotate the stand plate, so it's aligned to the block grid
+        this.standPlate.xRot = 0.0F;
+        this.standPlate.yRot = Mth.DEG_TO_RAD * -Mth.rotLerp(partialTick, entity.yRotO, entity.getYRot());
+        this.standPlate.zRot = 0.0F;
+
     }
 
     @Override
     public void setupAnim(TargetDummyEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
                           float headPitch) {
-
-
-        // un-rotate the stand plate, so it's aligned to the block grid
-        this.standPlate.yRot = -(entityIn).getYRot() / (180F / (float) Math.PI);
 
 
         float n = 1.5f;
