@@ -1,0 +1,6 @@
+{
+  "item.dummmmmmy.target_dummy": "ターゲットダミー",
+  "entity.dummmmmmy.target_dummy": "ターゲットダミー",
+  "message.dummmmmmy.dps": "%1$s：%2$s DPS",
+  "message.dummmmmmy.crit": "%d (%dx)"
+}
