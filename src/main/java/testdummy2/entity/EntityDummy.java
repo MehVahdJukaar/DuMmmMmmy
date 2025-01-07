@@ -1,9 +1,10 @@
 package testdummy2.entity;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -26,15 +27,17 @@ import testdummy2.network.SyncEquipmentMessage;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class EntityDummy extends EntityMob implements IEntityAdditionalSpawnData {
+public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnData {
     public float shake;
     public float shakeAnimation;
-    private float lastDamage;
+
     private int lastDamageTick;
     private int firstDamageTick;
+
     private int damageCounter;
     private float damageTaken;
     private float maxDamage;
+
     private EntityFloatingNumber myLittleNumber;
     private float customRotation;
     private EntityPlayer lastAttacker;
@@ -165,19 +168,26 @@ public class EntityDummy extends EntityMob implements IEntityAdditionalSpawnData
         }
 
         //Don't count fire or other side dmgs (potions) that happened since last hit
-        this.setHealth(defaultHealth);
+        this.setHealth(this.getMaxHealth());
 
         //Vanilla dmg calc
         if(ConfigHandler.server.useIframes) {
-            if (this.hurtResistantTime > this.maxHurtResistantTime / 2.0F) {
-                if (damage <= this.lastDamage) return false;
-                damage -= this.lastDamage;
-                this.lastDamage = damage;
+            if ((float) this.hurtResistantTime > (float) this.maxHurtResistantTime / 2.0F) {
+                if (damage <= this.lastDamage)
+                    return false;
+                //Intended behavior:
+                //1. Use for further damage calc only the part that is more than last dmg (difference currDmg-lastDmg)
+                //2. Set lastDamage to the full damage, not just the currently used difference
+                //Intention by MC is probably that a third even stronger attack during iframes will only deal the difference to the second attack, not the first one.
+                float fullDamage = damage;          //0. save full damage in tmp variable
+                damage = damage - this.lastDamage;  //1. only the difference to last highest attack is being used for further calculations
+                this.lastDamage = fullDamage;       //2. save full damage of the attack in lastDamage
             } else {
                 this.lastDamage = damage;
                 this.hurtResistantTime = this.maxHurtResistantTime;
             }
         }
+
         if(ConfigHandler.server.useLivingHurtEvent) {
             damage = ForgeHooks.onLivingHurt(this, source, damage);
             if (damage <= 0)
@@ -195,7 +205,7 @@ public class EntityDummy extends EntityMob implements IEntityAdditionalSpawnData
             float healthLost = this.getMaxHealth() - this.getHealth();
             damage += healthLost;
         }
-        this.setHealth(defaultHealth);
+        this.setHealth(this.getMaxHealth());
 
         this.shake = Math.min(damage, 30.0F);
         this.lastDamageTick = this.ticksExisted;
@@ -275,6 +285,12 @@ public class EntityDummy extends EntityMob implements IEntityAdditionalSpawnData
 
     protected boolean isMovementBlocked() {
         return true;
+    }
+
+    @Override
+    public void move(MoverType type, double x, double y, double z) {
+        motionX = motionY = motionZ = 0F;
+        //cancel movement fully
     }
 
     protected boolean canDespawn() {
