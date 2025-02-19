@@ -40,8 +40,6 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation fg.deobf("curse.maven:fermiumbooter-${fermiumbooter_version}")
 }
 
 processResources {
