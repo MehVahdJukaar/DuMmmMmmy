@@ -25,10 +25,10 @@ import testdummy2.proxy.CommonProxy;
 
 import java.text.DecimalFormat;
 
-@Mod(modid = TestDummy2.MODID, version = TestDummy2.VERSION, name = TestDummy2.NAME, dependencies = "required-after:fermiumbooter")
+@Mod(modid = TestDummy2.MODID, version = TestDummy2.VERSION, name = TestDummy2.NAME)
 public class TestDummy2 {
     public static final String MODID = "testdummy2";
-    public static final String VERSION = "2.0.1";
+    public static final String VERSION = "2.0.2";
     public static final String NAME = "TestDummy2";
     public static final Logger log = LogManager.getLogger();
     public static final DecimalFormat df = new DecimalFormat("#.##");
