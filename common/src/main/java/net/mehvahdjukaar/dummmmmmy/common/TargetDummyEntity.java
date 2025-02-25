@@ -5,6 +5,7 @@ import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
+import net.mehvahdjukaar.dummmmmmy.network.NetworkHandler;
 import net.mehvahdjukaar.moonlight.api.platform.ForgeHelper;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.network.NetworkHelper;
@@ -22,7 +23,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.InteractionHand;
@@ -30,8 +30,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.CombatEntry;
 import net.minecraft.world.damagesource.CombatTracker;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -54,7 +52,7 @@ import java.util.function.Predicate;
 public class TargetDummyEntity extends Mob {
 
     private static final int SHIELD_COOLDOWN = 100;
-    private static final int HEALTH_RECHARGE_TIME = 200;
+    private static final int HEALTH_RECHARGE_TIME = 160;
 
     private static final EntityDataAccessor<Boolean> SHEARED = SynchedEntityData.defineId(TargetDummyEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> BOSS = SynchedEntityData.defineId(TargetDummyEntity.class, EntityDataSerializers.BOOLEAN);
@@ -417,6 +415,12 @@ public class TargetDummyEntity extends Mob {
             if (player.isShiftKeyDown() && player.getMainHandItem().isEmpty() && !this.unbreakable && player.getAbilities().mayBuild) {
                 dismantle(!player.isCreative());
                 return false;
+            }
+        }
+        //pets
+        if (source.getEntity() instanceof TamableAnimal animal && animal.isTame()) {
+            if (animal.getOwner() instanceof ServerPlayer player) {
+                playersTracker.track(player);
             }
         }
 

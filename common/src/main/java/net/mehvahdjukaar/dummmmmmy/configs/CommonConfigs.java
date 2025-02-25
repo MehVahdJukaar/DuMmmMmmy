@@ -56,6 +56,7 @@ public class CommonConfigs {
 
         DAMAGE_EQUIPMENT = builder.comment("Enable this to prevent your equipment from getting damaged when attacking the dummy")
                 .define("disable_equipment_damage", true);
+
         DECOY = builder.comment("Makes monsters target a dummy that is wearing a player head")
                 .define("dummy_decoy", false);
 

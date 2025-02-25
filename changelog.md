@@ -1,1 +1,3 @@
-- changed how goals are added to entities on fabric since fabric spawn event is no good
+- removed unused configs
+- fixed pets not counting as player attack source
+- renaming a dummy with a number will give the dummy that max health
