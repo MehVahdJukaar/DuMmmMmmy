@@ -6,6 +6,7 @@ import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ModMessages;
 import net.mehvahdjukaar.moonlight.api.misc.DynamicHolder;
+import net.mehvahdjukaar.moonlight.api.misc.HolderReference;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
 import net.minecraft.advancements.critereon.EntityPredicate;
@@ -129,10 +130,10 @@ public class Dummmmmmy {
     public static final TagKey<DamageType> IS_COLD = TagKey.create(Registries.DAMAGE_TYPE, res("is_cold"));
 
 
-    public static final DynamicHolder<DamageType> TRUE_DAMAGE =
-            DynamicHolder.of(res("true"), Registries.DAMAGE_TYPE);
-    public static final DynamicHolder<DamageType> CRITICAL_DAMAGE =
-            DynamicHolder.of(res("critical"), Registries.DAMAGE_TYPE);
+    public static final HolderReference<DamageType> TRUE_DAMAGE =
+            HolderReference.of(res("true"), Registries.DAMAGE_TYPE);
+    public static final HolderReference<DamageType> CRITICAL_DAMAGE =
+            HolderReference.of(res("critical"), Registries.DAMAGE_TYPE);
 
 
     static {

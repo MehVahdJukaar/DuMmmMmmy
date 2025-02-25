@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -37,12 +38,12 @@ public record ClientBoundDamageNumberMessage
         return new ClientBoundDamageNumberMessage(entityID, damageAmount, damageType, isCrit, critMult);
     }
 
-    public ClientBoundDamageNumberMessage(int id, float damage, @Nullable DamageSource source, @Nullable CritRecord critical) {
-        this(id, damage, encodeDamage(source), critical != null, critical == null ? 0 : critical.getMultiplier());
+    public ClientBoundDamageNumberMessage(int id, float damage, @Nullable DamageSource source, @Nullable CritRecord critical, Level level) {
+        this(id, damage, encodeDamage(source, level), critical != null, critical == null ? 0 : critical.getMultiplier());
     }
 
-    public static Holder<DamageType> encodeDamage(@Nullable DamageSource source) {
-        if (source == null) return Dummmmmmy.TRUE_DAMAGE;
+    public static Holder<DamageType> encodeDamage(@Nullable DamageSource source, Level level) {
+        if (source == null) return Dummmmmmy.TRUE_DAMAGE.getHolder(level);
         //if (critical) return Dummmmmmy.CRITICAL_DAMAGE;
         var damageType = source.typeHolder();
         return Preconditions.checkNotNull(damageType);
@@ -110,7 +111,7 @@ public record ClientBoundDamageNumberMessage
         float mult = 0;
         CritMode critMode = ClientConfigs.CRIT_MODE.get();
         if (critMode != CritMode.OFF && isCrit) {
-            type = Dummmmmmy.CRITICAL_DAMAGE;
+            type = Dummmmmmy.CRITICAL_DAMAGE.getHolder(entity);
             if (critMode == CritMode.COLOR_AND_MULTIPLIER) {
                 mult = critMult;
             }

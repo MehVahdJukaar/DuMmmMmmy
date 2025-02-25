@@ -4,6 +4,7 @@ package net.mehvahdjukaar.dummmmmmy.common;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -54,7 +55,7 @@ public class TargetDummyItem extends Item {
                         consumer.accept(dummy);
 
                         //set custom health
-                        if (itemstack.hasCustomHoverName()) {
+                        if (itemstack.has(DataComponents.CUSTOM_NAME)) {
                             String name = itemstack.getHoverName().getString();
                             try {
                                 int i = Integer.parseInt(name);
