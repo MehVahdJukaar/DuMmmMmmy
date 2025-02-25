@@ -24,7 +24,6 @@ public class CommonConfigs {
     public static final Supplier<Boolean> DAMAGE_EQUIPMENT;
     public static final Supplier<Boolean> DECOY;
     public static final Supplier<DpsMode> DYNAMIC_DPS;
-    public static final Supplier<Integer> MAX_COMBAT_INTERVAL;
     public static final Supplier<Mode> DAMAGE_NUMBERS_MODE;
     public static final Supplier<Mode> HEALING_NUMBERS_MODE;
     public static final Supplier<Double> DROP_XP;
@@ -58,8 +57,6 @@ public class CommonConfigs {
         DAMAGE_EQUIPMENT = builder.comment("Enable this to prevent your equipment from getting damaged when attacking the dummy")
                 .define("disable_equipment_damage", true);
 
-        MAX_COMBAT_INTERVAL = builder.comment("Time in ticks that it takes for a dummy to be considered out of combat after having recieved damage")
-                .define("maximum_out_of_combat_interval", 6 * 20, 20, 1000);
         DECOY = builder.comment("Makes monsters target a dummy that is wearing a player head")
                 .define("dummy_decoy", false);
 

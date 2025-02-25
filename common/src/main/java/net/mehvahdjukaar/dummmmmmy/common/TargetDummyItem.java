@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -52,6 +52,18 @@ public class TargetDummyItem extends Item {
                         dummy.setYHeadRot(rotation);
 
                         consumer.accept(dummy);
+
+                        //set custom health
+                        if (itemstack.hasCustomHoverName()) {
+                            String name = itemstack.getHoverName().getString();
+                            try {
+                                int i = Integer.parseInt(name);
+                                if (i > 0 && i < 10000) {
+                                    dummy.getAttribute(Attributes.MAX_HEALTH).setBaseValue(i);
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        }
 
                         level.addFreshEntity(dummy);
 
