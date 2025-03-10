@@ -169,7 +169,9 @@ allprojects {
         maven {
             url = "https://maven.blamejared.com/"
         }
-
+        maven {
+            url = "https://maven.createmod.net/"
+        }
     }
 
     tasks.withType(JavaCompile) {
