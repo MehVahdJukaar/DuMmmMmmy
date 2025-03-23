@@ -1,4 +1,4 @@
-package testdummy2.entity;
+package testdummy.entity;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLiving;
@@ -19,10 +19,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import testdummy2.TestDummy2;
-import testdummy2.handlers.ConfigHandler;
-import testdummy2.network.DamageMessage;
-import testdummy2.network.SyncEquipmentMessage;
+import testdummy.TestDummy;
+import testdummy.handlers.ConfigHandler;
+import testdummy.network.DamageMessage;
+import testdummy.network.SyncEquipmentMessage;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -110,7 +110,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
                     armor = itemStack.copy();
                     armor.setCount(1);
                     if (!this.world.isRemote) {
-                        TestDummy2.proxy.network.sendToAllAround(new SyncEquipmentMessage(getEntityId(), slot.ordinal(), armor), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
+                        TestDummy.proxy.network.sendToAllAround(new SyncEquipmentMessage(getEntityId(), slot.ordinal(), armor), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
                     }
                     setItemStackToSlot(slot, armor);
                     getAttributeMap().applyAttributeModifiers(armor.getAttributeModifiers(slot));
@@ -134,7 +134,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
                         if (!player.capabilities.isCreativeMode) {
                             entityDropItem(armor, 1.0F);
                         }
-                        TestDummy2.proxy.network.sendToAllAround(new SyncEquipmentMessage(getEntityId(), slot.ordinal(), ItemStack.EMPTY), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
+                        TestDummy.proxy.network.sendToAllAround(new SyncEquipmentMessage(getEntityId(), slot.ordinal(), ItemStack.EMPTY), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
                     }
                     setItemStackToSlot(slot, ItemStack.EMPTY);
                     getAttributeMap().removeAttributeModifiers(armor.getAttributeModifiers(slot));
@@ -148,7 +148,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
     public void dismantle() {
         if (!this.world.isRemote) {
             dropEquipment(true, 999);
-            dropItem(TestDummy2.itemDummy, 1);
+            dropItem(TestDummy.itemDummy, 1);
         }
         setDead();
     }
@@ -222,7 +222,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
         EntityFloatingNumber number = new EntityFloatingNumber(this.world, damage, this.posX, this.posY + 2.0D, this.posZ);
         this.myLittleNumber = number;
         this.world.spawnEntity(number);
-        TestDummy2.proxy.network.sendToAllAround(new DamageMessage(damage, this.shake, this, this.myLittleNumber), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
+        TestDummy.proxy.network.sendToAllAround(new DamageMessage(damage, this.shake, this, this.myLittleNumber), new NetworkRegistry.TargetPoint(this.dimension, this.posX, this.posY, this.posZ, 20.0D));
         this.maxDamage = Math.max(damage,this.maxDamage);
         this.damageTaken += damage;
         this.damageCounter++;
@@ -275,10 +275,10 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
         this.world.spawnEntity(new EntityDpsFloatingNumber(this.world, outputValue, this.posX, this.posY + 3.0D, this.posZ));
 
         if(ConfigHandler.server.sendMsgInChat) {
-            String msg = "DPS " + TextFormatting.GRAY + TestDummy2.df.format(dps) + TextFormatting.WHITE +
-                    ", HPS " + TextFormatting.GRAY + TestDummy2.df.format(hps) + TextFormatting.WHITE +
-                    ", AVG " + TextFormatting.GRAY + TestDummy2.df.format(avg) + TextFormatting.WHITE +
-                    ",MAX " + TextFormatting.GRAY + TestDummy2.df.format(this.maxDamage);
+            String msg = "DPS " + TextFormatting.GRAY + TestDummy.df.format(dps) + TextFormatting.WHITE +
+                    ", HPS " + TextFormatting.GRAY + TestDummy.df.format(hps) + TextFormatting.WHITE +
+                    ", AVG " + TextFormatting.GRAY + TestDummy.df.format(avg) + TextFormatting.WHITE +
+                    ",MAX " + TextFormatting.GRAY + TestDummy.df.format(this.maxDamage);
             this.lastAttacker.sendMessage(new TextComponentString(msg));
         }
     }

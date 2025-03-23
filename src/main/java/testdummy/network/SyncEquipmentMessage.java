@@ -1,4 +1,4 @@
-package testdummy2.network;
+package testdummy.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import testdummy2.entity.EntityDummy;
+import testdummy.entity.EntityDummy;
 
 import javax.annotation.Nonnull;
 

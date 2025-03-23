@@ -1,7 +1,7 @@
 [
   {
-    "modid": "testdummy2",
-    "name": "TestDummy2",
+    "modid": "testdummy",
+    "name": "TestDummy",
     "description": "Provides a test dummy that can be placed in the world. Punch it, kick it, slice it, push it, pop it, twist it,....",
     "version": "2.0.0",
     "mcversion": "1.12.2",
@@ -12,7 +12,7 @@
       "nischhelm"
     ],
     "credits": "This is a fork of MmmMmmMmmMmm by boni. Original Credits: pillbox and XCompwiz for the idea. Also TTFTCUTS.",
-    "logoFile": "assets/testdummy2/logo.png",
+    "logoFile": "assets/testdummy/logo.png",
     "screenshots": [],
     "dependencies": []
   }

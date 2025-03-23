@@ -1,4 +1,4 @@
-package testdummy2.item;
+package testdummy.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,7 +9,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import testdummy2.entity.EntityDummy;
+import testdummy.entity.EntityDummy;
 
 public class ItemDummy extends Item {
     public ItemDummy() {

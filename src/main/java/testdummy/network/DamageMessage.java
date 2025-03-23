@@ -1,4 +1,4 @@
-package testdummy2.network;
+package testdummy.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -7,11 +7,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import testdummy2.TestDummy2;
-import testdummy2.entity.EntityDummy;
-import testdummy2.entity.EntityFloatingNumber;
-
-import java.text.DecimalFormat;
+import testdummy.TestDummy;
+import testdummy.entity.EntityDummy;
+import testdummy.entity.EntityFloatingNumber;
 
 public class DamageMessage implements IMessage {
     public float damage;
@@ -52,7 +50,7 @@ public class DamageMessage implements IMessage {
                     if (entity instanceof EntityDummy) {
                         EntityDummy dummy = (EntityDummy) entity;
                         dummy.shake = message.shakeAmount;
-                        dummy.setCustomNameTag(String.valueOf(TestDummy2.df.format(message.damage)));
+                        dummy.setCustomNameTag(String.valueOf(TestDummy.df.format(message.damage)));
                     }
                     if (message.nrID > 0) {
                         entity = (Minecraft.getMinecraft()).world.getEntityByID(message.nrID);

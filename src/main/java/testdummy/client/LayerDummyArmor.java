@@ -1,4 +1,4 @@
-package testdummy2.client;
+package testdummy.client;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.entity.RenderLivingBase;

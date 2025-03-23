@@ -1,4 +1,4 @@
-package testdummy2.entity;
+package testdummy.entity;
 
 import net.minecraft.world.World;
 
