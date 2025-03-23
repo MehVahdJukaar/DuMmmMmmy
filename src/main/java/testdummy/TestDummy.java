@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.apache.logging.log4j.LogManager;
@@ -32,7 +33,6 @@ public class TestDummy {
     public static final String NAME = "TestDummy";
     public static final Logger log = LogManager.getLogger();
     public static final DecimalFormat df = new DecimalFormat("#.##");
-
 
     @SidedProxy(clientSide = "testdummy.proxy.ClientProxy", serverSide = "testdummy.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -71,5 +71,23 @@ public class TestDummy {
                 'H', Items.WHEAT,
                 'W', new ItemStack(Blocks.WOOL, 0, 32767),
                 'P', "plankWood");
+    }
+
+    @SubscribeEvent
+    public void onMissingEntityMappings(RegistryEvent.MissingMappings<EntityEntry> event) {
+        for (RegistryEvent.MissingMappings.Mapping<EntityEntry> mapping : event.getAllMappings())
+            if (mapping.key.getNamespace().equals("testdummy2"))
+                switch (mapping.key.getPath()) {
+                    case "dummy": mapping.remap(EntityRegistry.getEntry(EntityDummy.class)); break;
+                    case "floating_number": mapping.remap(EntityRegistry.getEntry(EntityFloatingNumber.class)); break;
+                    case "floating_number_dps": mapping.remap(EntityRegistry.getEntry(EntityDpsFloatingNumber.class)); break;
+                }
+    }
+
+    @SubscribeEvent
+    public void onMissingItemMappings(RegistryEvent.MissingMappings<Item> event) {
+        for (RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getAllMappings())
+            if (mapping.key.getNamespace().equals("testdummy2") && mapping.key.getPath().equals("dummy"))
+                mapping.remap(TestDummy.itemDummy);
     }
 }
