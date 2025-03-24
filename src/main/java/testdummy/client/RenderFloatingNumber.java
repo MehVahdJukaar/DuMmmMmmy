@@ -1,4 +1,4 @@
-package testdummy2.client;
+package testdummy.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -7,12 +7,10 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import testdummy2.TestDummy2;
-import testdummy2.entity.EntityDpsFloatingNumber;
-import testdummy2.entity.EntityFloatingNumber;
-import testdummy2.handlers.ConfigHandler;
-
-import java.text.DecimalFormat;
+import testdummy.TestDummy;
+import testdummy.entity.EntityDpsFloatingNumber;
+import testdummy.entity.EntityFloatingNumber;
+import testdummy.handlers.ConfigHandler;
 
 public class RenderFloatingNumber extends Render<EntityFloatingNumber> {
     private static final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
@@ -41,7 +39,7 @@ public class RenderFloatingNumber extends Render<EntityFloatingNumber> {
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GL11.glRotatef(this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        String s = TestDummy2.df.format((entity.damage));
+        String s = TestDummy.df.format((entity.damage));
         if (dps) {
             s = ConfigHandler.server.outputMessage+": " + s;
         }

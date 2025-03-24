@@ -1,13 +1,13 @@
-package testdummy2.handlers;
+package testdummy.handlers;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import testdummy2.TestDummy2;
+import testdummy.TestDummy;
 
-@Config(modid = TestDummy2.MODID)
+@Config(modid = TestDummy.MODID)
 public class ConfigHandler {
 
     @Config.Comment("Server-Side Options")
@@ -58,13 +58,13 @@ public class ConfigHandler {
 
     }
 
-    @Mod.EventBusSubscriber(modid = TestDummy2.MODID)
+    @Mod.EventBusSubscriber(modid = TestDummy.MODID)
     private static class EventHandler {
 
         @SubscribeEvent
         public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-            if (event.getModID().equals(TestDummy2.MODID)) {
-                ConfigManager.sync(TestDummy2.MODID, Config.Type.INSTANCE);
+            if (event.getModID().equals(TestDummy.MODID)) {
+                ConfigManager.sync(TestDummy.MODID, Config.Type.INSTANCE);
             }
         }
     }

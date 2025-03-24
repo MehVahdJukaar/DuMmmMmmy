@@ -1,11 +1,11 @@
-package testdummy2.client;
+package testdummy.client;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
-import testdummy2.entity.EntityDummy;
+import testdummy.entity.EntityDummy;
 
 public class ModelDummy extends ModelBiped {
     public ModelRenderer standPlate;

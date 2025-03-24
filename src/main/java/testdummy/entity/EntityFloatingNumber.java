@@ -1,4 +1,4 @@
-package testdummy2.entity;
+package testdummy.entity;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
