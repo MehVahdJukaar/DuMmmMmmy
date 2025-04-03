@@ -1,0 +1,9 @@
+{
+  "item.dummmmmmy.target_dummy": "试验假人",
+  "entity.dummmmmmy.target_dummy": "试验假人",
+  "message.dummmmmmy.dps": "%1$s 每秒伤害量",
+  "message.dummmmmmy.hps": "%1$s 每秒治疗量",
+  "message.dummmmmmy.single": "%1$s：%2$s",
+  "message.dummmmmmy.double": "%1$s：%2$s，%3$s",
+  "message.dummmmmmy.crit": "%d（%dx）"
+}
