@@ -29,7 +29,7 @@ import java.text.DecimalFormat;
 @Mod(modid = TestDummy.MODID, version = TestDummy.VERSION, name = TestDummy.NAME)
 public class TestDummy {
     public static final String MODID = "testdummy";
-    public static final String VERSION = "2.0.4";
+    public static final String VERSION = "2.0.5";
     public static final String NAME = "TestDummy";
     public static final Logger log = LogManager.getLogger();
     public static final DecimalFormat df = new DecimalFormat("#.##");
