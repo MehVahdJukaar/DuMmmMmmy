@@ -155,6 +155,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
 
     public boolean attackEntityFrom(DamageSource source, float damage) {
         if (this.world.isRemote) return false;
+        if (!ForgeHooks.onLivingAttack(this, source, damage)) return false;
         if (this.isEntityInvulnerable(source)) return false;
 
         if(source.getTrueSource()==null) return false;
