@@ -1,3 +1,1 @@
-- removed unused configs
-- fixed pets not counting as player attack source
-- renaming a dummy with a number will give the dummy that max health
+improved shield logic

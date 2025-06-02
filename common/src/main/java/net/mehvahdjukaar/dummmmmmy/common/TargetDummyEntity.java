@@ -2,6 +2,7 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
+import net.mehvahdjukaar.dummmmmmy.DummyPlatStuff;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
@@ -359,7 +360,7 @@ public class TargetDummyEntity extends Mob {
     protected void blockUsingShield(LivingEntity attacker) {
         super.blockUsingShield(attacker);
         // same as player
-        if (attacker.canDisableShield()) {
+        if (DummyPlatStuff.canDisableShield(attacker,this.useItem, this)) {
             this.disableShield();
         } else {
             this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level().random.nextFloat() * 0.4F);
