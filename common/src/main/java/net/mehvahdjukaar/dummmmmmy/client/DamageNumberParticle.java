@@ -67,7 +67,7 @@ public class DamageNumberParticle extends Particle {
                     Dummmmmmy.DF1.format(number), Dummmmmmy.DF1.format(critMult));
         }
 
-        this.xd = POSITIONS.get((index % POSITIONS.size()));
+        this.xd = POSITIONS.get(Math.floorMod(index, POSITIONS.size()));
     }
 
     @Override
