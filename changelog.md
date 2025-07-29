@@ -1,1 +1,1 @@
-improved shield logic
+fixed particles spawned with command and unusual velocities
