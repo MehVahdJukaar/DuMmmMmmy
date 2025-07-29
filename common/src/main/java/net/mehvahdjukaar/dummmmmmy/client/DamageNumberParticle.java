@@ -67,7 +67,7 @@ public class DamageNumberParticle extends Particle {
             this.text = Component.translatable("message.dummmmmmy.crit", DF1.format(number), DF1.format(critMult));
         }
 
-        this.xd = POSITIONS.get((index % POSITIONS.size()));
+        this.xd = POSITIONS.get(Math.floorMod(index, POSITIONS.size()));
     }
 
     @Override
