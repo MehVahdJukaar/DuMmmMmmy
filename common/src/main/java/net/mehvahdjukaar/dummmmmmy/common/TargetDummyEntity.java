@@ -3,6 +3,7 @@ package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummyPlatStuff;
+import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
@@ -849,7 +850,7 @@ public class TargetDummyEntity extends Mob {
         }
 
         public void track(ServerPlayer serverPlayer) {
-            currentlyAttacking.put(serverPlayer, 300); //needs to match combat tracker. This works the same but per player instead of per receiving entity
+            currentlyAttacking.put(serverPlayer, ClientConfigs.COMBAT_DURATION.get()); //needs to match combat tracker. This works the same but per player instead of per receiving entity
             healthBar.addPlayer(serverPlayer);
         }
 

@@ -1,1 +1,1 @@
-improved shield logic
+- fixed a crash on forge

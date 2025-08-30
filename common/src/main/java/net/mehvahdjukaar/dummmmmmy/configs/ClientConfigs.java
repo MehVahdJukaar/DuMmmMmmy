@@ -39,6 +39,7 @@ public class ClientConfigs {
     public static final Supplier<Boolean> LIT_UP_PARTICLES;
     public static final Supplier<CritMode> CRIT_MODE;
     public static final Supplier<Boolean> HAY_PARTICLES;
+    public static final Supplier<Integer> COMBAT_DURATION;
 
     public static final Supplier<Map<IdOrTagPredicate, Integer>> DAMAGE_TO_COLORS;
 
@@ -80,7 +81,8 @@ public class ClientConfigs {
         HAY_PARTICLES = builder.comment("Show hay particles when dealing damage")
                 .define("hay_particles", true);
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
-
+        COMBAT_DURATION = builder.comment("Ticks after being hit that the dummy stays in combat and will keep reporting incoming damage.This ideally should be kept at 300 to match the game CombatTracker")
+                .define("combat_duration", 300, 20, 100000); //keep at 300 to match  CT
 
         Map<IdOrTagPredicate, Integer> map = new HashMap<>();
         map.put(new IdPredicate(TRUE_DAMAGE), COLOR_TRUE);

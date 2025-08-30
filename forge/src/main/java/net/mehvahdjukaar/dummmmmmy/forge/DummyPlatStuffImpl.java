@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.dummmmmmy.neoforge;
+package net.mehvahdjukaar.dummmmmmy.forge;
 
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.minecraft.world.entity.LivingEntity;
