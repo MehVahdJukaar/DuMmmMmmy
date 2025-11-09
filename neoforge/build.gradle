@@ -104,5 +104,5 @@ dependencies {
     implementation("curse.maven:citadel-331936:4786380")
     implementation("curse.maven:alexs-mobs-426558:5698791")
 
-
+    modCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}-neoforge")
 }

@@ -14,6 +14,7 @@ dependencies {
 
     modImplementation ("net.mehvahdjukaar:moonlight:${moonlight_version}")
 
+    modCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}-fabric")
 }
 
 publishing {
