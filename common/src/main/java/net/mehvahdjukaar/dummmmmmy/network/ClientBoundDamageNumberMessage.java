@@ -112,9 +112,7 @@ public record ClientBoundDamageNumberMessage
         CritMode critMode = ClientConfigs.CRIT_MODE.get();
         if (critMode != CritMode.OFF && isCrit) {
             type = Dummmmmmy.CRITICAL_DAMAGE.getHolder(entity);
-            if (critMode == CritMode.COLOR_AND_MULTIPLIER) {
-                mult = critMult;
-            }
+            mult = critMult;
         }
         double z = CritMode.encodeIntFloatToDouble(animationPos, mult);
         int color = ClientConfigs.getDamageColor(type);
