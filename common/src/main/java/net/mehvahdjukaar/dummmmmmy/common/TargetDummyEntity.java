@@ -3,6 +3,7 @@ package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.DummyPlatStuff;
+import net.mehvahdjukaar.dummmmmmy.compat.CritCompat;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
@@ -557,6 +558,10 @@ public class TargetDummyEntity extends Mob {
                     critRec = c;
                     break;
                 }
+            }
+            var critMultiplier = CritCompat.getCritMultiplier(source);
+            if (critMultiplier > 0) {
+                critRec = new CritRecord(source.getEntity(), critMultiplier);
             }
 
             for (var p : this.playersTracker.getPlayers()) {
