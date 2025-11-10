@@ -6,7 +6,6 @@ import net.mehvahdjukaar.dummmmmmy.compat.CritCompat;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ModMessages;
-import net.mehvahdjukaar.moonlight.api.misc.DynamicHolder;
 import net.mehvahdjukaar.moonlight.api.misc.HolderReference;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
@@ -44,6 +43,8 @@ public class Dummmmmmy {
 
     public static final String MOD_ID = "dummmmmmy";
     public static final Logger LOGGER = LogManager.getLogger();
+
+    public static final boolean CRIT_MOD = PlatHelper.isModLoaded("criticalhit");
 
     public static ResourceLocation res(String name) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);

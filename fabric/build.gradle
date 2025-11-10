@@ -19,24 +19,6 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
-dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
-    modImplementation("net.mehvahdjukaar:moonlight-fabric:${moonlight_version}")
-
-    modCompileOnly "com.terraformersmc:modmenu:4.0.6", {
-        exclude module: "fabric-api"
-    }
-
-    modCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}-fabric")
-}
-
-
-
 processResources {
     filesMatching("fabric.mod.json") {
         expand rootProject.ext.replaceProperties + [project: project]
@@ -51,10 +33,13 @@ shadowJar {
 }
 
 remapJar {
+    exclude '**/example/**'
+
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveClassifier = "fabric"
+    archiveClassifier = null
+    archiveClassifier = 'fabric'
 }
 
 jar {
@@ -65,6 +50,12 @@ sourcesJar {
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
+
+    archiveClassifier = "fabric-sources"
+}
+
+remapSourcesJar{
+    archiveClassifier = "fabric-sources"
 }
 
 components.java {
@@ -76,19 +67,24 @@ components.java {
 publishing {
     publications {
         mavenFabric(MavenPublication) {
-            artifactId = mod_id + "-" + project.name
+            artifactId = rootProject.mod_id + "-" + project.name
             from components.java
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        maven {
-            url = "https://www.cursemaven.com"
-            allowInsecureProtocol = true
-        }
-    }
 }
-repositories {
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+    modImplementation("net.mehvahdjukaar:moonlight-fabric:${moonlight_version}")
+
+    modCompileOnly "com.terraformersmc:modmenu:4.0.6", {
+        exclude module: "fabric-api"
+    }
+
+    modCompileOnly("maven.modrinth:critical-strike:${project.critical_strike_version}-fabric")
 }

@@ -366,7 +366,7 @@ public class TargetDummyEntity extends Mob {
     protected void blockUsingShield(LivingEntity attacker) {
         super.blockUsingShield(attacker);
         // same as player
-        if (DummyPlatStuff.canDisableShield(attacker,this.useItem, this)) {
+        if (DummyPlatStuff.canDisableShield(attacker, this.useItem, this)) {
             this.disableShield();
         } else {
             this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level().random.nextFloat() * 0.4F);
@@ -552,16 +552,20 @@ public class TargetDummyEntity extends Mob {
         }
         if (playersTracker.hasPlayers()) {
             CritRecord critRec = null;
-            for (int j = critRecordsThisTick.size() - 1; j >= 0; j--) {
-                var c = critRecordsThisTick.get(j);
-                if (c.matches(source)) {
-                    critRec = c;
-                    break;
+            if (source != null) {
+                for (int j = critRecordsThisTick.size() - 1; j >= 0; j--) {
+                    CritRecord crit = critRecordsThisTick.get(j);
+                    if (crit.matches(source)) {
+                        critRec = crit;
+                        break;
+                    }
                 }
-            }
-            var critMultiplier = CritCompat.getCritMultiplier(source);
-            if (critMultiplier > 0) {
-                critRec = new CritRecord(source.getEntity(), critMultiplier);
+                if (Dummmmmmy.CRIT_MOD) {
+                    float critMultiplier = CritCompat.getCritMultiplier(source);
+                    if (critMultiplier > 0) {
+                        critRec = new CritRecord(source.getEntity(), critMultiplier);
+                    }
+                }
             }
 
             for (var p : this.playersTracker.getPlayers()) {
