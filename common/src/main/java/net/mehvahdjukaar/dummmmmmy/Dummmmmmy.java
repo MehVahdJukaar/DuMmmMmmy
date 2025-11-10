@@ -66,8 +66,6 @@ public class Dummmmmmy {
 
         //TODO: damage numbers for other entities
         // TODO: fix max 100 damage??
-        // add straw particles
-        // make so when you kil the dummy it has a death animation and them respawns after a bit. Optional in configs
     }
 
 
