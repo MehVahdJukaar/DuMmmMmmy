@@ -1,1 +1,1 @@
-fixed particles spawned with command and unusual velocities
+added critical strike mod compat. thanks to Daedelus
