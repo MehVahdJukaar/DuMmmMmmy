@@ -210,6 +210,13 @@ public class TargetDummyEntity extends Mob {
 
                 }
             }
+            else if (item instanceof BannerItem) {
+                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
+                if (level.isClientSide) return InteractionResult.CONSUME;
+                this.swapItem(player, EquipmentSlot.OFFHAND, itemstack, hand);
+                this.setBoss(true);
+                return InteractionResult.SUCCESS;
+            }
             // armor item in hand -> equip/swap
             else if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                 if (level.isClientSide) return InteractionResult.CONSUME;
@@ -231,12 +238,6 @@ public class TargetDummyEntity extends Mob {
                     this.setSheared(true);
                     return InteractionResult.SUCCESS;
                 }
-            } else if (item instanceof BannerItem) {
-                this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
-                if (level.isClientSide) return InteractionResult.CONSUME;
-                this.swapItem(player, EquipmentSlot.OFFHAND, itemstack, hand);
-                this.setBoss(true);
-                return InteractionResult.SUCCESS;
             }
 
             if (success) return InteractionResult.SUCCESS;
