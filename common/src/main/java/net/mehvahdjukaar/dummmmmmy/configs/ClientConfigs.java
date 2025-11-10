@@ -36,6 +36,7 @@ public class ClientConfigs {
     public static final Supplier<Boolean> DAMAGE_NUMBERS;
     public static final Supplier<Boolean> LIT_UP_PARTICLES;
     public static final Supplier<CritMode> CRIT_MODE;
+    public static final Supplier<Boolean> CRIT_BOLD;
     public static final Supplier<Boolean> HAY_PARTICLES;
 
     public static final Supplier<Map<IdOrTagPredicate, Integer>> DAMAGE_TO_COLORS;
@@ -73,8 +74,10 @@ public class ClientConfigs {
                 .define("damage_numbers", true);
         LIT_UP_PARTICLES = builder.comment("Display particles fullbright")
                 .define("full_bright_damage_numbers", true);
-        CRIT_MODE = PlatHelper.getPlatform().isForge() ? builder.comment("How crits should be shown")
-                .define("crit_mode", CritMode.COLOR_AND_MULTIPLIER) : () -> CritMode.OFF;
+        CRIT_MODE = builder.comment("How crits should be shown")
+                .define("crit_mode", CritMode.COLOR_AND_MULTIPLIER);
+        CRIT_BOLD = builder.comment("Make critical hit damage numbers bold")
+                .define("crit_bold", false);
         HAY_PARTICLES = builder.comment("Show hay particles when dealing damage")
                 .define("hay_particles", true);
         SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);

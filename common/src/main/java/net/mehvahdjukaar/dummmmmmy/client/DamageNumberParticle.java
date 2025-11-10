@@ -17,6 +17,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -55,7 +56,7 @@ public class DamageNumberParticle extends Particle {
         this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
         double number = Math.abs(ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount);
-
+        boolean bold = ClientConfigs.CRIT_BOLD.get();
         this.yd = 1;
 
         int index = CritMode.extractIntegerPart(dz);
@@ -63,8 +64,20 @@ public class DamageNumberParticle extends Particle {
         if (critMult == 0) {
             this.text = Component.literal((amount < 0 ? "+" : "") + Dummmmmmy.DF2.format(number));
         } else {
-            this.text = Component.translatable("message.dummmmmmy.crit",
-                    Dummmmmmy.DF1.format(number), Dummmmmmy.DF1.format(critMult));
+            switch (ClientConfigs.CRIT_MODE.get()) {
+                case COLOR -> {
+                    this.text = Component.literal((amount < 0 ? "+" : "") + Dummmmmmy.DF2.format(number))
+                            .setStyle(bold ? Style.EMPTY.withBold(bold) : Style.EMPTY);
+                }
+                case COLOR_AND_MULTIPLIER -> {
+                    this.text = Component.translatable("message.dummmmmmy.crit",
+                                    Dummmmmmy.DF1.format(number), Dummmmmmy.DF1.format(critMult))
+                            .setStyle(bold ? Style.EMPTY.withBold(bold) : Style.EMPTY);
+                }
+                default -> {
+                    this.text = Component.literal((amount < 0 ? "+" : "") + Dummmmmmy.DF2.format(number));
+                }
+            }
         }
 
         this.xd = POSITIONS.get(Math.floorMod(index, POSITIONS.size()));
