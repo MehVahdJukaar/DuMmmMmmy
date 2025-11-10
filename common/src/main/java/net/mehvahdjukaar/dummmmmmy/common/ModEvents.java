@@ -73,7 +73,7 @@ public class ModEvents {
         //this should be client sided buuut its only fired on server
         if (!target.level().isClientSide && target.getType() != Dummmmmmy.TARGET_DUMMY.get() && amount != 0) {
             CritRecord crit = null;
-            if (Dummmmmmy.CRIT_MOD) {
+            if (Dummmmmmy.CRITICAL_STRIKE) {
                 float critMultiplier = CritCompat.getCritMultiplier(source);
                 crit = critMultiplier > 0 ? new CritRecord(null, critMultiplier) : null;
             }

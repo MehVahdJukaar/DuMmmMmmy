@@ -560,7 +560,7 @@ public class TargetDummyEntity extends Mob {
                         break;
                     }
                 }
-                if (Dummmmmmy.CRIT_MOD) {
+                if (Dummmmmmy.CRITICAL_STRIKE) {
                     float critMultiplier = CritCompat.getCritMultiplier(source);
                     if (critMultiplier > 0) {
                         critRec = new CritRecord(source.getEntity(), critMultiplier);

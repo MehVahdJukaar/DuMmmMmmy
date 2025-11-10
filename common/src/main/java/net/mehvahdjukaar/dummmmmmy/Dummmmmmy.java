@@ -2,7 +2,6 @@ package net.mehvahdjukaar.dummmmmmy;
 
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
-import net.mehvahdjukaar.dummmmmmy.compat.CritCompat;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ModMessages;
@@ -44,7 +43,7 @@ public class Dummmmmmy {
     public static final String MOD_ID = "dummmmmmy";
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final boolean CRIT_MOD = PlatHelper.isModLoaded("criticalhit");
+    public static final boolean CRITICAL_STRIKE = PlatHelper.isModLoaded("critical_strike");
 
     public static ResourceLocation res(String name) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
