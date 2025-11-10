@@ -62,7 +62,6 @@ public class Dummmmmmy {
         ModMessages.init();
         CommonConfigs.init();
         PlatHelper.addCommonSetup(Dummmmmmy::setup);
-        CritCompat.init();
 
         RegHelper.addAttributeRegistration(Dummmmmmy::registerEntityAttributes);
         RegHelper.addItemsToTabsRegistration(Dummmmmmy::registerItemsToTab);
@@ -106,12 +105,10 @@ public class Dummmmmmy {
 
     public static final String TARGET_DUMMY_NAME = "target_dummy";
     public static final Supplier<EntityType<TargetDummyEntity>> TARGET_DUMMY = RegHelper.registerEntityType(
-            res(TARGET_DUMMY_NAME), () -> (
-                    EntityType.Builder.<TargetDummyEntity>of(TargetDummyEntity::new, MobCategory.MISC)
-                            .clientTrackingRange(10)
-                            .updateInterval(40)
-                            .sized(0.6f, 2f))
-                    .build(TARGET_DUMMY_NAME));
+            res(TARGET_DUMMY_NAME), EntityType.Builder.<TargetDummyEntity>of(TargetDummyEntity::new, MobCategory.MISC)
+                    .clientTrackingRange(10)
+                    .updateInterval(40)
+                    .sized(0.6f, 2f));
 
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
             res(TARGET_DUMMY_NAME), () -> new TargetDummyItem(new Item.Properties().stacksTo(16)));
