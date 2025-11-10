@@ -117,7 +117,7 @@ subprojects {
 
     if (mrToken.isPresent()) {
         modrinth {
-            projectId = mod_id
+            projectId = mr_project_id
             uploadFile = tasks.remapJar
             gameVersions = mcVersions
             if (modLoader == "forge") {
