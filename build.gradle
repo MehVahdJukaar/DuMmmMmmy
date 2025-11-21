@@ -33,11 +33,6 @@ minecraft {
     }
 }
 
-repositories {
-    flatDir { dirs 'libs' }
-    maven { url = 'https://www.cursemaven.com' }
-}
-
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 }
@@ -68,9 +63,7 @@ jar {
                 'Implementation-Title'    : mod_name,
                 'Implementation-Vendor'   : mod_author,
                 'Implementation-Version'  : mod_version,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'FMLCorePluginContainsFMLMod': 'true',
-                'ForceLoadAsMod': 'true', //Comment out in dev environment, uncomment for building
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
