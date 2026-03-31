@@ -1,6 +1,9 @@
 {
-    "item.dummmmmmy.target_dummy": "Terčový panák",
-    "entity.dummmmmmy.target_dummy": "Terčový panák",
-    "message.dummmmmmy.dps": "%1$s: %2$s poškození za sekundu",
-    "message.dummmmmmy.crit": "%d (%dx)"
-  }
+  "item.dummmmmmy.target_dummy": "Terčový panák",
+  "entity.dummmmmmy.target_dummy": "Terčový panák",
+  "message.dummmmmmy.dps": "%1$s DPS",
+  "message.dummmmmmy.hps": "%1$s HPS",
+  "message.dummmmmmy.single": "%1$s: %2$s",
+  "message.dummmmmmy.double": "%1$s: %2$s, %3$s",
+  "message.dummmmmmy.crit": "%d (%dx)"
+}
