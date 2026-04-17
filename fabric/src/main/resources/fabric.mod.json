@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "id": "dummmmmmy",
-  "version": "${version}",
-  "name": "MmmMmmMmmMmm",
-  "description": "don't hurt me pls :S",
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
-    "Mehvahdjukaar, Bonusboni, Gooigipunch, Plantkillable"
+    "${mod_authors}"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/mmmmmmmmmmmm",
-    "sources": "https://github.com/MehVahdJukaar/dummmmmmy"
+    "homepage": "${mod_homepage}",
+    "sources": "${mod_github}"
   },
-  "license": "Supplementaries Team License",
+  "license": "${mod_license}",
   "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.mehvahdjukaar.dummmmmmy.fabric.DummmmmmyFabric"
+      "net.mehvahdjukaar.dummmmmmy.fabric.DummmmmmFabric"
     ],
     "modmenu": [
       "net.mehvahdjukaar.dummmmmmy.integration.fabric.ModMenuCompat"
@@ -28,7 +28,7 @@
   ],
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.20",
-    "moonlight": ">=1.20-2.5.0"
+    "minecraft": ">=${minecraft_min_version} <${minecraft_max_version}",
+    "moonlight": ">=${moonlight_min_version}"
   }
 }

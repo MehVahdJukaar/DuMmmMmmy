@@ -1,22 +1,12 @@
 architectury {
-    common(rootProject.enabled_platforms.split(","))
+    common(enabled_platforms.split(","))
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/dummmmmmy.accesswidener")
+    accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
 }
 
-dependencies {
 
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-
-    modImplementation ("curse.maven:selene-499980:4806892")
-
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
-    implementation("com.github.LlamaLad7:MixinExtras:${mixin_extras_version}")
-    annotationProcessor 'net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5'
-//    modImplementation("net.mehvahdjukaar:moonlight:${project.moonlight_version}")
-}
 
 publishing {
     publications {
@@ -29,4 +19,21 @@ publishing {
     repositories {
         // Add repositories to publish to here.
     }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.compilerArgs.add("-Acrafttweaker.processor.document.output_directory=${new File(rootProject.buildDir, "docsOut")}")
+    it.options.compilerArgs.add("-Acrafttweaker.processor.document.multi_source=true")
+
+    it.options.compilerArgs << "-Xmaxerrs" << "4000"
+
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0"))
+
+    modApi("net.mehvahdjukaar:moonlight:${moonlight_version}")
 }
