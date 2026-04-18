@@ -17,7 +17,7 @@ loom {
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 
-        mixinConfig "vista-common.mixins.json"
+        mixinConfig "dummmmmmy-common.mixins.json"
     }
 }
 
