@@ -3,14 +3,21 @@ package net.mehvahdjukaar.dummmmmmy.neoforge;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
+
+import java.util.Map;
 
 /**
  * Author: MehVahdJukaar
@@ -22,11 +29,12 @@ public class DummmmmmyForge {
         RegHelper.startRegisteringFor(bus);
         Dummmmmmy.init();
         NeoForge.EVENT_BUS.register(this);
+
     }
 
     @SubscribeEvent
     public void onEntityCriticalHit(CriticalHitEvent event) {
-        if(event.isCriticalHit()) {
+        if (event.isCriticalHit()) {
             float mod = event.getDamageMultiplier();
             if (mod > 1) {
                 ModEvents.onEntityCriticalHit(event.getEntity(), event.getTarget(), event.getDamageMultiplier());

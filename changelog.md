@@ -1,1 +1,1 @@
-added critical strike mod compat. thanks to Daedelus
+- translations
