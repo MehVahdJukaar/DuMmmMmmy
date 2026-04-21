@@ -850,7 +850,7 @@ public class TargetDummyEntity extends Mob {
         }
 
         public void track(ServerPlayer serverPlayer) {
-            currentlyAttacking.put(serverPlayer, ClientConfigs.COMBAT_DURATION.get()); //needs to match combat tracker. This works the same but per player instead of per receiving entity
+            currentlyAttacking.put(serverPlayer,300); //needs to match combat tracker. This works the same but per player instead of per receiving entity
             healthBar.addPlayer(serverPlayer);
         }
 
