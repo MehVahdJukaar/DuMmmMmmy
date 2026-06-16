@@ -17,3 +17,8 @@ classes/
 .vscode
 .settings
 *.launch
+# AI agent / assistant config (local only, not on GitHub)
+.claude/
+.cursor/
+.junie/
+CLAUDE.md
