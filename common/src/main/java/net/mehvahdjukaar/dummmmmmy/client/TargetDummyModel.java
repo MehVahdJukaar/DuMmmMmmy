@@ -97,10 +97,25 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
     @Override
     public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
         super.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);
-        float phase = entity.getShake(partialTick);
         float unscaledSwingAmount = entity.getAnimationPosition(partialTick);
-        float swingAmount = Math.min((float) (unscaledSwingAmount * ClientConfigs.ANIMATION_INTENSITY.get()), 40f);
+        setHitAnimation(entity.getShake(partialTick), unscaledSwingAmount);
 
+        // un-rotate the stand plate, so it's aligned to the block grid
+        this.standPlate.yRot = Mth.DEG_TO_RAD * -Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+
+        float recharge = entity.getRechargingAnimation(partialTick);
+        this.rechargingAnim = smoothRamp(recharge, 0.1);
+    }
+
+    /**
+     * Drives the getting-hit wobble from raw numbers instead of an entity, for the config screen preview where
+     * there's no dummy in a level to read from.
+     *
+     * @param phase                shake phase, in ticks since the hit
+     * @param unscaledSwingAmount  remaining swing, before the animation intensity setting is applied
+     */
+    public void setHitAnimation(float phase, float unscaledSwingAmount) {
+        float swingAmount = Math.min((float) (unscaledSwingAmount * ClientConfigs.ANIMATION_INTENSITY.get()), 40f);
         if (swingAmount > 0) {
             this.bodyWobble = (float) -(Mth.sin(phase) * Math.PI / 100f * swingAmount);
             this.headSideWobble = (float) (Mth.sin(phase) * Math.PI / 20 * Math.min(swingAmount, 1));
@@ -108,14 +123,10 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
             this.bodyWobble = 0;
             this.headSideWobble = 0;
         }
-
-        // un-rotate the stand plate, so it's aligned to the block grid
         this.standPlate.xRot = 0.0F;
-        this.standPlate.yRot = Mth.DEG_TO_RAD * -Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        this.standPlate.yRot = 0.0F;
         this.standPlate.zRot = 0.0F;
-
-        float recharge = entity.getRechargingAnimation(partialTick);
-        this.rechargingAnim = smoothRamp(recharge, 0.1);
+        this.rechargingAnim = 0;
     }
 
     private float smoothRamp(float number, double cutoff) {

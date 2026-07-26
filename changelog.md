@@ -1,1 +1,3 @@
+- reworked the configs: categories now have icons, scarecrow and damage numbers are proper feature toggles you can switch off wholesale, and boss settings moved to their own category. Some values will reset to default
+- added a punchable dummy on the config screen. It watches your cursor, and hitting it makes straw fly
 - translations

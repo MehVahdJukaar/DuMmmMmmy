@@ -1,14 +1,13 @@
 package net.mehvahdjukaar.dummmmmmy;
 
 import net.mehvahdjukaar.dummmmmmy.client.DamageNumberParticle;
+import net.mehvahdjukaar.dummmmmmy.client.DummyShowcaseWidget;
 import net.mehvahdjukaar.dummmmmmy.client.HayParticle;
 import net.mehvahdjukaar.dummmmmmy.client.TargetDummyModel;
 import net.mehvahdjukaar.dummmmmmy.client.TargetDummyRenderer;
+import net.mehvahdjukaar.moonlight.api.client.gui.ConfigScreenExtensions;
 import net.mehvahdjukaar.moonlight.api.platform.ClientHelper;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.core.particles.SimpleParticleType;
 
 public class DummmmmmyClient {
 
@@ -16,6 +15,9 @@ public class DummmmmmyClient {
         ClientHelper.addModelLayerRegistration(DummmmmmyClient::registerLayers);
         ClientHelper.addEntityRenderersRegistration(DummmmmmyClient::registerEntityRenderers);
         ClientHelper.addParticleRegistration(DummmmmmyClient::registerParticles);
+        // a punchable dummy instead of the mod icon on the config screen
+        ConfigScreenExtensions.registerShowcase(Dummmmmmy.MOD_ID,
+                (modId, x, y, width, height) -> new DummyShowcaseWidget(x, y, width, height));
     }
 
 
