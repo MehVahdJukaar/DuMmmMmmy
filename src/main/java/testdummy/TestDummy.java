@@ -36,7 +36,7 @@ import java.util.List;
 @Mod(modid = TestDummy.MODID, version = TestDummy.VERSION, name = TestDummy.NAME)
 public class TestDummy {
     public static final String MODID = "testdummy";
-    public static final String VERSION = "2.0.6";
+    public static final String VERSION = "2.0.7";
     public static final String NAME = "TestDummy";
     public static final Logger log = LogManager.getLogger(NAME);
     public static final DecimalFormat df = new DecimalFormat("#.##");
