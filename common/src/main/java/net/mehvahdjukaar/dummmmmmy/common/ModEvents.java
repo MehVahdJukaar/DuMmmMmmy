@@ -33,6 +33,7 @@ public class ModEvents {
     }
 
     public static boolean canBeScaredByScarecrow(Entity entity) {
+        if (!CommonConfigs.SCARECROW.get()) return false;
         String name = Utils.getID(entity.getType()).toString();
         return (entity instanceof Animal || CommonConfigs.WHITELIST.get().contains(name))
                 && !CommonConfigs.BLACKLIST.get().contains(name);

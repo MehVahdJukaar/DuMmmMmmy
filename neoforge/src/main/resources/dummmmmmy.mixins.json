@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.mehvahdjukaar.dummmmmmy.mixins.forge",
-  "compatibilityLevel": "JAVA_16",
+  "package": "net.mehvahdjukaar.dummmmmmy.mixins.neoforge",
+  "compatibilityLevel": "JAVA_21",
   "client": [
   ],
   "mixins": [

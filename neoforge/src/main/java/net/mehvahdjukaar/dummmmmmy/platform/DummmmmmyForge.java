@@ -1,4 +1,4 @@
-package net.mehvahdjukaar.dummmmmmy.neoforge;
+package net.mehvahdjukaar.dummmmmmy.platform;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;

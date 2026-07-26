@@ -18,6 +18,7 @@ public class CommonConfigs {
 
     public static final ModConfigHolder SPEC;
 
+    public static final Supplier<Boolean> SCARECROW;
     public static final Supplier<List<String>> WHITELIST;
     public static final Supplier<List<String>> BLACKLIST;
     public static final Supplier<Integer> RADIUS;
@@ -38,41 +39,44 @@ public class CommonConfigs {
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("common"), ConfigType.COMMON);
 
 
-        builder.push("scarecrow").comment("Equip a dummy with a pumpkin to make hit act as a scarecrow");
-
+        builder.icon("minecraft:carved_pumpkin").push("scarecrow");
+        SCARECROW = builder.comment("Equip a dummy with a pumpkin to make it act as a scarecrow, keeping animals away and stopping mobs from spawning around it")
+                .mainFeature();
         WHITELIST = builder.comment("All animal entities will be scared. add here additional ones that are not included")
                 .define("mobs_whitelist", Collections.singletonList(""));
         BLACKLIST = builder.comment("Animal entities that will not be scared")
                 .define("mobs_blacklist", Collections.singletonList(""));
-
-        RADIUS = builder.comment("Scaring radius").define("scare_radius", 12, 0, 100);
-
+        RADIUS = builder.worldReload().comment("Scaring radius")
+                .defineSlider("scare_radius", 12, 0, 100);
         builder.pop();
 
-        builder.push("general");
+        builder.icon("target_dummy").push("general");
         //TODO: move to client...
-        DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse? ")
+        DYNAMIC_DPS = builder.comment("Does dps message update dynamically or will it only appear after each parse?")
                 .define("DPS_mode", DpsMode.DYNAMIC);
 
         DAMAGE_EQUIPMENT = builder.comment("Enable this to prevent your equipment from getting damaged when attacking the dummy")
                 .define("disable_equipment_damage", true);
 
-        DECOY = builder.comment("Makes monsters target a dummy that is wearing a player head")
-                .define("dummy_decoy", false);
-
-        BOSS_HEALTH_COLOR = builder.comment("Health bar color when in boss mode")
-                .define("boss_health_bar_color", BossEvent.BossBarColor.YELLOW);
         DROP_XP = builder.comment("Makes dummy drop xp when hit. Training yay! Depends on damage done")
-                        .define("xp_per_damage_on_hit", 0, 0d, 100);
+                .define("xp_per_damage_on_hit", 0d, 0d, 100d);
 
-        BOSS_HEALTH = builder.comment("How much health the dummy should have when in boss mode (when given a banner)")
-                .define("boss_health", 200, 1, 1000000);
+        DECOY = builder.icon("minecraft:player_head").worldReload()
+                .comment("Makes monsters target a dummy that is wearing a player head")
+                .feature("dummy_decoy", false);
         builder.pop();
 
-        builder.push("mobs_damage_numbers");
-        DAMAGE_NUMBERS_MODE = builder.comment("Show damage taken form")
+        builder.icon("minecraft:white_banner").push("boss_mode");
+        BOSS_HEALTH = builder.gameRestart().comment("How much health the dummy should have when in boss mode (when given a banner)")
+                .define("health", 200, 1, 1000000);
+        BOSS_HEALTH_COLOR = builder.comment("Health bar color when in boss mode")
+                .define("health_bar_color", BossEvent.BossBarColor.YELLOW);
+        builder.pop();
+
+        builder.icon("minecraft:zombie_head").push("mobs_damage_numbers");
+        DAMAGE_NUMBERS_MODE = builder.comment("Show damage taken by regular mobs too, not just by dummies")
                 .define("damage_mode", Mode.NONE);
-        HEALING_NUMBERS_MODE = builder.comment("Show healing taken for")
+        HEALING_NUMBERS_MODE = builder.comment("Show healing received by regular mobs")
                 .define("healing_mode", Mode.NONE);
         builder.pop();
 

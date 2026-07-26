@@ -15,7 +15,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -63,27 +63,31 @@ public class ClientConfigs {
 
         ConfigBuilder builder = ConfigBuilder.create(Dummmmmmy.res("client"), ConfigType.CLIENT);
 
-        builder.comment("lots of cosmetic stuff in here");
+        builder.icon("target_dummy").push("visuals");
+        ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt")
+                .defineSlider("animation_intensity", 0.75, 0.0, 2.0);
+        SKIN = builder.comment("Skin used by the dummy")
+                .define("texture", SkinType.DEFAULT);
+        HAY_PARTICLES = builder.icon("minecraft:hay_block")
+                .comment("Show hay particles when dealing damage")
+                .feature("hay_particles");
+        builder.pop();
 
-        builder.push("visuals").comment("To edit the damage numbers color you'll have to edit the config file manually");
-        ANIMATION_INTENSITY = builder.comment("How much the dummy swings in degrees with respect to the damage dealt. default=0.75")
-                .define("animation_intensity", 0.75, 0.0, 2.0);
+        builder.icon("minecraft:iron_sword").push("damage_numbers");
+        DAMAGE_NUMBERS = builder.comment("Floating damage numbers popping off the dummy every time it's hit")
+                .mainFeature();
         SHOW_HEARTHS = builder.comment("Show hearths instead of damage dealt? (1 hearth = two damage)")
                 .define("show_hearths", false);
-        DAMAGE_NUMBERS = builder.comment("Show damage numbers on entity")
-                .define("damage_numbers", true);
-        LIT_UP_PARTICLES = builder.comment("Display particles fullbright")
-                .define("full_bright_damage_numbers", true);
+        LIT_UP_PARTICLES = builder.comment("Display the numbers fullbright, so they stay readable in the dark")
+                .define("full_bright", true);
         CRIT_MODE = builder.comment("How crits should be shown")
                 .define("crit_mode", CritMode.COLOR_AND_MULTIPLIER);
         CRIT_BOLD = builder.comment("Make critical hit damage numbers bold")
                 .define("crit_bold", false);
-        HAY_PARTICLES = builder.comment("Show hay particles when dealing damage")
-                .define("hay_particles", true);
-        SKIN = builder.comment("Skin used by the dummy").define("texture", SkinType.DEFAULT);
 
-
-        Map<IdOrTagPredicate, Integer> map = new HashMap<>();
+        // insertion ordered: getDamageColor returns the first key that matches, and the specific ids below have to win
+        // over the broader tags
+        Map<IdOrTagPredicate, Integer> map = new LinkedHashMap<>();
         map.put(new IdPredicate(TRUE_DAMAGE.getID()), COLOR_TRUE);
         map.put(new IdPredicate(CRITICAL_DAMAGE.getID()), COLOR_CRIT);
         map.put(new IdPredicate("generic"), COLOR_GENERIC);
@@ -101,10 +105,9 @@ public class ClientConfigs {
         map.put(new TagPredicate(DamageTypeTags.IS_DROWNING), COLOR_WATER);
         map.put(new TagPredicate(DamageTypeTags.WITCH_RESISTANT_TO), COLOR_IND_MAGIC);
 
-        DAMAGE_TO_COLORS = builder.comment("Add here custom colors (in hex format) to associate with your damage types. This is a map from damage source ID to a color where you can add new entries for each")
+        DAMAGE_TO_COLORS = builder.comment("Color to use for each damage type. Keys are damage type ids, or #tags, and are tested in insertion order")
                 .defineObject("damage_type_colors", () -> map,
                         Codec.unboundedMap(IdOrTagPredicate.CODEC, ColorUtils.CODEC));
-
 
         builder.pop();
 
