@@ -91,6 +91,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
     }
 
     protected boolean processInteract(EntityPlayer player, EnumHand hand) {
+        if (this.isDead) return false;
         ItemStack itemStack = player.getHeldItem(hand);
         if (itemStack.isEmpty()) {
             return removeArmor(player);
@@ -155,6 +156,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
 
     public boolean attackEntityFrom(DamageSource source, float damage) {
         if (this.world.isRemote) return false;
+        if (this.isDead) return false;
         if (!ForgeHooks.onLivingAttack(this, source, damage)) return false;
         if (this.isEntityInvulnerable(source)) return false;
 
