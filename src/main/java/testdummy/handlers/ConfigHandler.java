@@ -56,6 +56,10 @@ public class ConfigHandler {
         @Config.Name("Track added dmg no event")
         public boolean useNoEventDmg = true;
 
+        @Config.Comment("Whether the dummy entity is considered \"alive\", meaning it can be targeted by certain monsters.")
+        @Config.Name("Dummy is alive")
+        public boolean isAlive = false;
+
     }
 
     @Mod.EventBusSubscriber(modid = TestDummy.MODID)

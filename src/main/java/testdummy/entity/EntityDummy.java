@@ -299,7 +299,7 @@ public class EntityDummy extends EntityLiving implements IEntityAdditionalSpawnD
     }
 
     public boolean isEntityAlive() {
-        return false;
+        return ConfigHandler.server.isAlive;
     }
 
     public boolean canBePushed() {
