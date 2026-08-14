@@ -28,20 +28,22 @@ import net.minecraft.util.RandomSource;
 
 public class DummyShowcaseWidget extends AbstractWidget {
 
-    private static final float BLOCKS_TALL = 2.15f;    // the dummy plus a little headroom
-    private static final float HIT_DAMAGE = 7f;        // what one click "deals", in the entity's swing units
-    private static final float MAX_SWING = 60f;        // same cap the entity uses
-    private static final float DECAY_PER_TICK = 0.8f;  // ...and the same decay
-    private static final float BODY_SHARE = 0.35f;     // how much of the look-at the body takes, head takes the rest
+    private static final float BLOCKS_TALL = 2.15f;
+    // same swing units, cap and decay the entity uses
+    private static final float HIT_DAMAGE = 7f;
+    private static final float MAX_SWING = 60f;
+    private static final float DECAY_PER_TICK = 0.8f;
+    // how much of the look at rotation the body takes, the head takes the rest
+    private static final float BODY_SHARE = 0.35f;
     private static final int[] STRAW_COLORS = {0xE3C574, 0xC9A24C, 0xF2E0A5, 0xA8842F};
 
     private final TargetDummyModel<TargetDummyEntity> model;
     private final ScreenParticleEngine particles = new ScreenParticleEngine();
     private final RandomSource random = RandomSource.create();
 
-    private float swing;        // remaining wobble, decays like the entity's animationPosition
-    private float shakePhase;   // ticks since the hit started
-    private float lookYaw;      // radians, eased toward the cursor. positive looks screen-left, as in vanilla
+    private float swing;
+    private float shakePhase;
+    private float lookYaw;
     private float lookPitch;
     private long lastMs = -1;
 
@@ -56,7 +58,6 @@ public class DummyShowcaseWidget extends AbstractWidget {
 
         this.model.setHitAnimation(this.shakePhase, this.swing);
         this.model.setupAnim(null, 0, 0, 0, 0, 0);
-        // setupAnim owns the head's x/z rotation (that's the wobble), so the cursor tracking is layered on top of it
         this.model.head.yRot = this.lookYaw * (1 - BODY_SHARE);
         this.model.head.xRot += this.lookPitch;
         this.model.hat.copyFrom(this.model.head);
@@ -65,10 +66,8 @@ public class DummyShowcaseWidget extends AbstractWidget {
         PoseStack pose = graphics.pose();
         pose.pushPose();
         pose.translate(this.getX() + this.width / 2f, this.getY() + this.height - 1f, 100);
-        // mirroring z is what puts the dummy's front towards the viewer; entityCutoutNoCull makes the flipped winding
-        // harmless, and it leaves us in the same frame vanilla renders GUI entities in
         pose.scale(scale, scale, -scale);
-        pose.translate(0, -1.501f, 0);   // the model's origin is at head height, feet 1.5 blocks below it
+        pose.translate(0, -1.501f, 0);   // model origin is at head height, feet 1.5 blocks below it
         pose.mulPose(Axis.YP.rotationDegrees(this.lookYaw * Mth.RAD_TO_DEG * BODY_SHARE));
 
         Lighting.setupForEntityInInventory();
@@ -84,7 +83,7 @@ public class DummyShowcaseWidget extends AbstractWidget {
 
     private void advance(int mouseX, int mouseY) {
         long now = Util.getMillis();
-        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f); // clamp screen-reopen gaps
+        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f); // clamped so reopening the screen doesn't jump
         this.lastMs = now;
         float ticks = dt * 20f;
 
@@ -97,7 +96,6 @@ public class DummyShowcaseWidget extends AbstractWidget {
             }
         }
 
-        // it follows the cursor, clamped so it never twists all the way around
         float headX = this.getX() + this.width / 2f;
         float headY = this.getY() + this.height * 0.3f;
         float targetYaw = Mth.clamp(-(mouseX - headX) / 70f, -1.1f, 1.1f);
