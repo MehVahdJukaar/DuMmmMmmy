@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.object.banner.BannerFlagModel;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -51,7 +52,10 @@ public class LayerDummyCape extends RenderLayer<TargetDummyRenderState, TargetDu
         poseStack.mulPose(Axis.XP.rotation((bodyXRot + Mth.PI + Math.max(0, capeSwingAngle))));
         poseStack.scale(-scale, -scale, 1);
         poseStack.translate(0, 0, state.chestOpenForCape ? 1 / 16f : 0);
+        poseStack.translate(0, 44 / 16f, 0);
 
+        collector.submitModel(this.flag, 0.0F, poseStack, lightCoords, OverlayTexture.NO_OVERLAY, -1,
+                Sheets.BANNER_BASE, this.sprites, state.outlineColor, null);
         BannerRenderer.submitPatterns(this.sprites, poseStack, collector, lightCoords, OverlayTexture.NO_OVERLAY,
                 this.flag, 0.0F, true, state.bannerColor, state.bannerPatterns, null);
 
