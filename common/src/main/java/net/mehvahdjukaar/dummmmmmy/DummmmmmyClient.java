@@ -8,6 +8,8 @@ import net.mehvahdjukaar.dummmmmmy.client.TargetDummyRenderer;
 import net.mehvahdjukaar.moonlight.api.client.gui.ConfigScreenExtensions;
 import net.mehvahdjukaar.moonlight.api.platform.ClientHelper;
 import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.entity.ArmorModelSet;
 
 public class DummmmmmyClient {
 
@@ -30,14 +32,17 @@ public class DummmmmmyClient {
     }
 
     public static final ModelLayerLocation DUMMY_BODY = loc("dummy");
-    public static final ModelLayerLocation DUMMY_ARMOR_OUTER = loc("dummy_armor_outer");
-    public static final ModelLayerLocation DUMMY_ARMOR_INNER = loc("dummy_armor_inner");
+    public static final ArmorModelSet<ModelLayerLocation> DUMMY_ARMOR = new ArmorModelSet<>(
+            loc("dummy_armor_head"), loc("dummy_armor_chest"), loc("dummy_armor_legs"), loc("dummy_armor_feet"));
 
 
     private static void registerLayers(ClientHelper.ModelLayerEvent event) {
-        event.register(DUMMY_BODY, () -> TargetDummyModel.createMesh(0, 64));
-        event.register(DUMMY_ARMOR_OUTER, () -> TargetDummyModel.createMesh(1, 32));
-        event.register(DUMMY_ARMOR_INNER, () -> TargetDummyModel.createMesh(0.5f, 32));
+        event.register(DUMMY_BODY, TargetDummyModel::createBodyLayer);
+        ArmorModelSet<LayerDefinition> armor = TargetDummyModel.createArmorLayers();
+        event.register(DUMMY_ARMOR.head(), armor::head);
+        event.register(DUMMY_ARMOR.chest(), armor::chest);
+        event.register(DUMMY_ARMOR.legs(), armor::legs);
+        event.register(DUMMY_ARMOR.feet(), armor::feet);
     }
 
     private static void registerEntityRenderers(ClientHelper.EntityRendererEvent event) {

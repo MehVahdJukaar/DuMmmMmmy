@@ -1,8 +1,6 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CritMode;
@@ -14,21 +12,22 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.phys.Vec3;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class DamageNumberParticle extends Particle {
+
+    public static final ParticleRenderType GROUP = new ParticleRenderType(Dummmmmmy.MOD_ID + ":damage_numbers");
 
     private static final List<Float> POSITIONS = new ArrayList<>(Arrays.asList(0f, -0.25f, 0.12f, -0.12f, 0.25f));
 
@@ -36,7 +35,6 @@ public class DamageNumberParticle extends Particle {
 
     private final Component text;
     private final int color;
-    private final int darkColor;
     private float fadeout = -1;
     private float prevFadeout = -1;
 
@@ -51,9 +49,7 @@ public class DamageNumberParticle extends Particle {
                                 double amount, double dColor, double dz) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
-        //this.setColor(FastColor.ARGB32.red(color), FastColor.ARGB32.green(color), FastColor.ARGB32.blue(color));
         this.color = amount < 0 ? 0xff00ff00 : (int) dColor;
-        this.darkColor = FastColor.ARGB32.color(255, (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25f), (int) (this.rCol * 0.25));
 
         double number = Math.abs(ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount);
         boolean bold = ClientConfigs.CRIT_BOLD.get();
@@ -83,22 +79,16 @@ public class DamageNumberParticle extends Particle {
         this.xd = POSITIONS.get(Math.floorMod(index, POSITIONS.size()));
     }
 
-    @Override
-    public void render(VertexConsumer consumer, Camera camera, float partialTicks) {
-
-        Vec3 cameraPos = camera.getPosition();
+    public State extract(Camera camera, float partialTicks) {
+        Vec3 cameraPos = camera.position();
         float particleX = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
         float particleY = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
         float particleZ = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
-
-        int light = ClientConfigs.LIT_UP_PARTICLES.get() ? LightTexture.FULL_BRIGHT : this.getLightColor(partialTicks);
-
+        int light = ClientConfigs.LIT_UP_PARTICLES.get() ? LightCoordsUtil.FULL_BRIGHT : this.getLightCoords(partialTicks);
 
         PoseStack poseStack = new PoseStack();
-        poseStack.pushPose();
         poseStack.translate(particleX, particleY, particleZ);
-
 
         double distanceFromCam = new Vec3(particleX, particleY, particleZ).length();
 
@@ -108,7 +98,7 @@ public class DamageNumberParticle extends Particle {
         poseStack.translate(0, (1 + inc / 4f) * Mth.lerp(partialTicks, this.prevVisualDY, this.visualDY), 0);
         // rotate towards camera
 
-        float fadeout = Mth.lerp(partialTicks, this.prevFadeout, this.fadeout);
+        float fade = Mth.lerp(partialTicks, this.prevFadeout, this.fadeout);
 
         float defScale = 0.006f;
         float scale = (float) (defScale * distanceFromCam);
@@ -118,32 +108,16 @@ public class DamageNumberParticle extends Particle {
         poseStack.translate((1 + inc) * Mth.lerp(partialTicks, this.prevVisualDX, this.visualDX), 0, 0);
         // scale depending on distance so size remains the same
         poseStack.scale(scale, -scale, -scale);
-        poseStack.translate(0, (4d * (1 - fadeout)), 0);
-        poseStack.scale(fadeout, fadeout, fadeout);
+        poseStack.translate(0, (4d * (1 - fade)), 0);
+        poseStack.scale(fade, fade, fade);
         poseStack.translate(0, -distanceFromCam / 10d, 0);
 
-        var buffer = Minecraft.getInstance().renderBuffers().bufferSource();
-
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
-        // no idea what this did
-        RenderSystem.blendFuncSeparate(770, 771, 1, 0);
-
         float x1 = 0.5f - fontRenderer.width(text) / 2f;
-
-        fontRenderer.drawInBatch(text, x1,
-                0, color, false,
-                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
-        poseStack.translate(1, 1, +0.03);
-        fontRenderer.drawInBatch(text, x1,
-                0, darkColor, false,
-                poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
-
-        buffer.endBatch();
-
-        poseStack.popPose();
+        return new State(poseStack, text.getVisualOrderText(), x1, this.color, light);
     }
 
+    public record State(PoseStack pose, FormattedCharSequence text, float x, int color, int light) {
+    }
 
     @Override
     public void tick() {
@@ -174,8 +148,8 @@ public class DamageNumberParticle extends Particle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+    public ParticleRenderType getGroup() {
+        return GROUP;
     }
 
 
@@ -184,7 +158,8 @@ public class DamageNumberParticle extends Particle {
         }
 
         @Override
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                                       double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
             return new DamageNumberParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
         }
     }

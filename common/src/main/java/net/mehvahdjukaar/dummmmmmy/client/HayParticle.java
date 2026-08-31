@@ -2,15 +2,18 @@ package net.mehvahdjukaar.dummmmmmy.client;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 
-public class HayParticle extends TextureSheetParticle {
+public class HayParticle extends SingleQuadParticle {
 
     private float rotSpeed;
 
-    protected HayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
+    protected HayParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed,
+                          TextureAtlasSprite sprite) {
+        super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
@@ -31,8 +34,8 @@ public class HayParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    protected Layer getLayer() {
+        return Layer.bySprite(this.sprite);
     }
 
     @Override
@@ -55,10 +58,9 @@ public class HayParticle extends TextureSheetParticle {
     public record Factory(SpriteSet spriteSet) implements ParticleProvider<SimpleParticleType> {
 
         @Override
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
-            var p = new HayParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
-            p.pickSprite(spriteSet);
-            return p;
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                                       double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+            return new HayParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet.get(random));
         }
     }
 }

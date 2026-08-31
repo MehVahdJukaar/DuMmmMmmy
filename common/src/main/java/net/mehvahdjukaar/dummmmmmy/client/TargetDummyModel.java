@@ -1,19 +1,30 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.entity.ArmorModelSet;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.phys.Vec3;
 
-public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel<T> {
+import java.util.Map;
+import java.util.Set;
+
+public class TargetDummyModel extends HumanoidModel<TargetDummyRenderState> {
+
+    private static final CubeDeformation ARMOR_INNER = new CubeDeformation(0.5f);
+    private static final CubeDeformation ARMOR_OUTER = new CubeDeformation(1.0f);
+
+    private static final Map<EquipmentSlot, Set<String>> ARMOR_PARTS_PER_SLOT = Map.of(
+            EquipmentSlot.HEAD, Set.of("head"),
+            EquipmentSlot.CHEST, Set.of("body", "right_arm", "left_arm"),
+            EquipmentSlot.LEGS, Set.of("body", "left_leg"),
+            EquipmentSlot.FEET, Set.of("left_leg"));
+
     public final ModelPart standPlate;
 
     private float bodyWobble = 0;
@@ -25,8 +36,16 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
         standPlate = modelPart.getChild("stand");
     }
 
-    public static LayerDefinition createMesh(float size, int textHeight) {
-        CubeDeformation deformation = new CubeDeformation(size);
+    public static LayerDefinition createBodyLayer() {
+        return LayerDefinition.create(createMesh(CubeDeformation.NONE), 64, 64);
+    }
+
+    public static ArmorModelSet<LayerDefinition> createArmorLayers() {
+        return createArmorMeshSet(TargetDummyModel::createMesh, ARMOR_PARTS_PER_SLOT, ARMOR_INNER, ARMOR_OUTER)
+                .map(mesh -> LayerDefinition.create(mesh, 64, 32));
+    }
+
+    public static MeshDefinition createMesh(CubeDeformation deformation) {
         MeshDefinition meshdefinition = HumanoidModel.createMesh(deformation, 0.0F);
         PartDefinition partdefinition = meshdefinition.getRoot();
         partdefinition.addOrReplaceChild("stand", CubeListBuilder.create()
@@ -46,10 +65,10 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
 
         partdefinition.addOrReplaceChild("left_leg", CubeListBuilder.create()
                         .texOffs(0, 16)
-                        .addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, deformation.extend(size != 0 ? -0.01f : 0)),
+                        .addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, deformation.extend(deformation == CubeDeformation.NONE ? 0 : -0.01f)),
                 PartPose.offset(0F, 12.0F, 0.0F));
 
-        return LayerDefinition.create(meshdefinition, 64, textHeight);
+        return meshdefinition;
     }
 
     //don't touch. it just works
@@ -73,38 +92,8 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
         model.yRot = angle * mult;
     }
 
-    @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int overlayIn, int color) {
-        int overlay = OverlayTexture.NO_OVERLAY;
-        matrixStackIn.pushPose();
-        this.standPlate.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-
-        this.head.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-        this.rightArm.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-        this.leftArm.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-        this.body.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-        this.leftLeg.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-
-        this.hat.render(matrixStackIn, bufferIn, packedLightIn, overlay, color);
-        matrixStackIn.popPose();
-    }
-
     public ModelPart getBody() {
         return this.leftLeg;
-    }
-
-    //TODO: this is horrible
-    @Override
-    public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
-        super.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);
-        float unscaledSwingAmount = entity.getAnimationPosition(partialTick);
-        setHitAnimation(entity.getShake(partialTick), unscaledSwingAmount);
-
-        // un-rotate the stand plate, so it's aligned to the block grid
-        this.standPlate.yRot = Mth.DEG_TO_RAD * -Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-
-        float recharge = entity.getRechargingAnimation(partialTick);
-        this.rechargingAnim = smoothRamp(recharge, 0.1);
     }
 
     public void setHitAnimation(float phase, float unscaledSwingAmount) {
@@ -127,8 +116,14 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
     }
 
     @Override
-    public void setupAnim(TargetDummyEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw,
-                          float headPitch) {
+    public void setupAnim(TargetDummyRenderState state) {
+        this.resetPose();
+
+        setHitAnimation(state.shake, state.swing);
+
+        // un-rotate the stand plate, so it's aligned to the block grid
+        this.standPlate.yRot = Mth.DEG_TO_RAD * -state.bodyRot;
+        this.rechargingAnim = smoothRamp(state.recharging, 0.1);
 
         float n = 1.5f;
 
@@ -143,6 +138,7 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
         //for mod support
         this.rightLeg.setPos(0, 12.0F + yOffsetIn, 0.0F);
         this.rotateModelX(this.rightLeg, 0.01f, 24 + yOffsetIn + 0.01f, 0.01f, xangle);
+        this.rightLeg.visible = false;
 
         this.body.setPos(0.0F, 0.0F + yOffsetIn, 0.0F);
         this.rotateModelX(this.body, 0, 24 + yOffsetIn, 0, xangle);
@@ -158,11 +154,12 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
 
 
         this.rotateModelX(this.head, 0, 24 + yOffsetIn, 0, xangle);
-        this.head.xRot = -bodyWobble + rechargingAnim * 0.8f; //-r
+        this.head.xRot = -bodyWobble + rechargingAnim * 0.8f + state.headPitch; //-r
+        this.head.yRot = state.headYaw;
         this.head.zRot = headSideWobble; //r2
 
         //mod support
-        this.hat.copyFrom(this.head);
+        this.hat.loadPose(this.head.storePose());
 
         //rotate arms up
         this.rightArm.zRot = (float) Math.PI / 2f;
@@ -173,8 +170,6 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
 
         this.leftArm.zRot += rechargingAnim * 0.25f;
         this.rightArm.zRot += rechargingAnim * -0.25f;
-
-
     }
 
 }

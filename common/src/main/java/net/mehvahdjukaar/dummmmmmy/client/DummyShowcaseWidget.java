@@ -1,34 +1,28 @@
 package net.mehvahdjukaar.dummmmmmy.client;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
-import net.mehvahdjukaar.dummmmmmy.DummmmmmyClient;
-import net.mehvahdjukaar.dummmmmmy.common.TargetDummyEntity;
+import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.moonlight.api.client.gui.particle.ScreenParticle;
 import net.mehvahdjukaar.moonlight.api.client.gui.particle.ScreenParticleEngine;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Util;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class DummyShowcaseWidget extends AbstractWidget {
 
     private static final float BLOCKS_TALL = 2.15f;
+    private static final float GROUND_MARGIN = 3.0f;
     // same swing units, cap and decay the entity uses
     private static final float HIT_DAMAGE = 7f;
     private static final float MAX_SWING = 60f;
@@ -37,7 +31,7 @@ public class DummyShowcaseWidget extends AbstractWidget {
     private static final float BODY_SHARE = 0.35f;
     private static final int[] STRAW_COLORS = {0xE3C574, 0xC9A24C, 0xF2E0A5, 0xA8842F};
 
-    private final TargetDummyModel<TargetDummyEntity> model;
+    private final TargetDummyRenderState dummy = new TargetDummyRenderState();
     private final ScreenParticleEngine particles = new ScreenParticleEngine();
     private final RandomSource random = RandomSource.create();
 
@@ -49,41 +43,34 @@ public class DummyShowcaseWidget extends AbstractWidget {
 
     public DummyShowcaseWidget(int x, int y, int width, int height) {
         super(x, y, width, height, Component.translatable("entity.dummmmmmy.target_dummy"));
-        this.model = new TargetDummyModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(DummmmmmyClient.DUMMY_BODY));
+        this.dummy.entityType = Dummmmmmy.TARGET_DUMMY.get();
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         advance(mouseX, mouseY);
 
-        this.model.setHitAnimation(this.shakePhase, this.swing);
-        this.model.setupAnim(null, 0, 0, 0, 0, 0);
-        this.model.head.yRot = this.lookYaw * (1 - BODY_SHARE);
-        this.model.head.xRot += this.lookPitch;
-        this.model.hat.copyFrom(this.model.head);
+        this.dummy.texture = ClientConfigs.SKIN.get().getSkin(false);
+        this.dummy.shake = this.shakePhase;
+        this.dummy.swing = this.swing;
+        // 180 = facing the camera, like vanilla does in InventoryScreen
+        this.dummy.bodyRot = 180 + this.lookYaw * Mth.RAD_TO_DEG * BODY_SHARE;
+        this.dummy.headYaw = this.lookYaw * (1 - BODY_SHARE);
+        this.dummy.headPitch = this.lookPitch;
 
-        float scale = this.height / BLOCKS_TALL;   // px per block
-        PoseStack pose = graphics.pose();
-        pose.pushPose();
-        pose.translate(this.getX() + this.width / 2f, this.getY() + this.height - 1f, 100);
-        pose.scale(scale, scale, -scale);
-        pose.translate(0, -1.501f, 0);   // model origin is at head height, feet 1.5 blocks below it
-        pose.mulPose(Axis.YP.rotationDegrees(this.lookYaw * Mth.RAD_TO_DEG * BODY_SHARE));
+        float scale = this.height / BLOCKS_TALL;
+        Quaternionf rotation = new Quaternionf().rotateZ(Mth.PI);
+        Vector3f translation = new Vector3f(0, (this.height / 2f - GROUND_MARGIN) / scale, 0);
 
-        Lighting.setupForEntityInInventory();
-        MultiBufferSource.BufferSource buffer = graphics.bufferSource();
-        VertexConsumer consumer = buffer.getBuffer(RenderType.entityCutoutNoCull(ClientConfigs.SKIN.get().getSkin(false)));
-        this.model.renderToBuffer(pose, consumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, -1);
-        graphics.flush();
-        Lighting.setupFor3DItems();
-        pose.popPose();
+        graphics.entity(this.dummy, scale, translation, rotation, null,
+                this.getX(), this.getY(), this.getRight(), this.getBottom());
 
         this.particles.renderAndTick(graphics);
     }
 
     private void advance(int mouseX, int mouseY) {
         long now = Util.getMillis();
-        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f); // clamped so reopening the screen doesn't jump
+        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f);
         this.lastMs = now;
         float ticks = dt * 20f;
 
@@ -106,11 +93,11 @@ public class DummyShowcaseWidget extends AbstractWidget {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.swing = Math.min(this.swing + HIT_DAMAGE, MAX_SWING);
         this.shakePhase = 0;
         for (int i = 0; i < 12; i++) {
-            this.particles.add(ScreenParticle.square((float) mouseX, (float) mouseY)
+            this.particles.add(ScreenParticle.square((float) event.x(), (float) event.y())
                     .velocity(Mth.randomBetween(this.random, -70, 70), Mth.randomBetween(this.random, -90, -20))
                     .gravity(260)
                     .drag(1.5f)

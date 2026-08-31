@@ -10,7 +10,7 @@ import net.mehvahdjukaar.moonlight.api.platform.configs.ModConfigHolder;
 import net.mehvahdjukaar.moonlight.api.util.math.ColorUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
@@ -130,15 +130,15 @@ public class ClientConfigs {
         ALTERNATIVE("dummy_3", "dummy_3_h"),
         DUNGEONS("dummy_2", "dummy_2_h");
 
-        private final ResourceLocation texture;
-        private final ResourceLocation shearedTexture;
+        private final Identifier texture;
+        private final Identifier shearedTexture;
 
         SkinType(String name, String shearedName) {
             texture = Dummmmmmy.res("textures/entity/" + name + ".png");
             shearedTexture = Dummmmmmy.res("textures/entity/" + shearedName + ".png");
         }
 
-        public ResourceLocation getSkin(Boolean sheared) {
+        public Identifier getSkin(Boolean sheared) {
             return sheared ? shearedTexture : texture;
         }
     }
@@ -150,33 +150,33 @@ public class ClientConfigs {
 
         static DataResult<IdOrTagPredicate> read(String location) {
             if (location.startsWith("#")) {
-                return ResourceLocation.read(location.substring(1)).map(TagPredicate::new);
+                return Identifier.read(location.substring(1)).map(TagPredicate::new);
             } else {
-                return ResourceLocation.read(location).map(IdPredicate::new);
+                return Identifier.read(location).map(IdPredicate::new);
             }
         }
     }
 
-    record IdPredicate(ResourceLocation resourceLocation) implements IdOrTagPredicate {
+    record IdPredicate(Identifier id) implements IdOrTagPredicate {
         public IdPredicate(String name) {
-            this(ResourceLocation.tryParse(name));
+            this(Identifier.tryParse(name));
         }
 
         @Override
         public String toString() {
-            return resourceLocation.toString();
+            return id.toString();
         }
 
         @Override
-        public boolean test(Holder<DamageType> id) {
-            return id.unwrapKey().get().location().equals(resourceLocation);
+        public boolean test(Holder<DamageType> holder) {
+            return holder.unwrapKey().get().identifier().equals(id);
         }
     }
 
     record TagPredicate(TagKey<DamageType> tag) implements IdOrTagPredicate {
 
-        public TagPredicate(ResourceLocation resourceLocation) {
-            this(new TagKey<>(Registries.DAMAGE_TYPE, resourceLocation));
+        public TagPredicate(Identifier resourceLocation) {
+            this(TagKey.create(Registries.DAMAGE_TYPE, resourceLocation));
         }
 
         @Override

@@ -19,6 +19,9 @@
     "main": [
       "net.mehvahdjukaar.dummmmmmy.platform.DummmmmmyFabric"
     ],
+    "client": [
+      "net.mehvahdjukaar.dummmmmmy.platform.DummmmmmyFabricClient"
+    ],
     "modmenu": [
       "net.mehvahdjukaar.dummmmmmy.integration.platform.ModMenuCompat"
     ]

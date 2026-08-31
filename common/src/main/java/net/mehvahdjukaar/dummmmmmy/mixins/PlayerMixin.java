@@ -3,6 +3,7 @@ package net.mehvahdjukaar.dummmmmmy.mixins;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.mehvahdjukaar.dummmmmmy.common.ModEvents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,7 @@ public class PlayerMixin {
             // Mixin parameters
             Player entity, float healthToSet, Operation<Void> original,
             // Context parameters
-            DamageSource damageSource, float damageAmount
+            ServerLevel level, DamageSource damageSource, float damageAmount
     ) {
         var originalHealth = entity.getHealth();
         var mitigatedDamageAmount = originalHealth - healthToSet;

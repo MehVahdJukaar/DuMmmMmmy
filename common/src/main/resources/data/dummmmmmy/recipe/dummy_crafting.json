@@ -6,12 +6,8 @@
     "1"
   ],
   "key": {
-    "0": {
-      "item": "minecraft:hay_block"
-    },
-    "1": {
-      "item": "minecraft:armor_stand"
-    }
+    "0": ["minecraft:hay_block"],
+    "1": ["minecraft:armor_stand"]
   },
   "result": {
     "id": "dummmmmmy:target_dummy",

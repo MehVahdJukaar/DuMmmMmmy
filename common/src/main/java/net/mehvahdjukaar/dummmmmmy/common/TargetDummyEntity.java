@@ -2,7 +2,6 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.DummyPlatStuff;
 import net.mehvahdjukaar.dummmmmmy.compat.CritCompat;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
@@ -14,7 +13,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -24,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
@@ -46,6 +45,8 @@ import net.minecraft.world.level.block.TargetBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -93,7 +94,11 @@ public class TargetDummyEntity extends Mob {
         super(type, world);
         this.xpReward = 0;
         this.setCanPickUpLoot(false);
-        Arrays.fill(this.armorDropChances, 1.1f);
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+                this.setDropChance(slot, 1.1f);
+            }
+        }
         this.playersTracker.showHealthBar(false);
     }
 
@@ -158,21 +163,19 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        tag.putBoolean("Sheared", this.isSheared());
-        tag.putInt("HealthRechargeTimer", this.healthRechargeTimer);
-        if (this.unbreakable) tag.putBoolean("Unbreakable", true);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Sheared", this.isSheared());
+        output.putInt("HealthRechargeTimer", this.healthRechargeTimer);
+        if (this.unbreakable) output.putBoolean("Unbreakable", true);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        this.setSheared(tag.getBoolean("Sheared"));
-        this.healthRechargeTimer = tag.getInt("HealthRechargeTimer");
-        if (tag.contains("Unbreakable")) {
-            this.unbreakable = tag.getBoolean("Unbreakable");
-        }
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setSheared(input.getBooleanOr("Sheared", false));
+        this.healthRechargeTimer = input.getIntOr("HealthRechargeTimer", 0);
+        this.unbreakable = input.getBooleanOr("Unbreakable", false);
         this.mobType = DummyMobType.get(this.getItemBySlot(EquipmentSlot.HEAD));
         this.setBoss(this.getItemBySlot(EquipmentSlot.OFFHAND).getItem() instanceof BannerItem);
         this.lastHealth = this.getHealth();
@@ -180,11 +183,11 @@ public class TargetDummyEntity extends Mob {
 
     // dress it up! :D
     @Override
-    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 vec) {
         boolean success = false;
         if (!player.isSpectator() && player.getAbilities().mayBuild) {
             ItemStack itemstack = player.getItemInHand(hand);
-            EquipmentSlot equipmentSlot = getEquipmentSlotForItem(itemstack);
+            EquipmentSlot equipmentSlot = this.getEquipmentSlotForItem(itemstack);
 
             Item item = itemstack.getItem();
 
@@ -204,7 +207,7 @@ public class TargetDummyEntity extends Mob {
                     } else equipmentSlot = EquipmentSlot.OFFHAND;
                 }
                 if (this.hasItemInSlot(equipmentSlot)) {
-                    if (level.isClientSide) return InteractionResult.CONSUME;
+                    if (level.isClientSide()) return InteractionResult.CONSUME;
                     this.swapItem(player, equipmentSlot, ItemStack.EMPTY, hand);
                     success = true;
 
@@ -212,20 +215,20 @@ public class TargetDummyEntity extends Mob {
             }
             else if (item instanceof BannerItem) {
                 this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
-                if (level.isClientSide) return InteractionResult.CONSUME;
+                if (level.isClientSide()) return InteractionResult.CONSUME;
                 this.swapItem(player, EquipmentSlot.OFFHAND, itemstack, hand);
                 this.setBoss(true);
                 return InteractionResult.SUCCESS;
             }
             // armor item in hand -> equip/swap
             else if (equipmentSlot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-                if (level.isClientSide) return InteractionResult.CONSUME;
+                if (level.isClientSide()) return InteractionResult.CONSUME;
                 this.swapItem(player, equipmentSlot, itemstack, hand);
                 success = true;
 
             } else if (itemstack.getItem() instanceof ShieldItem) {
                 this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value(), 1.0F, 1.0F);
-                if (level.isClientSide) return InteractionResult.CONSUME;
+                if (level.isClientSide()) return InteractionResult.CONSUME;
                 this.swapItem(player, EquipmentSlot.MAINHAND, itemstack, hand);
 
                 success = true;
@@ -234,7 +237,7 @@ public class TargetDummyEntity extends Mob {
             else if (item instanceof ShearsItem) {
                 if (!this.isSheared()) {
                     player.playSound(SoundEvents.SNOW_GOLEM_SHEAR, 1.0F, 1.0F);
-                    if (level.isClientSide) return InteractionResult.CONSUME;
+                    if (level.isClientSide()) return InteractionResult.CONSUME;
                     this.setSheared(true);
                     return InteractionResult.SUCCESS;
                 }
@@ -243,7 +246,7 @@ public class TargetDummyEntity extends Mob {
             if (success) return InteractionResult.SUCCESS;
 
         }
-        return InteractionResult.PASS;
+        return super.interact(player, hand, vec);
     }
 
     private void swapItem(Player player, EquipmentSlot slot, ItemStack armor, InteractionHand hand) {
@@ -277,14 +280,14 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public void dropEquipment() {
-        dropPreservedEquipment();
-        this.spawnAtLocation(getPickResult(), 1);
+    public void dropEquipment(ServerLevel level) {
+        dropPreservedEquipment(level);
+        this.spawnAtLocation(level, getPickResult(), 1);
     }
 
     // same as super just spawns higher
     @Override
-    public Set<EquipmentSlot> dropPreservedEquipment(Predicate<ItemStack> predicate) {
+    public Set<EquipmentSlot> dropPreservedEquipment(ServerLevel level, Predicate<ItemStack> predicate) {
         Set<EquipmentSlot> set = new HashSet<>();
 
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -293,10 +296,10 @@ public class TargetDummyEntity extends Mob {
                 if (!predicate.test(itemStack)) {
                     set.add(equipmentSlot);
                 } else {
-                    double d = this.getEquipmentDropChance(equipmentSlot);
+                    double d = this.getDropChances().byEquipment(equipmentSlot);
                     if (d > 1.0) {
                         this.setItemSlot(equipmentSlot, ItemStack.EMPTY);
-                        this.spawnAtLocation(itemStack, 1);
+                        this.spawnAtLocation(level, itemStack, 1);
                     }
                 }
             }
@@ -307,13 +310,12 @@ public class TargetDummyEntity extends Mob {
     }
 
     public void dismantle(boolean drops) {
-        Level level = this.level();
-        if (!level.isClientSide && this.isAlive()) {
-            if (drops) this.dropEquipment();
+        if (this.level() instanceof ServerLevel level && this.isAlive()) {
+            if (drops) this.dropEquipment(level);
 
             this.playSound(this.getDeathSound(), 1.0F, 1.0F);
 
-            ((ServerLevel) level).sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),
+            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.OAK_PLANKS.defaultBlockState()),
                     this.getX(), this.getY(0.6666666666666666D), this.getZ(), 10, (this.getBbWidth() / 4.0F),
                     (this.getBbHeight() / 4.0F), (this.getBbWidth() / 4.0F), 0.05D);
 
@@ -354,30 +356,32 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public void kill() {
+    public void kill(ServerLevel level) {
         this.dismantle(true);
     }
 
     @Override
-    public boolean isBlocking() {
-        return shieldCooldown == 0 && !this.getItemInHand(InteractionHand.MAIN_HAND).isEmpty();
+    public @Nullable ItemStack getItemBlockingWith() {
+        if (this.shieldCooldown != 0) return null;
+        ItemStack held = this.getItemInHand(InteractionHand.MAIN_HAND);
+        return held.has(DataComponents.BLOCKS_ATTACKS) ? held : null;
     }
 
     @Override
-    protected void blockUsingShield(LivingEntity attacker) {
-        super.blockUsingShield(attacker);
+    protected void blockUsingItem(ServerLevel level, LivingEntity attacker) {
+        super.blockUsingItem(level, attacker);
         // same as player
-        if (DummyPlatStuff.canDisableShield(attacker, this.useItem, this)) {
+        if (attacker.getSecondsToDisableBlocking() > 0) {
             this.disableShield();
         } else {
-            this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 0.8F + this.level().random.nextFloat() * 0.4F);
+            this.playSound(SoundEvents.SHIELD_BLOCK.value(), 1.0F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         }
     }
 
     //same as player
     private void disableShield() {
         this.shieldCooldown = SHIELD_COOLDOWN;
-        this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+        this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.getRandom().nextFloat() * 0.4F);
         this.level().broadcastEntityEvent(this, (byte) 30);
     }
 
@@ -393,14 +397,14 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         return isRecharging() ||
-                super.isInvulnerableTo(source) || source == this.damageSources().drown() ||
+                super.isInvulnerableTo(level, source) || source == this.damageSources().drown() ||
                 source == this.damageSources().inWall();
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         //not immune to void damage, immune to drown, wall
         if (source == this.damageSources().fellOutOfWorld()) {
             this.remove(RemovalReason.KILLED);
@@ -429,7 +433,10 @@ public class TargetDummyEntity extends Mob {
             }
         }
 
-        if (level().isClientSide) return false;
+        if (source.is(DamageTypeTags.IS_FREEZING) && this.mobType.freezeHurtsExtra()) {
+            damage *= 5.0F;
+        }
+
         //for recursion
         var old = currentDamageSource;
         this.currentDamageSource = source;
@@ -439,7 +446,7 @@ public class TargetDummyEntity extends Mob {
                 critRecord.addSource(source);
             }
         }
-        boolean result = super.hurt(source, damage);
+        boolean result = super.hurtServer(level, source, damage);
         this.currentDamageSource = old;
         //set to zero to disable a red glow that happens when hurt
         this.hurtTime = 0;
@@ -458,7 +465,7 @@ public class TargetDummyEntity extends Mob {
         } else {
             Level level = this.level();
 
-            if (level.isClientSide) return;
+            if (level.isClientSide()) return;
             float damage = this.getHealth() - newHealth;
             DamageSource actualSource = getActualDamageSource(damage);
 
@@ -493,9 +500,6 @@ public class TargetDummyEntity extends Mob {
                 //&& DoubleMath.fuzzyEquals(damage, currentCombatEntry.damage(), 0.0001)
             ) {
                 actualSource = currentCombatEntry.source();
-                if (Math.abs(damage - currentCombatEntry.damage()) > 0.0001) {
-                    int error = 0;
-                }
             }
         } else actualSource = currentDamageSource;
         return actualSource;
@@ -597,7 +601,7 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    protected Vec3 getLeashOffset() {
+    public Vec3 getLeashOffset() {
         return new Vec3(0, this.getEyeHeight() - 1, 0);
     }
 
@@ -619,10 +623,10 @@ public class TargetDummyEntity extends Mob {
         BlockPos onPos = this.getOnPos();
         float health = this.getHealth();
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
 
             //show true damage that has bypassed hurt method
-            if (lastTickActuallyDamaged + 1 == this.tickCount && !level.isClientSide) {
+            if (lastTickActuallyDamaged + 1 == this.tickCount) {
                 float trueDamage = lastHealth - health;
                 if (trueDamage > 0) {
                     if (hasInfiniteHealth()) {
@@ -661,7 +665,7 @@ public class TargetDummyEntity extends Mob {
         super.tick();
 
 
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             //set to zero to disable the red glow that happens when hurt
             this.hurtTime = 0; //this.maxHurtTime;
             this.prevShakeAmount = this.shakeAmount;
@@ -732,7 +736,7 @@ public class TargetDummyEntity extends Mob {
     }
 
     @Override
-    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource damageSource) {
+    public boolean causeFallDamage(double fallDistance, float multiplier, DamageSource damageSource) {
         return false;
     }
 
@@ -767,7 +771,7 @@ public class TargetDummyEntity extends Mob {
     // these 2 mimic what tags do but depending on entity state
     @Override
     public boolean isInvertedHealAndHarm() {
-        return this.getType().is(EntityTypeTags.INVERTED_HEALING_AND_HARM) ||
+        return this.is(EntityTypeTags.INVERTED_HEALING_AND_HARM) ||
                 this.mobType.isInvertedHealAndHarm();
     }
 
@@ -852,7 +856,7 @@ public class TargetDummyEntity extends Mob {
                             hpsMessage);
                 } else return;
 
-                player.displayClientMessage(message, true);
+                player.sendOverlayMessage(message);
 
             }
         }
@@ -861,8 +865,8 @@ public class TargetDummyEntity extends Mob {
     private class PlayersTracker {
 
         private final Map<ServerPlayer, Integer> currentlyAttacking = new HashMap<>();
-        private final ServerBossEvent healthBar = new ServerBossEvent(getDisplayName(), CommonConfigs.BOSS_HEALTH_COLOR.get(),
-                BossEvent.BossBarOverlay.NOTCHED_12);
+        private final ServerBossEvent healthBar = new ServerBossEvent(UUID.randomUUID(), getDisplayName(),
+                CommonConfigs.BOSS_HEALTH_COLOR.get(), BossEvent.BossBarOverlay.NOTCHED_12);
 
         public void showHealthBar(boolean on) {
             healthBar.setVisible(on);

@@ -1,3 +1,2 @@
-- reworked the configs: categories have icons, scarecrow and damage numbers can now be turned off entirely and boss settings have their own category. Some values will reset to default
-- added a punchable dummy on the config screen
-- translations
+26.1.2 porterino
+pls report any issues

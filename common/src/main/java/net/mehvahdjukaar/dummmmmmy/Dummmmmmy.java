@@ -5,19 +5,16 @@ import net.mehvahdjukaar.dummmmmmy.common.TargetDummyItem;
 import net.mehvahdjukaar.dummmmmmy.configs.ClientConfigs;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ModMessages;
-import net.mehvahdjukaar.moonlight.api.misc.HolderReference;
+import net.mehvahdjukaar.moonlight.api.misc.HolderRef;
 import net.mehvahdjukaar.moonlight.api.platform.PlatHelper;
 import net.mehvahdjukaar.moonlight.api.platform.RegHelper;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.EntityTypePredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -45,18 +42,14 @@ public class Dummmmmmy {
 
     public static final boolean CRITICAL_STRIKE = PlatHelper.isModLoaded("critical_strike");
 
-    public static ResourceLocation res(String name) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
+    public static Identifier res(String name) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, name);
     }
 
     public static void init() {
         if (PlatHelper.getPhysicalSide().isClient()) {
             DummmmmmyClient.init();
             ClientConfigs.init();
-
-            EntityPredicate.Builder.entity()
-                    .entityType(EntityTypePredicate.of(EntityTypeTags.SENSITIVE_TO_IMPALING)).build();
-
         }
         ModMessages.init();
         CommonConfigs.init();
@@ -91,7 +84,7 @@ public class Dummmmmmy {
 
             TargetDummyEntity dummy = new TargetDummyEntity(world);
             float rot = direction.toYRot();
-            dummy.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, rot, 0.0F);
+            dummy.snapTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, rot, 0.0F);
             dummy.setYHeadRot(rot);
 
             world.addFreshEntity(dummy);
@@ -110,7 +103,7 @@ public class Dummmmmmy {
                     .sized(0.6f, 2f));
 
     public static final Supplier<Item> DUMMY_ITEM = RegHelper.registerItem(
-            res(TARGET_DUMMY_NAME), () -> new TargetDummyItem(new Item.Properties().stacksTo(16)));
+            res(TARGET_DUMMY_NAME), p -> new TargetDummyItem(p.stacksTo(16)));
 
     public static final Supplier<SimpleParticleType> NUMBER_PARTICLE = RegHelper.registerParticle(res("number"));
     public static final Supplier<SimpleParticleType> HAY_PARTICLE = RegHelper.registerParticle(res("hay"));
@@ -127,10 +120,10 @@ public class Dummmmmmy {
     public static final TagKey<DamageType> IS_COLD = TagKey.create(Registries.DAMAGE_TYPE, res("is_cold"));
 
 
-    public static final HolderReference<DamageType> TRUE_DAMAGE =
-            HolderReference.of(res("true"), Registries.DAMAGE_TYPE);
-    public static final HolderReference<DamageType> CRITICAL_DAMAGE =
-            HolderReference.of(res("critical"), Registries.DAMAGE_TYPE);
+    public static final HolderRef<DamageType> TRUE_DAMAGE =
+            HolderRef.of(res("true"), Registries.DAMAGE_TYPE);
+    public static final HolderRef<DamageType> CRITICAL_DAMAGE =
+            HolderRef.of(res("critical"), Registries.DAMAGE_TYPE);
 
 
     static {

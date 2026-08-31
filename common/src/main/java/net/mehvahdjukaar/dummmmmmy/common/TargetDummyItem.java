@@ -49,7 +49,7 @@ public class TargetDummyItem extends Item {
                         TargetDummyEntity dummy = new TargetDummyEntity(serverLevel);
 
                         float rotation = Mth.floor((Mth.wrapDegrees(context.getRotation() - 180.0F) + 11.25) / 22.5F) * 22.5F;
-                        dummy.moveTo(vec3.x, vec3.y, vec3.z, rotation, 0.0F);
+                        dummy.snapTo(vec3.x, vec3.y, vec3.z, rotation, 0.0F);
                         dummy.setYHeadRot(rotation);
 
                         consumer.accept(dummy);

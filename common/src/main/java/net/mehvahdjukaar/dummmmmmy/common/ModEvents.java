@@ -25,7 +25,7 @@ public class ModEvents {
 
     @EventCalled
     public static void onEntityCriticalHit(Player attacker, Entity target, float damageModifier) {
-        if (attacker != null && !attacker.level().isClientSide) { // && damageModifier == 1.5
+        if (attacker != null && !attacker.level().isClientSide()) { // && damageModifier == 1.5
             if (target instanceof TargetDummyEntity dummy) {
                 dummy.moist(attacker, damageModifier);
             }
@@ -58,21 +58,21 @@ public class ModEvents {
     //add goal
     @EventCalled
     public static void onEntityJoinWorld(Entity entity) {
-        if (entity.level().isClientSide) return;
+        if (entity.level().isClientSide()) return;
         if (entity instanceof PathfinderMob mob && canBeScaredByScarecrow(entity)) {
             mob.goalSelector.addGoal(0, new AvoidEntityGoal<>(mob, TargetDummyEntity.class,
                     CommonConfigs.RADIUS.get(), 1.0D, 1.3D, d -> ((TargetDummyEntity) d).canScare()));
         }
         if (CommonConfigs.DECOY.get() && entity instanceof Monster m) {
             m.goalSelector.addGoal(6, new NearestAttackableTargetGoal<>(m, TargetDummyEntity.class,
-                    20, true, true, d -> ((TargetDummyEntity) d).canAttract()));
+                    20, true, true, (d, l) -> ((TargetDummyEntity) d).canAttract()));
         }
     }
 
     @EventCalled
     public static void onEntityDamage(LivingEntity target, float amount, DamageSource source) {
         //this should be client sided buuut its only fired on server
-        if (!target.level().isClientSide && target.getType() != Dummmmmmy.TARGET_DUMMY.get() && amount != 0) {
+        if (!target.level().isClientSide() && !target.is(Dummmmmmy.TARGET_DUMMY.get()) && amount != 0) {
             CritRecord crit = null;
             if (Dummmmmmy.CRITICAL_STRIKE) {
                 float critMultiplier = CritCompat.getCritMultiplier(source);
@@ -101,7 +101,7 @@ public class ModEvents {
     }
 
     public static void onEntityHeal(LivingEntity entity, float amount) {
-        if (!entity.level().isClientSide && entity.getType() != Dummmmmmy.TARGET_DUMMY.get() && amount != 0) {
+        if (!entity.level().isClientSide() && !entity.is(Dummmmmmy.TARGET_DUMMY.get()) && amount != 0) {
             var message = new ClientBoundDamageNumberMessage(entity.getId(), -amount, null, null, entity.level());
             switch (CommonConfigs.HEALING_NUMBERS_MODE.get()) {
                 case ALL_ENTITIES -> {
