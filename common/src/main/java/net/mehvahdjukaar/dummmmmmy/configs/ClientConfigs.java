@@ -85,8 +85,6 @@ public class ClientConfigs {
         CRIT_BOLD = builder.comment("Make critical hit damage numbers bold")
                 .define("crit_bold", false);
 
-        // insertion ordered: getDamageColor returns the first key that matches, and the specific ids below have to win
-        // over the broader tags
         Map<IdOrTagPredicate, Integer> map = new LinkedHashMap<>();
         map.put(new IdPredicate(TRUE_DAMAGE.getID()), COLOR_TRUE);
         map.put(new IdPredicate(CRITICAL_DAMAGE.getID()), COLOR_CRIT);

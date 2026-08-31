@@ -107,13 +107,6 @@ public class TargetDummyModel<T extends TargetDummyEntity> extends HumanoidModel
         this.rechargingAnim = smoothRamp(recharge, 0.1);
     }
 
-    /**
-     * Drives the getting-hit wobble from raw numbers instead of an entity, for the config screen preview where
-     * there's no dummy in a level to read from.
-     *
-     * @param phase                shake phase, in ticks since the hit
-     * @param unscaledSwingAmount  remaining swing, before the animation intensity setting is applied
-     */
     public void setHitAnimation(float phase, float unscaledSwingAmount) {
         float swingAmount = Math.min((float) (unscaledSwingAmount * ClientConfigs.ANIMATION_INTENSITY.get()), 40f);
         if (swingAmount > 0) {
