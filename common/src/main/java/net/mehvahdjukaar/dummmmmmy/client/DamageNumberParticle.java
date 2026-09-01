@@ -29,20 +29,22 @@ public class DamageNumberParticle extends Particle {
 
     public static final ParticleRenderType GROUP = new ParticleRenderType(Dummmmmmy.MOD_ID + ":damage_numbers");
 
+    private static final float ALPHA_FADE_IN_TICKS = 5;
+    private static final float SIZE_POP_IN_TICKS = 10;
+    private static final float TRAVEL_TICKS = 14;
+    private static final float CAMERA_Z_OFFSET = 0.35f;
+
     private static final List<Float> POSITIONS = new ArrayList<>(Arrays.asList(0f, -0.25f, 0.12f, -0.12f, 0.25f));
 
     private final Font fontRenderer = Minecraft.getInstance().font;
 
     private final Component text;
     private final int color;
-    private float fadeout = -1;
-    private float prevFadeout = -1;
+    private float fadeout = 1;
+    private float prevFadeout = 1;
 
-    //visual offset
-    private float visualDY = 0;
-    private float prevVisualDY = 0;
-    private float visualDX = 0;
-    private float prevVisualDX = 0;
+    private final float targetDX;
+    private final float targetDY;
 
 
     public DamageNumberParticle(ClientLevel clientLevel, double x, double y, double z,
@@ -77,6 +79,23 @@ public class DamageNumberParticle extends Particle {
         }
 
         this.xd = POSITIONS.get(Math.floorMod(index, POSITIONS.size()));
+
+        float stepX = (float) this.xd;
+        float stepY = (float) this.yd;
+        float driftX = 0;
+        float driftY = 0;
+        while (true) {
+            driftX += stepX;
+            driftY += stepY;
+            if (!insideTorsoEllipse(driftX, driftY)) break;
+            stepY /= 2;
+        }
+        this.targetDX = driftX;
+        this.targetDY = driftY;
+    }
+
+    private static boolean insideTorsoEllipse(float dx, float dy) {
+        return Math.sqrt(Mth.square(dx * 1.5) + Mth.square(dy - 1)) < 0.9;
     }
 
     public State extract(Camera camera, float partialTicks) {
@@ -94,26 +113,49 @@ public class DamageNumberParticle extends Particle {
 
         double inc = Mth.clamp(distanceFromCam / 32f, 0, 5f);
 
+        float animAge = this.age + partialTicks;
+        float travel = easeOutQuint(Math.min(1, animAge / TRAVEL_TICKS));
+
         // animation
-        poseStack.translate(0, (1 + inc / 4f) * Mth.lerp(partialTicks, this.prevVisualDY, this.visualDY), 0);
+        poseStack.translate(0, (1 + inc / 4f) * this.targetDY * travel, 0);
         // rotate towards camera
 
         float fade = Mth.lerp(partialTicks, this.prevFadeout, this.fadeout);
+        float popIn = easeOutBack(Math.min(1, animAge / SIZE_POP_IN_TICKS));
+        float appear = Math.min(1, animAge / ALPHA_FADE_IN_TICKS);
+        float alphaIn = 1 - (1 - appear) * (1 - appear);
 
         float defScale = 0.006f;
         float scale = (float) (defScale * distanceFromCam);
         poseStack.mulPose(camera.rotation());
+        poseStack.translate(0, 0, CAMERA_Z_OFFSET);
 
         // animation
-        poseStack.translate((1 + inc) * Mth.lerp(partialTicks, this.prevVisualDX, this.visualDX), 0, 0);
+        poseStack.translate((1 + inc) * this.targetDX * travel, 0, 0);
         // scale depending on distance so size remains the same
-        poseStack.scale(scale, -scale, -scale);
+        poseStack.scale(scale, -scale, scale);
         poseStack.translate(0, (4d * (1 - fade)), 0);
         poseStack.scale(fade, fade, fade);
+        poseStack.scale(popIn, popIn, popIn);
         poseStack.translate(0, -distanceFromCam / 10d, 0);
 
         float x1 = 0.5f - fontRenderer.width(text) / 2f;
-        return new State(poseStack, text.getVisualOrderText(), x1, this.color, light);
+        return new State(poseStack, text.getVisualOrderText(), x1, withAlpha(this.color, alphaIn * fade), light);
+    }
+
+    private static float easeOutQuint(float t) {
+        float p = 1 - t;
+        return 1 - p * p * p * p * p;
+    }
+
+    private static float easeOutBack(float t) {
+        float p = t - 1;
+        return 1 + 2.7f * p * p * p + 1.7f * p * p;
+    }
+
+    private static int withAlpha(int color, float mult) {
+        int alpha = Mth.clamp((int) (((color >>> 24) & 0xff) * mult), 0, 255);
+        return (color & 0x00ffffff) | (alpha << 24);
     }
 
     public record State(PoseStack pose, FormattedCharSequence text, float x, int color, int light) {
@@ -130,20 +172,6 @@ public class DamageNumberParticle extends Particle {
             float length = 6;
             this.prevFadeout = this.fadeout;
             this.fadeout = this.age > (lifetime - length) ? ((float) lifetime - this.age) / length : 1;
-
-            this.prevVisualDY = this.visualDY;
-            this.visualDY += this.yd;
-            this.prevVisualDX = this.visualDX;
-            this.visualDX += this.xd;
-
-            //spawn numbers in a sort of ellipse centered on his torso
-            if (Math.sqrt(Mth.square(this.visualDX * 1.5) + Mth.square(this.visualDY - 1)) < 1.9 - 1) {
-
-                this.yd = this.yd / 2;
-            } else {
-                this.yd = 0;
-                this.xd = 0;
-            }
         }
     }
 
