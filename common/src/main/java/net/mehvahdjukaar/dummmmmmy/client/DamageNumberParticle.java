@@ -152,8 +152,9 @@ public class DamageNumberParticle extends Particle {
         return 1 + 2.7f * p * p * p + 1.7f * p * p;
     }
 
+    // font forces full opacity when the top alpha bits are all off, so never go below 4
     private static int withAlpha(int color, float mult) {
-        int alpha = Mth.clamp((int) (((color >>> 24) & 0xff) * mult), 0, 255);
+        int alpha = Mth.clamp((int) (((color >>> 24) & 0xff) * mult), 4, 255);
         return (color & 0x00ffffff) | (alpha << 24);
     }
 
