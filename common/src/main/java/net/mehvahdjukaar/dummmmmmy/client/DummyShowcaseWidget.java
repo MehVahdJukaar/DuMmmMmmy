@@ -70,7 +70,7 @@ public class DummyShowcaseWidget extends AbstractWidget {
 
     private void advance(int mouseX, int mouseY) {
         long now = Util.getMillis();
-        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f);
+        float dt = this.lastMs < 0 ? 0 : Math.min((now - this.lastMs) / 1000f, 0.1f); // clamped so reopening the screen doesn't jump
         this.lastMs = now;
         float ticks = dt * 20f;
 

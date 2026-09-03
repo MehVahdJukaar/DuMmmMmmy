@@ -500,6 +500,9 @@ public class TargetDummyEntity extends Mob {
                 //&& DoubleMath.fuzzyEquals(damage, currentCombatEntry.damage(), 0.0001)
             ) {
                 actualSource = currentCombatEntry.source();
+                if (Math.abs(damage - currentCombatEntry.damage()) > 0.0001) {
+                    int error = 0;
+                }
             }
         } else actualSource = currentDamageSource;
         return actualSource;

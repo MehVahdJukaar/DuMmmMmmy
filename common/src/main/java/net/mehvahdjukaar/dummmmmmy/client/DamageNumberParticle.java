@@ -32,7 +32,6 @@ public class DamageNumberParticle extends Particle {
     private static final float ALPHA_FADE_IN_TICKS = 5;
     private static final float SIZE_POP_IN_TICKS = 10;
     private static final float TRAVEL_TICKS = 14;
-    private static final float CAMERA_Z_OFFSET = 0.35f;
 
     private static final List<Float> POSITIONS = new ArrayList<>(Arrays.asList(0f, -0.25f, 0.12f, -0.12f, 0.25f));
 
@@ -128,7 +127,7 @@ public class DamageNumberParticle extends Particle {
         float defScale = 0.006f;
         float scale = (float) (defScale * distanceFromCam);
         poseStack.mulPose(camera.rotation());
-        poseStack.translate(0, 0, CAMERA_Z_OFFSET);
+        poseStack.translate(0, 0, 0.35f);
 
         // animation
         poseStack.translate((1 + inc) * this.targetDX * travel, 0, 0);
