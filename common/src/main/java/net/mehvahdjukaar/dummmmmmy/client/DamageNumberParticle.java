@@ -167,6 +167,8 @@ public class DamageNumberParticle extends Particle {
                 poseStack.last().pose(), buffer, Font.DisplayMode.NORMAL, 0, light);
 
         buffer.endBatch();
+        //text render type turns the light layer off when it ends... resettingit here
+        Minecraft.getInstance().gameRenderer.lightTexture().turnOnLightLayer();
 
         poseStack.popPose();
     }
