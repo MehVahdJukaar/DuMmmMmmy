@@ -3,6 +3,8 @@ plugins {
 }
 
 common {
+    //pinned so the build doesn't need to hit maven.neoforged.net to list versions
+    neoformVersion = "26.1.2-1"
     accessWidener()
 }
 
@@ -10,9 +12,6 @@ val moonlight_version: String by extra
 val critical_strike_version: String by extra
 
 dependencies {
-    // Use the neoforge variant in common for compile-only access.
-    // @jar ignores moonlight's module metadata. Without it gradle picks the access transformer variant here and
-    // the whole api goes missing from the classpath
     modCompileOnly("net.mehvahdjukaar:moonlight-neoforge:${moonlight_version}@jar")
     accessTransformers("net.mehvahdjukaar:moonlight-neoforge:${moonlight_version}")
 
