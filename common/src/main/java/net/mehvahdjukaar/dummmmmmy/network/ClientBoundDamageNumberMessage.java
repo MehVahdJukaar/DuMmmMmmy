@@ -39,7 +39,7 @@ public record ClientBoundDamageNumberMessage
     }
 
     public ClientBoundDamageNumberMessage(int id, float damage, @Nullable DamageSource source, @Nullable CritRecord critical, Level level) {
-        this(id, damage, encodeDamage(source, level), critical != null, critical == null ? 0 : critical.getMultiplier());
+        this(id, damage, encodeDamage(source, level), critical != null, critical == null ? 0 : critical.multiplier());
     }
 
     public static Holder<DamageType> encodeDamage(@Nullable DamageSource source, Level level) {

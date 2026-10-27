@@ -9,7 +9,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
-import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 
 /**
  * Author: MehVahdJukaar
@@ -21,16 +20,6 @@ public class DummmmmmyForge {
         Dummmmmmy.init();
         NeoForge.EVENT_BUS.register(this);
 
-    }
-
-    @SubscribeEvent
-    public void onEntityCriticalHit(CriticalHitEvent event) {
-        if (event.isCriticalHit()) {
-            float mod = event.getDamageMultiplier();
-            if (mod > 1) {
-                ModEvents.onEntityCriticalHit(event.getEntity(), event.getTarget(), event.getDamageMultiplier());
-            }
-        }
     }
 
     //prevents them from spawning

@@ -17,19 +17,23 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import org.jetbrains.annotations.Nullable;
 
 public class ModEvents {
 
-    @EventCalled
-    public static void onEntityCriticalHit(Player attacker, Entity target, float damageModifier) {
-        if (attacker != null && !attacker.level().isClientSide()) { // && damageModifier == 1.5
-            if (target instanceof TargetDummyEntity dummy) {
-                dummy.moist(attacker, damageModifier);
-            }
+    @Nullable
+    public static CritRecord getCrit(Entity victim, DamageSource source) {
+        if (Dummmmmmy.CRITICAL_STRIKE) {
+            float critMultiplier = CritCompat.getCritMultiplier(source);
+            if (critMultiplier > 0) return new CritRecord(victim, critMultiplier);
         }
+        CritRecord meleeCrit = ((MeleeCritSource) source).dummy$getMeleeCrit();
+        if (meleeCrit != null && meleeCrit.victim() == victim) {
+            return meleeCrit;
+        }
+        return null;
     }
 
     public static boolean canBeScaredByScarecrow(Entity entity) {
@@ -73,12 +77,7 @@ public class ModEvents {
     public static void onEntityDamage(LivingEntity target, float amount, DamageSource source) {
         //this should be client sided buuut its only fired on server
         if (!target.level().isClientSide() && !target.is(Dummmmmmy.TARGET_DUMMY.get()) && amount != 0) {
-            CritRecord crit = null;
-            if (Dummmmmmy.CRITICAL_STRIKE) {
-                float critMultiplier = CritCompat.getCritMultiplier(source);
-                crit = critMultiplier > 0 ? new CritRecord(null, critMultiplier) : null;
-            }
-            var message = new ClientBoundDamageNumberMessage(target.getId(), amount, source, crit, target.level());
+            var message = new ClientBoundDamageNumberMessage(target.getId(), amount, source, getCrit(target, source), target.level());
             switch (CommonConfigs.DAMAGE_NUMBERS_MODE.get()) {
                 case ALL_ENTITIES -> {
                     NetworkHelper.sendToAllClientPlayersTrackingEntity(target, message);

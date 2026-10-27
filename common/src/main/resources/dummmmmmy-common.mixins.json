@@ -7,6 +7,7 @@
   ],
   "mixins": [
     "ArmorStandFIxMixin",
+    "DamageSourceMixin",
     "EnchantmentMixin",
     "LivingEntityMixin",
     "PlayerMixin",

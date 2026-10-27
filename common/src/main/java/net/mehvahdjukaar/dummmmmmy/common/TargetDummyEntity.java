@@ -2,7 +2,6 @@
 package net.mehvahdjukaar.dummmmmmy.common;
 
 import net.mehvahdjukaar.dummmmmmy.Dummmmmmy;
-import net.mehvahdjukaar.dummmmmmy.compat.CritCompat;
 import net.mehvahdjukaar.dummmmmmy.configs.CommonConfigs;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundDamageNumberMessage;
 import net.mehvahdjukaar.dummmmmmy.network.ClientBoundUpdateAnimationMessage;
@@ -67,8 +66,6 @@ public class TargetDummyEntity extends Mob {
     // currently, recording damage taken
     private float totalDamageTakenInCombat;
     private float totalHealingTakenInCombat;
-    //has just been hit by critical? server side
-    private final List<CritRecord> critRecordsThisTick = new ArrayList<>();
     private DummyMobType mobType = DummyMobType.UNDEFINED;
 
     private DamageSource currentDamageSource = null;
@@ -440,12 +437,6 @@ public class TargetDummyEntity extends Mob {
         //for recursion
         var old = currentDamageSource;
         this.currentDamageSource = source;
-        if (!this.critRecordsThisTick.isEmpty()) {
-            CritRecord critRecord = this.critRecordsThisTick.get(this.critRecordsThisTick.size() - 1);
-            if (critRecord.canCompleteWith(source)) {
-                critRecord.addSource(source);
-            }
-        }
         boolean result = super.hurtServer(level, source, damage);
         this.currentDamageSource = old;
         //set to zero to disable a red glow that happens when hurt
@@ -559,29 +550,11 @@ public class TargetDummyEntity extends Mob {
                     new ClientBoundUpdateAnimationMessage(this.getId(), this.animationPosition));
         }
         if (playersTracker.hasPlayers()) {
-            CritRecord critRec = null;
-            if (source != null) {
-                for (int j = critRecordsThisTick.size() - 1; j >= 0; j--) {
-                    CritRecord crit = critRecordsThisTick.get(j);
-                    if (crit.matches(source)) {
-                        critRec = crit;
-                        break;
-                    }
-                }
-                if (Dummmmmmy.CRITICAL_STRIKE) {
-                    float critMultiplier = CritCompat.getCritMultiplier(source);
-                    if (critMultiplier > 0) {
-                        critRec = new CritRecord(source.getEntity(), critMultiplier);
-                    }
-                }
-            }
+            CritRecord critRec = source == null ? null : ModEvents.getCrit(this, source);
 
             for (var p : this.playersTracker.getPlayers()) {
                 NetworkHelper.sendToClientPlayer(p,
                         new ClientBoundDamageNumberMessage(this.getId(), damage, source, critRec, level()));
-            }
-            if (critRec != null) {
-                this.critRecordsThisTick.remove(critRec);
             }
         }
     }
@@ -620,7 +593,6 @@ public class TargetDummyEntity extends Mob {
         if (this.shieldCooldown > 0) {
             this.shieldCooldown--;
         }
-        this.critRecordsThisTick.clear();
 
         Level level = this.level();
         BlockPos onPos = this.getOnPos();
@@ -817,10 +789,6 @@ public class TargetDummyEntity extends Mob {
 
     public void updateAnimation(float shake) {
         this.animationPosition = shake;
-    }
-
-    public void moist(Entity attacker, float critModifier) {
-        this.critRecordsThisTick.add(new CritRecord(attacker, critModifier));
     }
 
     public int getNextNumberPos() {
