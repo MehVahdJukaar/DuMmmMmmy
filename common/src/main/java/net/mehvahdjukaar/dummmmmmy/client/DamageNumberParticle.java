@@ -50,7 +50,7 @@ public class DamageNumberParticle extends Particle {
                                 double amount, double dColor, double dz) {
         super(clientLevel, x, y, z);
         this.lifetime = 35;
-        this.color = amount < 0 ? 0xff00ff00 : (int) dColor;
+        this.color = amount < 0 ? 0xff00ff00 : (int) dColor; //TODO: make green configurable
 
         double number = Math.abs(ClientConfigs.SHOW_HEARTHS.get() ? amount / 2f : amount);
         boolean bold = ClientConfigs.CRIT_BOLD.get();
@@ -131,7 +131,7 @@ public class DamageNumberParticle extends Particle {
 
         // animation
         poseStack.translate((1 + inc) * this.targetDX * travel, 0, 0);
-        // scale depending on distance so size remains the same
+        //scale depending on distance so size remains the same
         poseStack.scale(scale, -scale, scale);
         poseStack.translate(0, (4d * (1 - fade)), 0);
         poseStack.scale(fade, fade, fade);
